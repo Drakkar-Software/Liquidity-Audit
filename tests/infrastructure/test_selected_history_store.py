@@ -127,3 +127,26 @@ class TestSelectedHistoryStore:
 
         recent_by_key = store.load_recent_by_key()
         assert recent_by_key[("mexc", "LOW/USDT")].selected_at == "2026-06-10T10:00:00+00:00"
+
+
+class TestParseSelectedHistoryRow:
+    def test_loads_float_formatted_integer_columns(self, tmp_path: pathlib.Path):
+        csv_path = tmp_path / "selected_history.csv"
+        csv_path.write_text(
+            "selected_at,exchange,symbol,full_name,is_new_listing,selection_tier,"
+            "is_low_health,health_label_primary,health_labels_other,issue_count,"
+            "bid_levels,ask_levels,bid_depth_quote,ask_depth_quote,"
+            "bid_larger_depth_quote,ask_larger_depth_quote,bid_total_depth_quote,"
+            "ask_total_depth_quote,volume_quote,bid_ask_spread_ratio,liquidity_score,"
+            "website,coingecko_id,website_resolution_status\n"
+            "2026-06-26T20:58:09+00:00,bitmart,UGOLD/USDT,UGOLD Inc.-ETH,true,"
+            "new_low_health,true,few_orders,shallow_liquidity,5.0,"
+            "0.0,36.0,0.0,3800.138246,0.0,3800.138246,,,,,0.125,,,\n",
+            encoding="utf-8",
+        )
+        loaded_records = selected_history_store.SelectedHistoryStore(csv_path).load_all()
+        assert len(loaded_records) == 1
+        loaded_record = loaded_records[0]
+        assert loaded_record.issue_count == 5
+        assert loaded_record.bid_levels == 0
+        assert loaded_record.ask_levels == 36

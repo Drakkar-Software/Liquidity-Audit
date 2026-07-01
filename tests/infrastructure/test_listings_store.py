@@ -190,6 +190,15 @@ class TestListingsStoreLoadOldSchema:
 
 
 
+class TestParseOptionalInt:
+    def test_parses_float_formatted_integer(self):
+        assert listings_store._parse_optional_int("0.0") == 0
+        assert listings_store._parse_optional_int("36.0") == 36
+
+    def test_returns_none_for_empty_string(self):
+        assert listings_store._parse_optional_int("") is None
+
+
 class TestParseOptionalFloat:
     def test_parses_comma_decimal_separator(self):
         assert listings_store._parse_optional_float("0,000001") == 0.000001

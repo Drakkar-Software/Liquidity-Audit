@@ -39,10 +39,22 @@ SELECTED_HISTORY_CSV_COLUMNS = [
 ]
 
 
+def _normalize_numeric_string(value: str) -> str:
+    stripped = value.strip()
+    if "," in stripped and "." not in stripped:
+        return stripped.replace(",", ".")
+    return stripped
+
+
 def _parse_optional_int(value: str) -> typing.Optional[int]:
     if value == "":
         return None
-    return int(value)
+    return int(float(_normalize_numeric_string(value)))
+
+
+def _parse_required_int(value: str, *, default: str = "0") -> int:
+    raw = value if value != "" else default
+    return int(float(_normalize_numeric_string(raw)))
 
 
 def _parse_optional_float(value: str) -> typing.Optional[float]:
@@ -159,7 +171,7 @@ def _row_to_record(row: dict[str, str]) -> models.SelectedHistoryRecord:
         is_low_health=_parse_bool(row.get("is_low_health", "false")),
         health_label_primary=row.get("health_label_primary") or None,
         health_labels_other=_parse_health_labels_other(row.get("health_labels_other", "")),
-        issue_count=int(row.get("issue_count", "0")),
+        issue_count=_parse_required_int(row.get("issue_count", "0")),
         bid_levels=_parse_optional_int(row.get("bid_levels", "")),
         ask_levels=_parse_optional_int(row.get("ask_levels", "")),
         bid_depth_quote=_parse_optional_float(row.get("bid_depth_quote", "")),

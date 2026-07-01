@@ -49,7 +49,7 @@ CSV_COLUMNS = [
 def _parse_optional_int(value: str) -> typing.Optional[int]:
     if value == "":
         return None
-    return int(value)
+    return int(float(_normalize_float_string(value)))
 
 
 def _normalize_float_string(value: str) -> str:
