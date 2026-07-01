@@ -1,4 +1,4 @@
-import liquidity_audit.domain.contacts.selection as contact_selection
+import liquidity_audit.domain.select.selection as select_selection
 import liquidity_audit.domain.models as models
 import liquidity_audit.domain.website.website_resolution as website_resolution
 
@@ -64,7 +64,7 @@ class TestSelectDailyProjects:
             new_listing.key(): new_listing,
             existing_listing.key(): existing_listing,
         }
-        selections = contact_selection.select_daily_projects(
+        selections = select_selection.select_daily_projects(
             all_records,
             {new_listing.key()},
             {},
@@ -80,7 +80,7 @@ class TestSelectDailyProjects:
         recent_selection_by_key = {
             listing.key(): _history_record("OLD/USDT", "2026-06-10T12:00:00+00:00"),
         }
-        selections = contact_selection.select_daily_projects(
+        selections = select_selection.select_daily_projects(
             {listing.key(): listing},
             set(),
             recent_selection_by_key,
@@ -104,7 +104,7 @@ class TestSelectDailyProjects:
             few_orders_listing.key(): few_orders_listing,
             wide_spread_listing.key(): wide_spread_listing,
         }
-        selections = contact_selection.select_daily_projects(
+        selections = select_selection.select_daily_projects(
             all_records,
             set(),
             {},
@@ -125,7 +125,7 @@ class TestSelectDailyProjects:
         ]
         all_records = {listing.key(): listing for listing in listings}
         new_keys = {listing.key() for listing in listings}
-        selections = contact_selection.select_daily_projects(
+        selections = select_selection.select_daily_projects(
             all_records,
             new_keys,
             {},
@@ -144,7 +144,7 @@ class TestSelectDailyProjects:
         all_records = {new_listing.key(): new_listing}
         for listing in existing_listings:
             all_records[listing.key()] = listing
-        selections = contact_selection.select_daily_projects(
+        selections = select_selection.select_daily_projects(
             all_records,
             {new_listing.key()},
             {},
@@ -170,7 +170,7 @@ class TestSelectDailyProjects:
             healthy_new_listing.key(): healthy_new_listing,
             existing_listing.key(): existing_listing,
         }
-        selections = contact_selection.select_daily_projects(
+        selections = select_selection.select_daily_projects(
             all_records,
             {healthy_new_listing.key()},
             {},
@@ -186,7 +186,7 @@ class TestSelectDailyProjects:
 class TestWebsiteSelectionGate:
     def test_excludes_listing_without_website_info(self):
         listing = _listing("OLD/USDT", website=None, website_resolution_status=None)
-        selections = contact_selection.select_daily_projects(
+        selections = select_selection.select_daily_projects(
             {listing.key(): listing},
             set(),
             {},
@@ -201,7 +201,7 @@ class TestWebsiteSelectionGate:
             website=None,
             website_resolution_status=website_resolution.COINGECKO_NAME_MISMATCH,
         )
-        selections = contact_selection.select_daily_projects(
+        selections = select_selection.select_daily_projects(
             {listing.key(): listing},
             set(),
             {},

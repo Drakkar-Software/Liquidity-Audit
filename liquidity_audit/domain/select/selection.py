@@ -1,11 +1,11 @@
-import liquidity_audit.domain.contacts.cooldown as contact_cooldown
-import liquidity_audit.domain.contacts.health_issues as contact_health_issues
+import liquidity_audit.domain.select.cooldown as select_cooldown
+import liquidity_audit.domain.select.health_issues as select_health_issues
 import liquidity_audit.domain.models as models
 import liquidity_audit.domain.website.website_resolution as website_resolution
 
 
 def _liquidity_sort_key(record: models.ListingRecord) -> tuple[int, float]:
-    issue_count = contact_health_issues.count_health_issues(record)
+    issue_count = select_health_issues.count_health_issues(record)
     liquidity_score = record.liquidity_score if record.liquidity_score is not None else 1.0
     return (-issue_count, liquidity_score)
 
@@ -18,7 +18,7 @@ def _is_within_selection_cooldown(
     recent_selection = recent_selection_by_key.get(record.key())
     if recent_selection is None:
         return False
-    return contact_cooldown.is_within_cooldown(
+    return select_cooldown.is_within_cooldown(
         recent_selection.selected_at,
         cooldown_days,
     )

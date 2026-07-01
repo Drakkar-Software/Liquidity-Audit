@@ -1,6 +1,6 @@
 import logging
 
-import liquidity_audit.domain.contacts.health_issues as contact_health_issues
+import liquidity_audit.domain.select.health_issues as select_health_issues
 import liquidity_audit.domain.models as models
 
 _LOGGER = logging.getLogger(__name__)
@@ -58,7 +58,7 @@ def log_daily_selections_summary(
     )
     for selection in sorted_selections:
         record = selection.record
-        issue_count = contact_health_issues.count_health_issues(record)
+        issue_count = select_health_issues.count_health_issues(record)
         primary_label = record.health_label_primary or "none"
         _LOGGER.info(
             "  %s %s | %s | %s | label=%s | issues=%s",

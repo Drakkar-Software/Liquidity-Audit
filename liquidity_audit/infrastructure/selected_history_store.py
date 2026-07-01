@@ -4,8 +4,8 @@ import logging
 import pathlib
 import typing
 
-import liquidity_audit.domain.contacts.cooldown as contact_cooldown
-import liquidity_audit.domain.contacts.health_issues as contact_health_issues
+import liquidity_audit.domain.select.cooldown as select_cooldown
+import liquidity_audit.domain.select.health_issues as select_health_issues
 import liquidity_audit.domain.models as models
 
 _LOGGER = logging.getLogger(__name__)
@@ -76,7 +76,7 @@ def selected_history_record_from_selection(
         is_low_health=listing.is_low_health,
         health_label_primary=listing.health_label_primary,
         health_labels_other=list(listing.health_labels_other or []),
-        issue_count=contact_health_issues.count_health_issues(listing),
+        issue_count=select_health_issues.count_health_issues(listing),
         bid_levels=listing.bid_levels,
         ask_levels=listing.ask_levels,
         bid_depth_quote=listing.bid_depth_quote,
@@ -95,7 +95,7 @@ def selected_history_record_from_selection(
 
 
 def parse_selected_at(selected_at: str) -> datetime.datetime:
-    return contact_cooldown.parse_contacted_at(selected_at)
+    return select_cooldown.parse_contacted_at(selected_at)
 
 
 def is_within_cooldown(
@@ -103,7 +103,7 @@ def is_within_cooldown(
     cooldown_days: int,
     now: datetime.datetime | None = None,
 ) -> bool:
-    return contact_cooldown.is_within_cooldown(selected_at, cooldown_days, now=now)
+    return select_cooldown.is_within_cooldown(selected_at, cooldown_days, now=now)
 
 
 def _record_to_row(record: models.SelectedHistoryRecord) -> dict[str, str]:

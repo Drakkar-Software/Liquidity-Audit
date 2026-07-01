@@ -2,7 +2,7 @@ import dataclasses
 import json
 import typing
 
-import liquidity_audit.domain.contacts.selection as contact_selection
+import liquidity_audit.domain.select.selection as select_selection
 import liquidity_audit.domain.models as models
 
 COINGECKO_AMBIGUOUS_NAME_MATCH = "coingecko_ambiguous_name_match"
@@ -47,7 +47,7 @@ def should_resolve_website(
 ) -> bool:
     return (
         needs_website_resolution(listing)
-        and contact_selection.is_website_resolution_candidate(
+        and select_selection.is_website_resolution_candidate(
             listing,
             new_listing_keys,
             recent_selection_by_key,

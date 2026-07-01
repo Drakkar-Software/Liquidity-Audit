@@ -1,7 +1,7 @@
 import datetime
 import pathlib
 
-import liquidity_audit.domain.contacts.health_issues as contact_health_issues
+import liquidity_audit.domain.select.health_issues as select_health_issues
 import liquidity_audit.infrastructure.selected_history_store as selected_history_store
 import liquidity_audit.domain.models as models
 
@@ -32,7 +32,7 @@ def _listing(symbol: str) -> models.ListingRecord:
 
 class TestCountHealthIssues:
     def test_counts_primary_and_other_labels(self):
-        assert contact_health_issues.count_health_issues(_listing("LOW/USDT")) == 2
+        assert select_health_issues.count_health_issues(_listing("LOW/USDT")) == 2
 
 
 class TestIsWithinCooldown:

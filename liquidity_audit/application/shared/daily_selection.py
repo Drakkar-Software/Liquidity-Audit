@@ -1,7 +1,7 @@
 import liquidity_audit.application.shared.time_utils as time_utils
 import liquidity_audit.infrastructure.selected_history_store as selected_history_store
 import liquidity_audit.config as app_config
-import liquidity_audit.domain.contacts.selection as contact_selection
+import liquidity_audit.domain.select.selection as select_selection
 import liquidity_audit.infrastructure.listings_store as listings_store
 import liquidity_audit.domain.models as models
 
@@ -38,7 +38,7 @@ def select_and_record_daily_selections(
         config.daily_selection.history_csv_path,
     )
     recent_selection_by_key = history_store.load_recent_by_key()
-    daily_selections = contact_selection.select_daily_projects(
+    daily_selections = select_selection.select_daily_projects(
         all_records,
         new_listing_keys,
         recent_selection_by_key,
