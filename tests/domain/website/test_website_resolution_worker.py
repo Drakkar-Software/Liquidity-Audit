@@ -203,3 +203,113 @@ class TestWebsiteResolutionWorkerShutdown:
         saved = store.load_all()[listing.key()]
         assert saved.website == "https://save.example/"
         assert saved.coingecko_id == "save"
+
+    @pytest.mark.asyncio
+    async def test_shutdown_returns_after_queue_drain_timeout(
+        self,
+        tmp_path: pathlib.Path,
+        monkeypatch,
+    ):
+        csv_path = tmp_path / "listings.csv"
+        config = _config(csv_path)
+        listings_csv_lock = asyncio.Lock()
+        store = listings_store.ListingsStore(csv_path)
+
+        async def fake_load_coingecko_index(self, coingecko_client):
+            return None
+
+        async def slow_resolve_website(self, coingecko_client, full_name, base_symbol):
+            await asyncio.sleep(5.0)
+            return website_resolution.WebsiteResolutionResult(
+                website=f"https://{base_symbol.lower()}.example/",
+                coingecko_id=base_symbol.lower(),
+            )
+
+        monkeypatch.setattr(
+            website_resolution_worker,
+            "SHUTDOWN_QUEUE_DRAIN_TIMEOUT_SECONDS",
+            0.01,
+        )
+        monkeypatch.setattr(
+            website_resolution_worker,
+            "CONSUMER_STOP_TIMEOUT_SECONDS",
+            0.05,
+        )
+        monkeypatch.setattr(
+            website_resolution_worker.website_finder.WebsiteFinder,
+            "load_coingecko_index",
+            fake_load_coingecko_index,
+        )
+        monkeypatch.setattr(
+            website_resolution_worker.website_finder.WebsiteFinder,
+            "resolve_website",
+            slow_resolve_website,
+        )
+        monkeypatch.setattr(
+            website_resolution_worker.ccxt_client,
+            "create_exchange",
+            lambda *args, **kwargs: mock.AsyncMock(),
+        )
+
+        worker = await website_resolution_worker.WebsiteResolutionWorker.create_and_start(
+            store,
+            config,
+            set(),
+            listings_csv_lock,
+        )
+        worker.try_enqueue(_listing("SLOW/USDT"))
+        worker.try_enqueue(_listing("SKIP/USDT"))
+        resolved_count = await worker.shutdown()
+
+        assert resolved_count == 0
+
+
+class TestWebsiteResolutionWorkerConsumerLoop:
+    @pytest.mark.asyncio
+    async def test_continues_after_resolve_failure(self, tmp_path: pathlib.Path, monkeypatch):
+        csv_path = tmp_path / "listings.csv"
+        config = _config(csv_path)
+        listings_csv_lock = asyncio.Lock()
+        store = listings_store.ListingsStore(csv_path)
+
+        async def fake_load_coingecko_index(self, coingecko_client):
+            return None
+
+        async def fake_resolve_website(self, coingecko_client, full_name, base_symbol):
+            if base_symbol == "FAIL":
+                raise RuntimeError("CoinGecko lookup failed")
+            return website_resolution.WebsiteResolutionResult(
+                website=f"https://{base_symbol.lower()}.example/",
+                coingecko_id=base_symbol.lower(),
+            )
+
+        monkeypatch.setattr(
+            website_resolution_worker.website_finder.WebsiteFinder,
+            "load_coingecko_index",
+            fake_load_coingecko_index,
+        )
+        monkeypatch.setattr(
+            website_resolution_worker.website_finder.WebsiteFinder,
+            "resolve_website",
+            fake_resolve_website,
+        )
+        monkeypatch.setattr(
+            website_resolution_worker.ccxt_client,
+            "create_exchange",
+            lambda *args, **kwargs: mock.AsyncMock(),
+        )
+
+        worker = await website_resolution_worker.WebsiteResolutionWorker.create_and_start(
+            store,
+            config,
+            set(),
+            listings_csv_lock,
+        )
+        worker.try_enqueue(_listing("FAIL/USDT"))
+        worker.try_enqueue(_listing("OK/USDT"))
+        resolved_count = await worker.shutdown()
+
+        assert resolved_count == 1
+        assert worker._failed_count == 1
+        saved = store.load_all()[_listing("OK/USDT").key()]
+        assert saved.website == "https://ok.example/"

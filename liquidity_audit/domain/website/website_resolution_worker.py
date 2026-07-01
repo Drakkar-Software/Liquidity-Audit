@@ -14,6 +14,8 @@ import liquidity_audit.infrastructure.website_finder as website_finder
 _LOGGER = logging.getLogger(__name__)
 
 _SHUTDOWN_SENTINEL = object()
+SHUTDOWN_QUEUE_DRAIN_TIMEOUT_SECONDS = 1800
+CONSUMER_STOP_TIMEOUT_SECONDS = 30
 
 
 class WebsiteResolutionWorker:
@@ -35,6 +37,7 @@ class WebsiteResolutionWorker:
         self._enqueued_keys: set[tuple[str, str]] = set()
         self._coingecko_lock = asyncio.Lock()
         self._resolved_count = 0
+        self._failed_count = 0
         self._website_finder = website_finder.WebsiteFinder()
         self._coingecko_client: typing.Any = None
         self._consumer_task: asyncio.Task[None] | None = None
@@ -97,18 +100,70 @@ class WebsiteResolutionWorker:
             )
 
     async def shutdown(self) -> int:
-        await self._queue.join()
+        try:
+            await asyncio.wait_for(
+                self._queue.join(),
+                timeout=SHUTDOWN_QUEUE_DRAIN_TIMEOUT_SECONDS,
+            )
+        except asyncio.TimeoutError:
+            _LOGGER.warning(
+                "CoinGecko website resolution queue drain timed out after %ss "
+                "(%s item(s) still in queue, %s resolved, %s failed, %s enqueued)",
+                SHUTDOWN_QUEUE_DRAIN_TIMEOUT_SECONDS,
+                self._queue.qsize(),
+                self._resolved_count,
+                self._failed_count,
+                len(self._enqueued_keys),
+            )
+            self._abandon_pending_queue_items()
+
         await self._queue.put(_SHUTDOWN_SENTINEL)
         if self._consumer_task is not None:
-            await self._consumer_task
+            try:
+                await asyncio.wait_for(
+                    self._consumer_task,
+                    timeout=CONSUMER_STOP_TIMEOUT_SECONDS,
+                )
+            except asyncio.TimeoutError:
+                _LOGGER.warning(
+                    "CoinGecko website resolution consumer did not stop within %ss; cancelling",
+                    CONSUMER_STOP_TIMEOUT_SECONDS,
+                )
+                self._consumer_task.cancel()
+                try:
+                    await self._consumer_task
+                except asyncio.CancelledError:
+                    pass
         if self._coingecko_client is not None:
             await self._coingecko_client.close()
         _LOGGER.info(
-            "CoinGecko website resolution worker stopped: %s/%s listing(s) resolved",
+            "CoinGecko website resolution worker stopped: %s resolved, %s failed, %s enqueued",
             self._resolved_count,
+            self._failed_count,
             len(self._enqueued_keys),
         )
         return self._resolved_count
+
+    def _abandon_pending_queue_items(self) -> None:
+        abandoned_count = 0
+        while True:
+            try:
+                listing = self._queue.get_nowait()
+            except asyncio.QueueEmpty:
+                break
+            if listing is not _SHUTDOWN_SENTINEL:
+                abandoned_count += 1
+                _LOGGER.warning(
+                    "Skipping CoinGecko website resolution for %s %s (shutdown timeout)",
+                    listing.exchange,
+                    listing.symbol,
+                )
+            self._queue.task_done()
+        if abandoned_count > 0:
+            _LOGGER.warning(
+                "Abandoned %s pending CoinGecko website resolution(s) due to shutdown timeout",
+                abandoned_count,
+            )
 
     async def _consumer_loop(self) -> None:
         while True:
@@ -116,7 +171,15 @@ class WebsiteResolutionWorker:
             try:
                 if listing is _SHUTDOWN_SENTINEL:
                     break
-                await self._resolve_listing(listing)
+                try:
+                    await self._resolve_listing(listing)
+                except Exception:
+                    self._failed_count += 1
+                    _LOGGER.exception(
+                        "Website resolution failed for %s %s",
+                        listing.exchange,
+                        listing.symbol,
+                    )
             finally:
                 self._queue.task_done()
 
