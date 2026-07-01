@@ -60,6 +60,11 @@ Run from this directory (`Liquidity-Audit/`).
 
 ## CI
 
+[`.github/workflows/tests.yml`](.github/workflows/tests.yml) runs on push to `master` and on pull requests:
+
+1. `pip install -r requirements.txt` and `pip install -e .`
+2. `python -m pytest tests/ -v`
+
 [`.github/workflows/update-analysis-data.yml`](.github/workflows/update-analysis-data.yml) runs on `workflow_dispatch` (optional cron commented in file):
 
 1. `pip install -r requirements.txt` (`octobot-ccxt` from PyPI)

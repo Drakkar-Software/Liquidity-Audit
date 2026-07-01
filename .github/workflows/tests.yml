@@ -1,0 +1,31 @@
+name: Liquidity-Audit - CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+permissions: read-all
+
+jobs:
+  tests:
+    name: Python 3.13 - tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: 3.13.x
+          architecture: x64
+
+      - name: Install dependencies
+        run: |
+          pip install --prefer-binary -r requirements.txt
+          pip install -e .
+
+      - name: Pytest
+        run: python -m pytest tests/ -v
