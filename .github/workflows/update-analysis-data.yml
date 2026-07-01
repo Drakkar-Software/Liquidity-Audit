@@ -1,0 +1,74 @@
+name: Update analysis data
+
+on:
+  # schedule:
+  #   - cron: '0 */12 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: liquidity-audit-analysis
+  cancel-in-progress: false
+
+permissions: read-all
+
+jobs:
+  update-analysis:
+    name: Run cli.py and sync to R2
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+
+    env:
+      R2_ENDPOINT: https://${{ secrets.CLOUDFLARE_ACCOUNT_ID }}.r2.cloudflarestorage.com
+      R2_ANALYSIS_BUCKET: ${{ secrets.R2_ANALYSIS_BUCKET }}
+      R2_STATE_BUCKET: ${{ secrets.R2_STATE_BUCKET }}
+      MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: auto
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: 3.13.x
+          architecture: x64
+
+      - name: Install dependencies
+        run: pip install --prefer-binary -r requirements.txt
+
+      - name: Restore state from R2
+        run: |
+          mkdir -p data
+          aws s3 cp "s3://${R2_STATE_BUCKET}/listings.csv" data/listings.csv \
+            --endpoint-url "${R2_ENDPOINT}" || true
+          aws s3 cp "s3://${R2_STATE_BUCKET}/selected_history.csv" data/selected_history.csv \
+            --endpoint-url "${R2_ENDPOINT}" || true
+          aws s3 cp "s3://${R2_STATE_BUCKET}/contact_history.csv" data/selected_history.csv \
+            --endpoint-url "${R2_ENDPOINT}" || true
+
+      - name: Prepare config.json
+        run: cp config.example.json config.json
+
+      - name: Run Liquidity Audit sync
+        run: python cli.py --config config.json run
+
+      - name: Upload analysis JSON to R2
+        run: |
+          aws configure set default.s3.max_concurrent_requests 32
+          aws configure set default.s3.max_queue_size 10000
+          aws s3 sync data/analysis/ "s3://${R2_ANALYSIS_BUCKET}/" \
+            --endpoint-url "${R2_ENDPOINT}" \
+            --delete \
+            --exclude "*" \
+            --include "*.json"
+
+      - name: Upload state to R2
+        run: |
+          aws s3 cp data/listings.csv "s3://${R2_STATE_BUCKET}/listings.csv" \
+            --endpoint-url "${R2_ENDPOINT}"
+          if [ -f data/selected_history.csv ]; then
+            aws s3 cp data/selected_history.csv "s3://${R2_STATE_BUCKET}/selected_history.csv" \
+              --endpoint-url "${R2_ENDPOINT}"
+          fi

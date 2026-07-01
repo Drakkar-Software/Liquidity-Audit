@@ -1,0 +1,69 @@
+{
+  "exchange": "mexc",
+  "symbol": "ATLAS/USDT",
+  "raw": {
+    "exchange": "mexc",
+    "symbol": "ATLAS/USDT",
+    "full_name": "Star Atlas",
+    "mid_price": 0.000111,
+    "spread_pct": 3.603603603603593,
+    "bid_levels": 23,
+    "ask_levels": 50,
+    "bid_depth_1pct_quote": 0,
+    "ask_depth_1pct_quote": 0,
+    "depth_1pct_quote": 0,
+    "depth_2pct_quote": 31.27205929,
+    "depth_10pct_quote": 1324.99397697,
+    "bid_larger_depth_quote": 808.68349681,
+    "ask_larger_depth_quote": 516.31048016,
+    "depth_2pct_capped": false,
+    "volume_quote": 597.065721,
+    "bid_volume_quote": 163836.51,
+    "ask_volume_quote": 118706.9,
+    "buy_volume_pct": 57.986314386168125,
+    "sell_volume_pct": 42.01368561383186,
+    "volume_depth_ratio": null,
+    "max_fillable_buy_quote": 6558.08364261,
+    "liquidity_score": 0.375,
+    "is_low_health": true,
+    "health_label_primary": "wide_spread",
+    "health_labels_other": [
+      "under_depth_for_volume",
+      "fragmented_tight_depth",
+      "shallow_total_depth"
+    ],
+    "slippage": [
+      {
+        "size": 100,
+        "pct": 2.5809320582652298,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 1000,
+        "pct": 13.17798373312706,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 5000,
+        "pct": 97.78055661417345,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 10000,
+        "pct": null,
+        "omitted": true,
+        "fill_ratio": 0.655808364261
+      },
+      {
+        "size": 25000,
+        "pct": null,
+        "omitted": true,
+        "fill_ratio": 0.26232334570439997
+      }
+    ],
+    "fetched_at": "2026-06-28T13:44:48+00:00"
+  }
+}

@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "liquidity-audit"
+version = "0.1.0"
+description = "CSV and JSON sync logic for exchange listing liquidity analysis"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "octobot-ccxt",
+    "boto3",
+    "aiohttp",
+    "python-dotenv",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-asyncio",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["liquidity_audit*"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+pythonpath = [".", "../ccxt/python"]

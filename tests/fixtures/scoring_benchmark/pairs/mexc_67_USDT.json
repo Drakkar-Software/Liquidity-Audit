@@ -1,0 +1,67 @@
+{
+  "exchange": "mexc",
+  "symbol": "67/USDT",
+  "raw": {
+    "exchange": "mexc",
+    "symbol": "67/USDT",
+    "full_name": "The Official 67 Coin",
+    "mid_price": 0.002412,
+    "spread_pct": 1.4925373134328361,
+    "bid_levels": 50,
+    "ask_levels": 50,
+    "bid_depth_1pct_quote": 7.3092410999999995,
+    "ask_depth_1pct_quote": 186.57141903000002,
+    "depth_1pct_quote": 193.88066013000002,
+    "depth_2pct_quote": 199.93177061,
+    "depth_10pct_quote": 1314.85683315,
+    "bid_larger_depth_quote": 968.4966225,
+    "ask_larger_depth_quote": 346.36021065,
+    "depth_2pct_capped": false,
+    "volume_quote": 58900.825523,
+    "bid_volume_quote": 3053.15,
+    "ask_volume_quote": 15075.35,
+    "buy_volume_pct": 16.841713324323578,
+    "sell_volume_pct": 83.15828667567642,
+    "volume_depth_ratio": 303.7993860940337,
+    "max_fillable_buy_quote": 9119.40648317,
+    "liquidity_score": 0.42266414297173094,
+    "is_low_health": true,
+    "health_label_primary": "under_depth_for_volume",
+    "health_labels_other": [
+      "shallow_total_depth"
+    ],
+    "slippage": [
+      {
+        "size": 100,
+        "pct": 0.7725362139958556,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 1000,
+        "pct": 24.652913468577598,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 5000,
+        "pct": 102.39458678876451,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 10000,
+        "pct": null,
+        "omitted": true,
+        "fill_ratio": 0.9119406483169994
+      },
+      {
+        "size": 25000,
+        "pct": null,
+        "omitted": true,
+        "fill_ratio": 0.3647762593267999
+      }
+    ],
+    "fetched_at": "2026-06-28T13:57:56+00:00"
+  }
+}

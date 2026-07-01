@@ -1,0 +1,72 @@
+{
+  "exchange": "bitmart",
+  "symbol": "$$LAIKA/USDT",
+  "raw": {
+    "exchange": "bitmart",
+    "symbol": "$$LAIKA/USDT",
+    "full_name": "LAIKA-SOL",
+    "mid_price": 1.8e-07,
+    "spread_pct": 144.44444444444443,
+    "bid_levels": 3,
+    "ask_levels": 50,
+    "bid_depth_1pct_quote": 0,
+    "ask_depth_1pct_quote": 0,
+    "depth_1pct_quote": 0,
+    "depth_2pct_quote": 0,
+    "depth_10pct_quote": 0,
+    "bid_larger_depth_quote": 0,
+    "ask_larger_depth_quote": 0,
+    "depth_2pct_capped": false,
+    "volume_quote": 11.2394079,
+    "bid_volume_quote": 101400000.0,
+    "ask_volume_quote": 79999999.0,
+    "buy_volume_pct": 55.89856701156872,
+    "sell_volume_pct": 44.10143298843127,
+    "volume_depth_ratio": null,
+    "max_fillable_buy_quote": 953.25953301,
+    "liquidity_score": 0.2,
+    "is_low_health": true,
+    "health_label_primary": "few_orders",
+    "health_labels_other": [
+      "shallow_liquidity",
+      "wide_spread",
+      "under_depth_for_volume",
+      "fragmented_tight_depth",
+      "shallow_total_depth",
+      "low_liquidity_score"
+    ],
+    "slippage": [
+      {
+        "size": 100,
+        "pct": 181.81652228682452,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 1000,
+        "pct": 511.2082620531562,
+        "omitted": false,
+        "fill_ratio": 0.95325953301
+      },
+      {
+        "size": 5000,
+        "pct": null,
+        "omitted": true,
+        "fill_ratio": 0.19065190660200024
+      },
+      {
+        "size": 10000,
+        "pct": null,
+        "omitted": true,
+        "fill_ratio": 0.09532595330100048
+      },
+      {
+        "size": 25000,
+        "pct": null,
+        "omitted": true,
+        "fill_ratio": 0.03813038132039975
+      }
+    ],
+    "fetched_at": "2026-06-28T13:54:08+00:00"
+  }
+}

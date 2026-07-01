@@ -1,0 +1,65 @@
+{
+  "exchange": "bitmart",
+  "symbol": "$ART/USDT",
+  "raw": {
+    "exchange": "bitmart",
+    "symbol": "$ART/USDT",
+    "full_name": "LiveArt -BASE-ETH",
+    "mid_price": 0.00029245,
+    "spread_pct": 0.6496837066165129,
+    "bid_levels": 27,
+    "ask_levels": 36,
+    "bid_depth_1pct_quote": 1429.75831238,
+    "ask_depth_1pct_quote": 70.60175226999999,
+    "depth_1pct_quote": 1500.36006465,
+    "depth_2pct_quote": 2077.87719352,
+    "depth_10pct_quote": 6379.08292489,
+    "bid_larger_depth_quote": 1879.04141908,
+    "ask_larger_depth_quote": 4500.04150581,
+    "depth_2pct_capped": false,
+    "volume_quote": 633070.7481849,
+    "bid_volume_quote": 156602.7,
+    "ask_volume_quote": 81808.7,
+    "buy_volume_pct": 65.68591099251127,
+    "sell_volume_pct": 34.31408900748873,
+    "volume_depth_ratio": 421.94588025947036,
+    "max_fillable_buy_quote": 4826.5231954,
+    "liquidity_score": 0.3185987068102041,
+    "is_low_health": true,
+    "health_label_primary": "under_depth_for_volume",
+    "health_labels_other": [],
+    "slippage": [
+      {
+        "size": 100,
+        "pct": 0.8336017029286291,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 1000,
+        "pct": 1.6941016255357524,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 5000,
+        "pct": 7.660379112109015,
+        "omitted": false,
+        "fill_ratio": 0.9653046390799996
+      },
+      {
+        "size": 10000,
+        "pct": null,
+        "omitted": true,
+        "fill_ratio": 0.4826523195400001
+      },
+      {
+        "size": 25000,
+        "pct": null,
+        "omitted": true,
+        "fill_ratio": 0.19306092781600018
+      }
+    ],
+    "fetched_at": "2026-06-28T13:47:31+00:00"
+  }
+}

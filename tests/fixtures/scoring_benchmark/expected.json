@@ -1,0 +1,362 @@
+{
+  "mexc|USDC/USDT": {
+    "score_100": 100,
+    "internal_100": 75,
+    "peer_relative_100": 100,
+    "grade": "A",
+    "status": "Good",
+    "qualifies_perfect": true,
+    "is_low_health": false
+  },
+  "mexc|BTC/USDT": {
+    "score_100": 64,
+    "internal_100": 50,
+    "peer_relative_100": 79,
+    "grade": "C",
+    "status": "Fair",
+    "qualifies_perfect": false,
+    "is_low_health": false
+  },
+  "mexc|ETH/USDT": {
+    "score_100": 65,
+    "internal_100": 50,
+    "peer_relative_100": 81,
+    "grade": "C",
+    "status": "Fair",
+    "qualifies_perfect": false,
+    "is_low_health": false
+  },
+  "mexc|SOL/USDT": {
+    "score_100": 69,
+    "internal_100": 99,
+    "peer_relative_100": 38,
+    "grade": "C",
+    "status": "Fair",
+    "qualifies_perfect": false,
+    "is_low_health": false
+  },
+  "mexc|0G/USDT": {
+    "score_100": 93,
+    "internal_100": 93,
+    "peer_relative_100": 92,
+    "grade": "A",
+    "status": "Good",
+    "qualifies_perfect": false,
+    "is_low_health": false
+  },
+  "mexc|1INCH/USDT": {
+    "score_100": 94,
+    "internal_100": 88,
+    "peer_relative_100": 100,
+    "grade": "A",
+    "status": "Good",
+    "qualifies_perfect": false,
+    "is_low_health": false
+  },
+  "mexc|2Z/USDT": {
+    "score_100": 92,
+    "internal_100": 100,
+    "peer_relative_100": 84,
+    "grade": "A",
+    "status": "Good",
+    "qualifies_perfect": false,
+    "is_low_health": false
+  },
+  "mexc|AAVE/USDC": {
+    "score_100": 94,
+    "internal_100": 94,
+    "peer_relative_100": null,
+    "grade": "A",
+    "status": "Good",
+    "qualifies_perfect": false,
+    "is_low_health": false
+  },
+  "mexc|67/USDT": {
+    "score_100": 25,
+    "internal_100": 42,
+    "peer_relative_100": 8,
+    "grade": "F",
+    "status": "Poor",
+    "qualifies_perfect": false,
+    "is_low_health": true
+  },
+  "mexc|ABBC/USDT": {
+    "score_100": 56,
+    "internal_100": 66,
+    "peer_relative_100": 46,
+    "grade": "C",
+    "status": "Poor",
+    "qualifies_perfect": false,
+    "is_low_health": true
+  },
+  "mexc|ABEY/USDT": {
+    "score_100": 88,
+    "internal_100": 75,
+    "peer_relative_100": 100,
+    "grade": "A",
+    "status": "Poor",
+    "qualifies_perfect": false,
+    "is_low_health": true
+  },
+  "mexc|BTC/USDC": {
+    "score_100": 100,
+    "internal_100": 100,
+    "peer_relative_100": null,
+    "grade": "A",
+    "status": "Good",
+    "qualifies_perfect": false,
+    "is_low_health": false
+  },
+  "mexc|AREA/USDT": {
+    "score_100": 68,
+    "internal_100": 50,
+    "peer_relative_100": 85,
+    "grade": "C",
+    "status": "Poor",
+    "qualifies_perfect": false,
+    "is_low_health": true
+  },
+  "mexc|DEB/USDT": {
+    "score_100": 25,
+    "internal_100": 25,
+    "peer_relative_100": null,
+    "grade": "F",
+    "status": "Poor",
+    "qualifies_perfect": false,
+    "is_low_health": true
+  },
+  "mexc|4/USDT": {
+    "score_100": 80,
+    "internal_100": 91,
+    "peer_relative_100": 70,
+    "grade": "B",
+    "status": "Good",
+    "qualifies_perfect": false,
+    "is_low_health": false
+  },
+  "mexc|114514/USDT": {
+    "score_100": 28,
+    "internal_100": 44,
+    "peer_relative_100": 13,
+    "grade": "F",
+    "status": "Poor",
+    "qualifies_perfect": false,
+    "is_low_health": false
+  },
+  "mexc|ATLAS/USDT": {
+    "score_100": 62,
+    "internal_100": 38,
+    "peer_relative_100": 86,
+    "grade": "C",
+    "status": "Poor",
+    "qualifies_perfect": false,
+    "is_low_health": true
+  },
+  "bitmart|BTC/USDT": {
+    "score_100": 100,
+    "internal_100": 100,
+    "peer_relative_100": 100,
+    "grade": "A",
+    "status": "Good",
+    "qualifies_perfect": true,
+    "is_low_health": false
+  },
+  "bitmart|ETH/USDT": {
+    "score_100": 100,
+    "internal_100": 100,
+    "peer_relative_100": 68,
+    "grade": "A",
+    "status": "Good",
+    "qualifies_perfect": true,
+    "is_low_health": false
+  },
+  "bitmart|SOL/USDT": {
+    "score_100": 100,
+    "internal_100": 100,
+    "peer_relative_100": 84,
+    "grade": "A",
+    "status": "Good",
+    "qualifies_perfect": true,
+    "is_low_health": false
+  },
+  "bitmart|BTC/USDC": {
+    "score_100": 100,
+    "internal_100": 100,
+    "peer_relative_100": 100,
+    "grade": "A",
+    "status": "Good",
+    "qualifies_perfect": true,
+    "is_low_health": false
+  },
+  "bitmart|DOGE/USDC": {
+    "score_100": 54,
+    "internal_100": 100,
+    "peer_relative_100": 9,
+    "grade": "D",
+    "status": "Fair",
+    "qualifies_perfect": false,
+    "is_low_health": false
+  },
+  "bitmart|ETH/USDC": {
+    "score_100": 94,
+    "internal_100": 88,
+    "peer_relative_100": 100,
+    "grade": "A",
+    "status": "Good",
+    "qualifies_perfect": false,
+    "is_low_health": false
+  },
+  "bitmart|$$EWT/USDT": {
+    "score_100": 25,
+    "internal_100": 25,
+    "peer_relative_100": null,
+    "grade": "F",
+    "status": "Poor",
+    "qualifies_perfect": false,
+    "is_low_health": true
+  },
+  "bitmart|$$LAIKA/USDT": {
+    "score_100": 20,
+    "internal_100": 20,
+    "peer_relative_100": null,
+    "grade": "F",
+    "status": "Poor",
+    "qualifies_perfect": false,
+    "is_low_health": true
+  },
+  "bitmart|$ACM/USDT": {
+    "score_100": 22,
+    "internal_100": 22,
+    "peer_relative_100": null,
+    "grade": "F",
+    "status": "Poor",
+    "qualifies_perfect": false,
+    "is_low_health": true
+  },
+  "bitmart|$SCR/USDT": {
+    "score_100": 97,
+    "internal_100": 94,
+    "peer_relative_100": 100,
+    "grade": "A",
+    "status": "Good",
+    "qualifies_perfect": false,
+    "is_low_health": false
+  },
+  "bitmart|$AERO/USDT": {
+    "score_100": 54,
+    "internal_100": 51,
+    "peer_relative_100": 56,
+    "grade": "D",
+    "status": "Fair",
+    "qualifies_perfect": false,
+    "is_low_health": false
+  },
+  "bitmart|AGT/USDT": {
+    "score_100": 17,
+    "internal_100": 31,
+    "peer_relative_100": 3,
+    "grade": "F",
+    "status": "Poor",
+    "qualifies_perfect": false,
+    "is_low_health": true
+  },
+  "bitmart|1INCH/USDT": {
+    "score_100": 96,
+    "internal_100": 93,
+    "peer_relative_100": 100,
+    "grade": "A",
+    "status": "Good",
+    "qualifies_perfect": false,
+    "is_low_health": false
+  },
+  "bitmart|$ART/USDT": {
+    "score_100": 45,
+    "internal_100": 32,
+    "peer_relative_100": 58,
+    "grade": "D",
+    "status": "Poor",
+    "qualifies_perfect": false,
+    "is_low_health": true
+  },
+  "bitmart|AIOT/USDT": {
+    "score_100": 27,
+    "internal_100": 40,
+    "peer_relative_100": 14,
+    "grade": "F",
+    "status": "Poor",
+    "qualifies_perfect": false,
+    "is_low_health": true
+  },
+  "mexc|TRX/USDT": {
+    "score_100": 79,
+    "internal_100": 100,
+    "peer_relative_100": 58,
+    "grade": "B",
+    "status": "Good",
+    "qualifies_perfect": false,
+    "is_low_health": false
+  },
+  "mexc|DOGE/USDT": {
+    "score_100": 100,
+    "internal_100": 100,
+    "peer_relative_100": 75,
+    "grade": "A",
+    "status": "Good",
+    "qualifies_perfect": true,
+    "is_low_health": false
+  },
+  "mexc|XRP/USDT": {
+    "score_100": 78,
+    "internal_100": 100,
+    "peer_relative_100": 57,
+    "grade": "B",
+    "status": "Good",
+    "qualifies_perfect": false,
+    "is_low_health": false
+  },
+  "mexc|CHISAI/USDT": {
+    "score_100": 74,
+    "internal_100": 93,
+    "peer_relative_100": 56,
+    "grade": "B",
+    "status": "Good",
+    "qualifies_perfect": false,
+    "is_low_health": false
+  },
+  "bitmart|USDC/USDT": {
+    "score_100": 100,
+    "internal_100": 100,
+    "peer_relative_100": 91,
+    "grade": "A",
+    "status": "Good",
+    "qualifies_perfect": true,
+    "is_low_health": false
+  },
+  "bitmart|TRX/USDT": {
+    "score_100": 56,
+    "internal_100": 100,
+    "peer_relative_100": 12,
+    "grade": "C",
+    "status": "Fair",
+    "qualifies_perfect": false,
+    "is_low_health": false
+  },
+  "bitmart|$BLOCK/USDT": {
+    "score_100": 25,
+    "internal_100": 25,
+    "peer_relative_100": null,
+    "grade": "F",
+    "status": "Poor",
+    "qualifies_perfect": false,
+    "is_low_health": true
+  },
+  "mexc|A1X/USDT": {
+    "score_100": 41,
+    "internal_100": 75,
+    "peer_relative_100": 7,
+    "grade": "D",
+    "status": "Fair",
+    "qualifies_perfect": false,
+    "is_low_health": false
+  }
+}

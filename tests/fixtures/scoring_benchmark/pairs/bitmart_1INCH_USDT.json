@@ -1,0 +1,65 @@
+{
+  "exchange": "bitmart",
+  "symbol": "1INCH/USDT",
+  "raw": {
+    "exchange": "bitmart",
+    "symbol": "1INCH/USDT",
+    "full_name": "1inch",
+    "mid_price": 0.0681,
+    "spread_pct": 0.2936857562408104,
+    "bid_levels": 33,
+    "ask_levels": 50,
+    "bid_depth_1pct_quote": 13873.48596,
+    "ask_depth_1pct_quote": 20496.117621999998,
+    "depth_1pct_quote": 34369.603581999996,
+    "depth_2pct_quote": 108707.28599100001,
+    "depth_10pct_quote": 189524.10193300003,
+    "bid_larger_depth_quote": 96858.22275500001,
+    "ask_larger_depth_quote": 92665.879178,
+    "depth_2pct_capped": false,
+    "volume_quote": 367936.2799,
+    "bid_volume_quote": 13556.71,
+    "ask_volume_quote": 50210.19,
+    "buy_volume_pct": 21.259791521933792,
+    "sell_volume_pct": 78.74020847806621,
+    "volume_depth_ratio": 10.705281456685032,
+    "max_fillable_buy_quote": 114621.707222,
+    "liquidity_score": 0.9277900146842837,
+    "is_low_health": false,
+    "health_label_primary": "",
+    "health_labels_other": [],
+    "slippage": [
+      {
+        "size": 100,
+        "pct": 0.14684287812041538,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 1000,
+        "pct": 0.14684287812041538,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 5000,
+        "pct": 0.19307149311378302,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 10000,
+        "pct": 0.28937292339424625,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 25000,
+        "pct": 0.6683084289086221,
+        "omitted": false,
+        "fill_ratio": 1.0
+      }
+    ],
+    "fetched_at": "2026-06-28T13:52:03+00:00"
+  }
+}

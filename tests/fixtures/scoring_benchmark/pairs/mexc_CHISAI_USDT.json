@@ -1,0 +1,59 @@
+{
+  "exchange": "mexc",
+  "symbol": "CHISAI/USDT",
+  "raw": {
+    "exchange": "mexc",
+    "symbol": "CHISAI/USDT",
+    "full_name": "Chis AI",
+    "mid_price": 0.17123500000000003,
+    "spread_pct": 0.30951616199959275,
+    "bid_levels": 50,
+    "ask_levels": 50,
+    "bid_depth_1pct_quote": 1715.6431382,
+    "ask_depth_1pct_quote": 2883.6752494,
+    "depth_1pct_quote": 4599.3183876,
+    "depth_2pct_quote": 4599.3183876,
+    "depth_10pct_quote": 9629.4174306,
+    "bid_larger_depth_quote": 3657.2272897,
+    "ask_larger_depth_quote": 5972.1901409,
+    "depth_2pct_capped": false,
+    "volume_quote": 86249.54426,
+    "bid_volume_quote": 554.06,
+    "ask_volume_quote": 227.49,
+    "buy_volume_pct": 70.89245729639818,
+    "sell_volume_pct": 29.10754270360182,
+    "volume_depth_ratio": 18.752679634559158,
+    "max_fillable_buy_quote": 5972.1901409,
+    "liquidity_score": 0.9328564931146944,
+    "is_low_health": false,
+    "health_label_primary": "",
+    "health_labels_other": [],
+    "slippage": [
+      {
+        "size": 1000,
+        "pct": 0.5971834157771967,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 5000,
+        "pct": 1.7821149286028095,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 10000,
+        "pct": null,
+        "omitted": true,
+        "fill_ratio": 0.5972190140899999
+      },
+      {
+        "size": 25000,
+        "pct": null,
+        "omitted": true,
+        "fill_ratio": 0.2388876056360001
+      }
+    ],
+    "fetched_at": "2026-06-13T14:40:52+00:00"
+  }
+}

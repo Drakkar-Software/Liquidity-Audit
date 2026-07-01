@@ -1,0 +1,6 @@
+octobot-ccxt
+boto3
+aiohttp
+python-dotenv
+pytest
+pytest-asyncio

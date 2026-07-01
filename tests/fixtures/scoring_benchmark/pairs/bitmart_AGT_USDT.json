@@ -1,0 +1,68 @@
+{
+  "exchange": "bitmart",
+  "symbol": "AGT/USDT",
+  "raw": {
+    "exchange": "bitmart",
+    "symbol": "AGT/USDT",
+    "full_name": "Alaya AI-BSC_BNB",
+    "mid_price": 0.0208177295,
+    "spread_pct": 4.635284553966369,
+    "bid_levels": 41,
+    "ask_levels": 39,
+    "bid_depth_1pct_quote": 0,
+    "ask_depth_1pct_quote": 0,
+    "depth_1pct_quote": 0,
+    "depth_2pct_quote": 0,
+    "depth_10pct_quote": 6584.8491344914,
+    "bid_larger_depth_quote": 3106.8658971104,
+    "ask_larger_depth_quote": 3477.983237381,
+    "depth_2pct_capped": false,
+    "volume_quote": 661525.77275891,
+    "bid_volume_quote": 27487.1,
+    "ask_volume_quote": 26940.5,
+    "buy_volume_pct": 50.50213494624051,
+    "sell_volume_pct": 49.49786505375949,
+    "volume_depth_ratio": null,
+    "max_fillable_buy_quote": 57635.43640646971,
+    "liquidity_score": 0.31050163846993056,
+    "is_low_health": true,
+    "health_label_primary": "wide_spread",
+    "health_labels_other": [
+      "under_depth_for_volume",
+      "fragmented_tight_depth"
+    ],
+    "slippage": [
+      {
+        "size": 100,
+        "pct": 2.3176422769831846,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 1000,
+        "pct": 2.341993904737174,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 5000,
+        "pct": 45.753716442928635,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 10000,
+        "pct": 191.41900873967342,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 25000,
+        "pct": 627.8851446830029,
+        "omitted": false,
+        "fill_ratio": 1.0
+      }
+    ],
+    "fetched_at": "2026-06-28T13:48:53+00:00"
+  }
+}

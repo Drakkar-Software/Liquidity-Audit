@@ -1,0 +1,65 @@
+{
+  "exchange": "mexc",
+  "symbol": "DOGE/USDT",
+  "raw": {
+    "exchange": "mexc",
+    "symbol": "DOGE/USDT",
+    "full_name": "DOGE",
+    "mid_price": 0.07369500000000001,
+    "spread_pct": 0.013569441617472177,
+    "bid_levels": 50,
+    "ask_levels": 50,
+    "bid_depth_1pct_quote": 1048355.2906479,
+    "ask_depth_1pct_quote": 719055.5690095,
+    "depth_1pct_quote": 1767410.8596573998,
+    "depth_2pct_quote": 2872258.8567196,
+    "depth_10pct_quote": 2872258.8567196,
+    "bid_larger_depth_quote": 1586724.3667178,
+    "ask_larger_depth_quote": 1285534.4900018,
+    "depth_2pct_capped": true,
+    "volume_quote": 7748457.60482,
+    "bid_volume_quote": 130105.11,
+    "ask_volume_quote": 168801.17,
+    "buy_volume_pct": 43.52705804642177,
+    "sell_volume_pct": 56.47294195357823,
+    "volume_depth_ratio": 4.384072646425848,
+    "max_fillable_buy_quote": 1285534.4900018,
+    "liquidity_score": 1.0,
+    "is_low_health": false,
+    "health_label_primary": "",
+    "health_labels_other": [],
+    "slippage": [
+      {
+        "size": 100,
+        "pct": 0.006784720808726674,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 1000,
+        "pct": 0.006784720808726674,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 5000,
+        "pct": 0.006784720808726674,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 10000,
+        "pct": 0.006784720808726674,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 25000,
+        "pct": 0.01367535780216487,
+        "omitted": false,
+        "fill_ratio": 1.0
+      }
+    ],
+    "fetched_at": "2026-06-28T13:43:43+00:00"
+  }
+}

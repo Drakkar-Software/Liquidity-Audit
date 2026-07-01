@@ -1,0 +1,68 @@
+{
+  "exchange": "bitmart",
+  "symbol": "AIOT/USDT",
+  "raw": {
+    "exchange": "bitmart",
+    "symbol": "AIOT/USDT",
+    "full_name": "OKZOO-BSC_BNB",
+    "mid_price": 0.053271,
+    "spread_pct": 4.227440821460089,
+    "bid_levels": 45,
+    "ask_levels": 50,
+    "bid_depth_1pct_quote": 0,
+    "ask_depth_1pct_quote": 0,
+    "depth_1pct_quote": 0,
+    "depth_2pct_quote": 0,
+    "depth_10pct_quote": 2083.1048227,
+    "bid_larger_depth_quote": 1152.4308002,
+    "ask_larger_depth_quote": 930.6740225,
+    "depth_2pct_capped": false,
+    "volume_quote": 115936.813501,
+    "bid_volume_quote": 295.2,
+    "ask_volume_quote": 283.0,
+    "buy_volume_pct": 51.054998270494636,
+    "sell_volume_pct": 48.94500172950536,
+    "volume_depth_ratio": null,
+    "max_fillable_buy_quote": 7606.4789403,
+    "liquidity_score": 0.403608194620028,
+    "is_low_health": true,
+    "health_label_primary": "wide_spread",
+    "health_labels_other": [
+      "under_depth_for_volume",
+      "fragmented_tight_depth"
+    ],
+    "slippage": [
+      {
+        "size": 100,
+        "pct": 2.1710402890977583,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 1000,
+        "pct": 5.27517987628926,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 5000,
+        "pct": 102.0531779135051,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 10000,
+        "pct": null,
+        "omitted": true,
+        "fill_ratio": 0.7606478940300001
+      },
+      {
+        "size": 25000,
+        "pct": null,
+        "omitted": true,
+        "fill_ratio": 0.3042591576120001
+      }
+    ],
+    "fetched_at": "2026-06-28T13:40:09+00:00"
+  }
+}

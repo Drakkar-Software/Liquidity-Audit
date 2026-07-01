@@ -1,0 +1,65 @@
+{
+  "exchange": "mexc",
+  "symbol": "2Z/USDT",
+  "raw": {
+    "exchange": "mexc",
+    "symbol": "2Z/USDT",
+    "full_name": "DoubleZero",
+    "mid_price": 0.063775,
+    "spread_pct": 0.04704037632301411,
+    "bid_levels": 50,
+    "ask_levels": 50,
+    "bid_depth_1pct_quote": 5553.8867826,
+    "ask_depth_1pct_quote": 3750.7547968,
+    "depth_1pct_quote": 9304.641579399999,
+    "depth_2pct_quote": 13525.490600000001,
+    "depth_10pct_quote": 13525.490600000001,
+    "bid_larger_depth_quote": 7739.5691292,
+    "ask_larger_depth_quote": 5785.9214708,
+    "depth_2pct_capped": true,
+    "volume_quote": 57897.8645,
+    "bid_volume_quote": 369.2,
+    "ask_volume_quote": 968.4,
+    "buy_volume_pct": 27.60167464114833,
+    "sell_volume_pct": 72.39832535885168,
+    "volume_depth_ratio": 6.222471226423479,
+    "max_fillable_buy_quote": 5785.9214708,
+    "liquidity_score": 1.0,
+    "is_low_health": false,
+    "health_label_primary": "",
+    "health_labels_other": [],
+    "slippage": [
+      {
+        "size": 100,
+        "pct": 0.02961392548229739,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 1000,
+        "pct": 0.09995673734899549,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 5000,
+        "pct": 0.6217836867147738,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 10000,
+        "pct": null,
+        "omitted": true,
+        "fill_ratio": 0.5785921470800004
+      },
+      {
+        "size": 25000,
+        "pct": null,
+        "omitted": true,
+        "fill_ratio": 0.23143685883200013
+      }
+    ],
+    "fetched_at": "2026-06-28T13:52:33+00:00"
+  }
+}

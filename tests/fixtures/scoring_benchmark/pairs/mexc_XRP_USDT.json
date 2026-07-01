@@ -1,0 +1,65 @@
+{
+  "exchange": "mexc",
+  "symbol": "XRP/USDT",
+  "raw": {
+    "exchange": "mexc",
+    "symbol": "XRP/USDT",
+    "full_name": "XRP",
+    "mid_price": 1.0524499999999999,
+    "spread_pct": 0.009501639032732101,
+    "bid_levels": 50,
+    "ask_levels": 50,
+    "bid_depth_1pct_quote": 669285.990946,
+    "ask_depth_1pct_quote": 479791.71448799997,
+    "depth_1pct_quote": 1149077.705434,
+    "depth_2pct_quote": 1149077.705434,
+    "depth_10pct_quote": 1149077.705434,
+    "bid_larger_depth_quote": 669285.990946,
+    "ask_larger_depth_quote": 479791.71448799997,
+    "depth_2pct_capped": true,
+    "volume_quote": 16634609.9738,
+    "bid_volume_quote": 2054.47,
+    "ask_volume_quote": 859.89,
+    "buy_volume_pct": 70.49472268353944,
+    "sell_volume_pct": 29.505277316460564,
+    "volume_depth_ratio": 14.476488313309678,
+    "max_fillable_buy_quote": 479791.71448799997,
+    "liquidity_score": 1.0,
+    "is_low_health": false,
+    "health_label_primary": "",
+    "health_labels_other": [],
+    "slippage": [
+      {
+        "size": 100,
+        "pct": 0.004750819516376599,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 1000,
+        "pct": 0.005653072447049744,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 5000,
+        "pct": 0.014892778081705157,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 10000,
+        "pct": 0.02265827595664611,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 25000,
+        "pct": 0.02901648288904898,
+        "omitted": false,
+        "fill_ratio": 1.0
+      }
+    ],
+    "fetched_at": "2026-06-28T13:44:27+00:00"
+  }
+}

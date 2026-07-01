@@ -1,0 +1,67 @@
+{
+  "exchange": "mexc",
+  "symbol": "ABEY/USDT",
+  "raw": {
+    "exchange": "mexc",
+    "symbol": "ABEY/USDT",
+    "full_name": "ABEY",
+    "mid_price": 0.015965,
+    "spread_pct": 0.18791105543377543,
+    "bid_levels": 46,
+    "ask_levels": 50,
+    "bid_depth_1pct_quote": 176.0901531,
+    "ask_depth_1pct_quote": 1.2125624,
+    "depth_1pct_quote": 177.3027155,
+    "depth_2pct_quote": 2412.6549520000003,
+    "depth_10pct_quote": 2880.6821377,
+    "bid_larger_depth_quote": 532.3739105,
+    "ask_larger_depth_quote": 2348.3082272,
+    "depth_2pct_capped": false,
+    "volume_quote": 10671.54165,
+    "bid_volume_quote": 2194.41,
+    "ask_volume_quote": 75.88,
+    "buy_volume_pct": 96.65769571288249,
+    "sell_volume_pct": 3.342304287117505,
+    "volume_depth_ratio": 60.188258368778335,
+    "max_fillable_buy_quote": 7311.4121284,
+    "liquidity_score": 0.7504603526082332,
+    "is_low_health": true,
+    "health_label_primary": "under_depth_for_volume",
+    "health_labels_other": [
+      "fragmented_tight_depth"
+    ],
+    "slippage": [
+      {
+        "size": 100,
+        "pct": 1.168215371323142,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 1000,
+        "pct": 1.4965923986927225,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 5000,
+        "pct": 20.464578742083408,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 10000,
+        "pct": null,
+        "omitted": true,
+        "fill_ratio": 0.7311412128399999
+      },
+      {
+        "size": 25000,
+        "pct": null,
+        "omitted": true,
+        "fill_ratio": 0.29245648513600025
+      }
+    ],
+    "fetched_at": "2026-06-28T13:45:06+00:00"
+  }
+}

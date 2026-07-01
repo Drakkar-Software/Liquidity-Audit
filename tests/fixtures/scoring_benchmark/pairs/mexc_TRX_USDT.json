@@ -1,0 +1,65 @@
+{
+  "exchange": "mexc",
+  "symbol": "TRX/USDT",
+  "raw": {
+    "exchange": "mexc",
+    "symbol": "TRX/USDT",
+    "full_name": "Tron",
+    "mid_price": 0.32395,
+    "spread_pct": 0.030868961259450215,
+    "bid_levels": 50,
+    "ask_levels": 50,
+    "bid_depth_1pct_quote": 1559826.986721,
+    "ask_depth_1pct_quote": 1377640.087276,
+    "depth_1pct_quote": 2937467.073997,
+    "depth_2pct_quote": 5305387.2883049995,
+    "depth_10pct_quote": 5305387.2883049995,
+    "bid_larger_depth_quote": 2781387.794882,
+    "ask_larger_depth_quote": 2523999.493423,
+    "depth_2pct_capped": true,
+    "volume_quote": 8015363.6115,
+    "bid_volume_quote": 147828.54,
+    "ask_volume_quote": 206476.7,
+    "buy_volume_pct": 41.72349807753338,
+    "sell_volume_pct": 58.27650192246663,
+    "volume_depth_ratio": 2.7286650061386135,
+    "max_fillable_buy_quote": 2523999.493423,
+    "liquidity_score": 1.0,
+    "is_low_health": false,
+    "health_label_primary": "",
+    "health_labels_other": [],
+    "slippage": [
+      {
+        "size": 100,
+        "pct": 0.015434480629725108,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 1000,
+        "pct": 0.015434480629725108,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 5000,
+        "pct": 0.015434480629725108,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 10000,
+        "pct": 0.015434480629725108,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 25000,
+        "pct": 0.015434480629725108,
+        "omitted": false,
+        "fill_ratio": 1.0
+      }
+    ],
+    "fetched_at": "2026-06-28T13:42:10+00:00"
+  }
+}

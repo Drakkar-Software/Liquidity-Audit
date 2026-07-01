@@ -1,0 +1,64 @@
+{
+  "exchange": "bitmart",
+  "symbol": "$BLOCK/USDT",
+  "raw": {
+    "exchange": "bitmart",
+    "symbol": "$BLOCK/USDT",
+    "full_name": "BLOCK-BASE-ETH",
+    "mid_price": 0.08415,
+    "spread_pct": 138.2055852644088,
+    "bid_levels": 6,
+    "ask_levels": 36,
+    "bid_depth_1pct_quote": 0,
+    "ask_depth_1pct_quote": 0,
+    "depth_1pct_quote": 0,
+    "depth_2pct_quote": 0,
+    "depth_10pct_quote": 0,
+    "bid_larger_depth_quote": 0,
+    "ask_larger_depth_quote": 0,
+    "depth_2pct_capped": false,
+    "volume_quote": null,
+    "bid_volume_quote": 458.78,
+    "ask_volume_quote": 77.81,
+    "buy_volume_pct": 85.49917068898041,
+    "sell_volume_pct": 14.500829311019588,
+    "volume_depth_ratio": null,
+    "max_fillable_buy_quote": 6032.388121,
+    "liquidity_score": 0.25,
+    "is_low_health": true,
+    "health_label_primary": "few_orders",
+    "health_labels_other": [
+      "shallow_liquidity",
+      "wide_spread",
+      "fragmented_tight_depth",
+      "shallow_total_depth"
+    ],
+    "slippage": [
+      {
+        "size": 1000,
+        "pct": 144.30925885969503,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 5000,
+        "pct": 427.0871103537224,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 10000,
+        "pct": null,
+        "omitted": true,
+        "fill_ratio": 0.6032388120999997
+      },
+      {
+        "size": 25000,
+        "pct": null,
+        "omitted": true,
+        "fill_ratio": 0.24129552484000014
+      }
+    ],
+    "fetched_at": "2026-06-13T14:52:08+00:00"
+  }
+}

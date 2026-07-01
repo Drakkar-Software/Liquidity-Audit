@@ -1,0 +1,65 @@
+{
+  "exchange": "bitmart",
+  "symbol": "SOL/USDT",
+  "raw": {
+    "exchange": "bitmart",
+    "symbol": "SOL/USDT",
+    "full_name": "Solana",
+    "mid_price": 71.7897,
+    "spread_pct": 0.00111436598843307,
+    "bid_levels": 50,
+    "ask_levels": 50,
+    "bid_depth_1pct_quote": 2258376.875637,
+    "ask_depth_1pct_quote": 2161160.878415,
+    "depth_1pct_quote": 4419537.754052,
+    "depth_2pct_quote": 5167575.357697001,
+    "depth_10pct_quote": 5287471.344792,
+    "bid_larger_depth_quote": 2696808.834948,
+    "ask_larger_depth_quote": 2590662.509844,
+    "depth_2pct_capped": false,
+    "volume_quote": 47618857.1454,
+    "bid_volume_quote": 4.18,
+    "ask_volume_quote": 296.92,
+    "buy_volume_pct": 1.3882431086017932,
+    "sell_volume_pct": 98.6117568913982,
+    "volume_depth_ratio": 10.77462390761143,
+    "max_fillable_buy_quote": 2590662.509844,
+    "liquidity_score": 1.0,
+    "is_low_health": false,
+    "health_label_primary": "",
+    "health_labels_other": [],
+    "slippage": [
+      {
+        "size": 100,
+        "pct": 0.000557182994216535,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 1000,
+        "pct": 0.000557182994216535,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 5000,
+        "pct": 0.000557182994216535,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 10000,
+        "pct": 0.000557182994216535,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 25000,
+        "pct": 0.000577710056635944,
+        "omitted": false,
+        "fill_ratio": 1.0
+      }
+    ],
+    "fetched_at": "2026-06-28T13:40:43+00:00"
+  }
+}

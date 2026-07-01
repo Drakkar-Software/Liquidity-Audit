@@ -1,0 +1,65 @@
+{
+  "exchange": "bitmart",
+  "symbol": "$AERO/USDT",
+  "raw": {
+    "exchange": "bitmart",
+    "symbol": "$AERO/USDT",
+    "full_name": "Aerodrome Finance",
+    "mid_price": 0.49,
+    "spread_pct": 0.8163265306122457,
+    "bid_levels": 36,
+    "ask_levels": 50,
+    "bid_depth_1pct_quote": 3745.1390999999994,
+    "ask_depth_1pct_quote": 1097.6760000000002,
+    "depth_1pct_quote": 4842.8151,
+    "depth_2pct_quote": 10663.2307,
+    "depth_10pct_quote": 17726.396699999998,
+    "bid_larger_depth_quote": 8665.2855,
+    "ask_larger_depth_quote": 9061.1112,
+    "depth_2pct_capped": false,
+    "volume_quote": 620366.838,
+    "bid_volume_quote": 24.6,
+    "ask_volume_quote": 31.9,
+    "buy_volume_pct": 43.53982300884956,
+    "sell_volume_pct": 56.46017699115043,
+    "volume_depth_ratio": 128.10045917301284,
+    "max_fillable_buy_quote": 29239.6124,
+    "liquidity_score": 0.5139232601920607,
+    "is_low_health": false,
+    "health_label_primary": "",
+    "health_labels_other": [],
+    "slippage": [
+      {
+        "size": 100,
+        "pct": 0.5801598269743786,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 1000,
+        "pct": 0.7673535967642141,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 5000,
+        "pct": 1.248348934989188,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 10000,
+        "pct": 4.0820851831070675,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 25000,
+        "pct": 74.85241955364089,
+        "omitted": false,
+        "fill_ratio": 1.0
+      }
+    ],
+    "fetched_at": "2026-06-28T13:51:18+00:00"
+  }
+}

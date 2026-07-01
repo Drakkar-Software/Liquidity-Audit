@@ -1,0 +1,65 @@
+{
+  "exchange": "bitmart",
+  "symbol": "DOGE/USDC",
+  "raw": {
+    "exchange": "bitmart",
+    "symbol": "DOGE/USDC",
+    "full_name": "Dogecoin",
+    "mid_price": 0.07354,
+    "spread_pct": 0.05439216752787377,
+    "bid_levels": 33,
+    "ask_levels": 50,
+    "bid_depth_1pct_quote": 154087.042135,
+    "ask_depth_1pct_quote": 164750.041104,
+    "depth_1pct_quote": 318837.083239,
+    "depth_2pct_quote": 330737.736289,
+    "depth_10pct_quote": 531460.536356,
+    "bid_larger_depth_quote": 267650.164272,
+    "ask_larger_depth_quote": 263810.372084,
+    "depth_2pct_capped": false,
+    "volume_quote": 1258704.17589,
+    "bid_volume_quote": 3321.0,
+    "ask_volume_quote": 213929.0,
+    "buy_volume_pct": 1.5286536248561566,
+    "sell_volume_pct": 98.47134637514384,
+    "volume_depth_ratio": 3.94779729855475,
+    "max_fillable_buy_quote": 465777.019784,
+    "liquidity_score": 1.0,
+    "is_low_health": false,
+    "health_label_primary": "",
+    "health_labels_other": [],
+    "slippage": [
+      {
+        "size": 100,
+        "pct": 0.027196083763946322,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 1000,
+        "pct": 0.027196083763946322,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 5000,
+        "pct": 0.027196083763946322,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 10000,
+        "pct": 0.027196083763946322,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 25000,
+        "pct": 0.03485712054571277,
+        "omitted": false,
+        "fill_ratio": 1.0
+      }
+    ],
+    "fetched_at": "2026-06-28T13:49:30+00:00"
+  }
+}

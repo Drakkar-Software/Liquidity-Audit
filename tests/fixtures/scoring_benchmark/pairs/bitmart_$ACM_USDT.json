@@ -1,0 +1,71 @@
+{
+  "exchange": "bitmart",
+  "symbol": "$ACM/USDT",
+  "raw": {
+    "exchange": "bitmart",
+    "symbol": "$ACM/USDT",
+    "full_name": "acmFinance",
+    "mid_price": 0.06465,
+    "spread_pct": 195.9474091260634,
+    "bid_levels": 4,
+    "ask_levels": 50,
+    "bid_depth_1pct_quote": 0,
+    "ask_depth_1pct_quote": 0,
+    "depth_1pct_quote": 0,
+    "depth_2pct_quote": 0,
+    "depth_10pct_quote": 0,
+    "bid_larger_depth_quote": 0,
+    "ask_larger_depth_quote": 0,
+    "depth_2pct_capped": false,
+    "volume_quote": null,
+    "bid_volume_quote": 4561.9,
+    "ask_volume_quote": 4342.2,
+    "buy_volume_pct": 51.233701328601434,
+    "sell_volume_pct": 48.76629867139857,
+    "volume_depth_ratio": null,
+    "max_fillable_buy_quote": 2762.252046,
+    "liquidity_score": 0.225,
+    "is_low_health": true,
+    "health_label_primary": "few_orders",
+    "health_labels_other": [
+      "shallow_liquidity",
+      "wide_spread",
+      "fragmented_tight_depth",
+      "shallow_total_depth",
+      "low_liquidity_score"
+    ],
+    "slippage": [
+      {
+        "size": 100,
+        "pct": 97.9737045630317,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 1000,
+        "pct": 97.98057575457028,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 5000,
+        "pct": null,
+        "omitted": true,
+        "fill_ratio": 0.5524504091999999
+      },
+      {
+        "size": 10000,
+        "pct": null,
+        "omitted": true,
+        "fill_ratio": 0.27622520460000005
+      },
+      {
+        "size": 25000,
+        "pct": null,
+        "omitted": true,
+        "fill_ratio": 0.1104900818399999
+      }
+    ],
+    "fetched_at": "2026-06-28T13:52:20+00:00"
+  }
+}

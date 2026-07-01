@@ -1,0 +1,65 @@
+{
+  "exchange": "bitmart",
+  "symbol": "BTC/USDT",
+  "raw": {
+    "exchange": "bitmart",
+    "symbol": "BTC/USDT",
+    "full_name": "Bitcoin",
+    "mid_price": 60110.385,
+    "spread_pct": 4.990818142128992e-05,
+    "bid_levels": 50,
+    "ask_levels": 50,
+    "bid_depth_1pct_quote": 3859985.921153,
+    "ask_depth_1pct_quote": 6131452.7624921,
+    "depth_1pct_quote": 9991438.6836451,
+    "depth_2pct_quote": 11003286.8095498,
+    "depth_10pct_quote": 11003286.8095498,
+    "bid_larger_depth_quote": 3859985.921153,
+    "ask_larger_depth_quote": 7143300.8883968,
+    "depth_2pct_capped": true,
+    "volume_quote": 120435505.74,
+    "bid_volume_quote": 2.50168,
+    "ask_volume_quote": 1.71949,
+    "buy_volume_pct": 59.26508527256661,
+    "sell_volume_pct": 40.73491472743339,
+    "volume_depth_ratio": 12.053870273671382,
+    "max_fillable_buy_quote": 7143300.8883968,
+    "liquidity_score": 1.0,
+    "is_low_health": false,
+    "health_label_primary": "",
+    "health_labels_other": [],
+    "slippage": [
+      {
+        "size": 100,
+        "pct": 2.495409071064496e-05,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 1000,
+        "pct": 2.4954090698540636e-05,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 5000,
+        "pct": 2.495409071064496e-05,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 10000,
+        "pct": 2.495409071064496e-05,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 25000,
+        "pct": 2.495409071064496e-05,
+        "omitted": false,
+        "fill_ratio": 1.0
+      }
+    ],
+    "fetched_at": "2026-06-28T13:46:36+00:00"
+  }
+}

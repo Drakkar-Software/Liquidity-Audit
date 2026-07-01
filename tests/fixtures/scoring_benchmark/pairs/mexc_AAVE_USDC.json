@@ -1,0 +1,65 @@
+{
+  "exchange": "mexc",
+  "symbol": "AAVE/USDC",
+  "raw": {
+    "exchange": "mexc",
+    "symbol": "AAVE/USDC",
+    "full_name": "AaveToken",
+    "mid_price": 89.575,
+    "spread_pct": 0.32375104660897797,
+    "bid_levels": 50,
+    "ask_levels": 50,
+    "bid_depth_1pct_quote": 39897.06007,
+    "ask_depth_1pct_quote": 45901.68,
+    "depth_1pct_quote": 85798.74007,
+    "depth_2pct_quote": 90011.61441000001,
+    "depth_10pct_quote": 93620.11471,
+    "bid_larger_depth_quote": 45694.91745,
+    "ask_larger_depth_quote": 47925.19726,
+    "depth_2pct_capped": false,
+    "volume_quote": 95723.86,
+    "bid_volume_quote": 16.66,
+    "ask_volume_quote": 14.026,
+    "buy_volume_pct": 54.29185947989311,
+    "sell_volume_pct": 45.70814052010689,
+    "volume_depth_ratio": 1.115679087150959,
+    "max_fillable_buy_quote": 52367.75421,
+    "liquidity_score": 0.9383128663131423,
+    "is_low_health": false,
+    "health_label_primary": "",
+    "health_labels_other": [],
+    "slippage": [
+      {
+        "size": 100,
+        "pct": 0.16187552330448898,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 1000,
+        "pct": 0.16187552330448898,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 5000,
+        "pct": 0.18958717785299206,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 10000,
+        "pct": 0.19805829266504715,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 25000,
+        "pct": 0.2276987047738798,
+        "omitted": false,
+        "fill_ratio": 1.0
+      }
+    ],
+    "fetched_at": "2026-06-28T13:44:38+00:00"
+  }
+}

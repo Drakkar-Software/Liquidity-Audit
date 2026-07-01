@@ -1,0 +1,59 @@
+{
+  "exchange": "mexc",
+  "symbol": "A1X/USDT",
+  "raw": {
+    "exchange": "mexc",
+    "symbol": "A1X/USDT",
+    "full_name": "AI Nexus",
+    "mid_price": 0.00010375,
+    "spread_pct": 1.4457831325301296,
+    "bid_levels": 23,
+    "ask_levels": 50,
+    "bid_depth_1pct_quote": 733.3610534779999,
+    "ask_depth_1pct_quote": 589.8203211690001,
+    "depth_1pct_quote": 1323.181374647,
+    "depth_2pct_quote": 1323.181374647,
+    "depth_10pct_quote": 1640.500556901,
+    "bid_larger_depth_quote": 951.9067898619999,
+    "ask_larger_depth_quote": 688.593767039,
+    "depth_2pct_capped": false,
+    "volume_quote": 16543.9865598,
+    "bid_volume_quote": 25586.7,
+    "ask_volume_quote": 5612985.72,
+    "buy_volume_pct": 0.4537797529964154,
+    "sell_volume_pct": 99.54622024700357,
+    "volume_depth_ratio": 12.50318881205052,
+    "max_fillable_buy_quote": 29228.123029315997,
+    "liquidity_score": 0.75,
+    "is_low_health": false,
+    "health_label_primary": "shallow_total_depth",
+    "health_labels_other": [],
+    "slippage": [
+      {
+        "size": 1000,
+        "pct": 19.792305051834685,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 5000,
+        "pct": 308.1404709034292,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 10000,
+        "pct": 669.7189140840447,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 25000,
+        "pct": 1544.5422694755678,
+        "omitted": false,
+        "fill_ratio": 1.0
+      }
+    ],
+    "fetched_at": "2026-06-13T13:28:54+00:00"
+  }
+}

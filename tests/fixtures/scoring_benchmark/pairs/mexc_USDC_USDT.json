@@ -1,0 +1,65 @@
+{
+  "exchange": "mexc",
+  "symbol": "USDC/USDT",
+  "raw": {
+    "exchange": "mexc",
+    "symbol": "USDC/USDT",
+    "full_name": "USDCoin",
+    "mid_price": 1.001105,
+    "spread_pct": 0.000998896219661621,
+    "bid_levels": 50,
+    "ask_levels": 50,
+    "bid_depth_1pct_quote": 34379993.6257807,
+    "ask_depth_1pct_quote": 13033115.6364262,
+    "depth_1pct_quote": 47413109.2622069,
+    "depth_2pct_quote": 47413109.2622069,
+    "depth_10pct_quote": 47413109.2622069,
+    "bid_larger_depth_quote": 34379993.6257807,
+    "ask_larger_depth_quote": 13033115.6364262,
+    "depth_2pct_capped": true,
+    "volume_quote": 28963294.26317,
+    "bid_volume_quote": 2320316.47,
+    "ask_volume_quote": 993104.33,
+    "buy_volume_pct": 70.02782351097694,
+    "sell_volume_pct": 29.972176489023063,
+    "volume_depth_ratio": 0.6108710167687044,
+    "max_fillable_buy_quote": 13033115.6364262,
+    "liquidity_score": 0.75,
+    "is_low_health": false,
+    "health_label_primary": "",
+    "health_labels_other": [],
+    "slippage": [
+      {
+        "size": 100,
+        "pct": 0.0004994481098419003,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 1000,
+        "pct": 0.0004994481098419003,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 5000,
+        "pct": 0.0004994481098419003,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 10000,
+        "pct": 0.0004994481098419003,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 25000,
+        "pct": 0.0004994481098419003,
+        "omitted": false,
+        "fill_ratio": 1.0
+      }
+    ],
+    "fetched_at": "2026-06-28T13:54:10+00:00"
+  }
+}

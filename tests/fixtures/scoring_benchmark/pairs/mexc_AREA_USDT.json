@@ -1,0 +1,68 @@
+{
+  "exchange": "mexc",
+  "symbol": "AREA/USDT",
+  "raw": {
+    "exchange": "mexc",
+    "symbol": "AREA/USDT",
+    "full_name": "Areon Network",
+    "mid_price": 0.009465,
+    "spread_pct": 3.6978341257263563,
+    "bid_levels": 33,
+    "ask_levels": 50,
+    "bid_depth_1pct_quote": 0,
+    "ask_depth_1pct_quote": 0,
+    "depth_1pct_quote": 0,
+    "depth_2pct_quote": 44.7070327,
+    "depth_10pct_quote": 253.69316680000003,
+    "bid_larger_depth_quote": 148.5266712,
+    "ask_larger_depth_quote": 105.1664956,
+    "depth_2pct_capped": false,
+    "volume_quote": 258.04425,
+    "bid_volume_quote": 10451.03,
+    "ask_volume_quote": 1577.28,
+    "buy_volume_pct": 86.88693590371382,
+    "sell_volume_pct": 13.113064096286175,
+    "volume_depth_ratio": null,
+    "max_fillable_buy_quote": 12540.3469166,
+    "liquidity_score": 0.5,
+    "is_low_health": true,
+    "health_label_primary": "wide_spread",
+    "health_labels_other": [
+      "under_depth_for_volume",
+      "fragmented_tight_depth"
+    ],
+    "slippage": [
+      {
+        "size": 100,
+        "pct": 4.278914329225402,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 1000,
+        "pct": 12.518496701599624,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 5000,
+        "pct": 29.46608103504368,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 10000,
+        "pct": 52.28114375580704,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 25000,
+        "pct": null,
+        "omitted": true,
+        "fill_ratio": 0.5016138766640001
+      }
+    ],
+    "fetched_at": "2026-06-28T13:52:18+00:00"
+  }
+}

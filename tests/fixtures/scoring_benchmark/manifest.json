@@ -1,0 +1,207 @@
+{
+  "formula_version": "soften-v1",
+  "generated_at": "2026-06-29T07:52:39+00:00",
+  "universe_note": "Golden scores use anchor-only universe per exchange (all committed anchors on that exchange), not the full production analysis corpus.",
+  "anchors": [
+    {
+      "key": "mexc|USDC/USDT",
+      "archetype": "perfect_floor",
+      "notes": "Anchor perfect market"
+    },
+    {
+      "key": "mexc|BTC/USDT",
+      "archetype": "liquid_major",
+      "notes": ""
+    },
+    {
+      "key": "mexc|ETH/USDT",
+      "archetype": "liquid_major",
+      "notes": ""
+    },
+    {
+      "key": "mexc|SOL/USDT",
+      "archetype": "liquid_major",
+      "notes": ""
+    },
+    {
+      "key": "mexc|0G/USDT",
+      "archetype": "perfect_floor",
+      "notes": ""
+    },
+    {
+      "key": "mexc|1INCH/USDT",
+      "archetype": "perfect_floor",
+      "notes": ""
+    },
+    {
+      "key": "mexc|2Z/USDT",
+      "archetype": "perfect_floor",
+      "notes": ""
+    },
+    {
+      "key": "mexc|AAVE/USDC",
+      "archetype": "perfect_floor",
+      "notes": ""
+    },
+    {
+      "key": "mexc|67/USDT",
+      "archetype": "low_health_red_flag",
+      "notes": ""
+    },
+    {
+      "key": "mexc|ABBC/USDT",
+      "archetype": "low_health_red_flag",
+      "notes": ""
+    },
+    {
+      "key": "mexc|ABEY/USDT",
+      "archetype": "low_health_red_flag",
+      "notes": ""
+    },
+    {
+      "key": "mexc|BTC/USDC",
+      "archetype": "no_peers",
+      "notes": ""
+    },
+    {
+      "key": "mexc|AREA/USDT",
+      "archetype": "wide_spread",
+      "notes": ""
+    },
+    {
+      "key": "mexc|DEB/USDT",
+      "archetype": "no_peers",
+      "notes": ""
+    },
+    {
+      "key": "mexc|4/USDT",
+      "archetype": "high_internal_low_composite",
+      "notes": ""
+    },
+    {
+      "key": "mexc|114514/USDT",
+      "archetype": "asymmetric_depth",
+      "notes": ""
+    },
+    {
+      "key": "mexc|ATLAS/USDT",
+      "archetype": "wide_spread",
+      "notes": ""
+    },
+    {
+      "key": "bitmart|BTC/USDT",
+      "archetype": "liquid_major",
+      "notes": ""
+    },
+    {
+      "key": "bitmart|ETH/USDT",
+      "archetype": "liquid_major",
+      "notes": ""
+    },
+    {
+      "key": "bitmart|SOL/USDT",
+      "archetype": "liquid_major",
+      "notes": ""
+    },
+    {
+      "key": "bitmart|BTC/USDC",
+      "archetype": "perfect_floor",
+      "notes": ""
+    },
+    {
+      "key": "bitmart|DOGE/USDC",
+      "archetype": "perfect_floor",
+      "notes": ""
+    },
+    {
+      "key": "bitmart|ETH/USDC",
+      "archetype": "perfect_floor",
+      "notes": ""
+    },
+    {
+      "key": "bitmart|$$EWT/USDT",
+      "archetype": "low_health_red_flag",
+      "notes": ""
+    },
+    {
+      "key": "bitmart|$$LAIKA/USDT",
+      "archetype": "low_health_red_flag",
+      "notes": ""
+    },
+    {
+      "key": "bitmart|$ACM/USDT",
+      "archetype": "low_health_red_flag",
+      "notes": ""
+    },
+    {
+      "key": "bitmart|$SCR/USDT",
+      "archetype": "high_internal_low_composite",
+      "notes": ""
+    },
+    {
+      "key": "bitmart|$AERO/USDT",
+      "archetype": "asymmetric_depth",
+      "notes": ""
+    },
+    {
+      "key": "bitmart|AGT/USDT",
+      "archetype": "wide_spread",
+      "notes": ""
+    },
+    {
+      "key": "bitmart|1INCH/USDT",
+      "archetype": "high_internal_low_composite",
+      "notes": ""
+    },
+    {
+      "key": "bitmart|$ART/USDT",
+      "archetype": "asymmetric_depth",
+      "notes": ""
+    },
+    {
+      "key": "bitmart|AIOT/USDT",
+      "archetype": "wide_spread",
+      "notes": ""
+    },
+    {
+      "key": "mexc|TRX/USDT",
+      "archetype": "liquid_major",
+      "notes": ""
+    },
+    {
+      "key": "mexc|DOGE/USDT",
+      "archetype": "liquid_major",
+      "notes": ""
+    },
+    {
+      "key": "mexc|XRP/USDT",
+      "archetype": "liquid_major",
+      "notes": ""
+    },
+    {
+      "key": "mexc|CHISAI/USDT",
+      "archetype": "csv_only_stale",
+      "notes": ""
+    },
+    {
+      "key": "bitmart|USDC/USDT",
+      "archetype": "perfect_floor",
+      "notes": ""
+    },
+    {
+      "key": "bitmart|TRX/USDT",
+      "archetype": "liquid_major",
+      "notes": ""
+    },
+    {
+      "key": "bitmart|$BLOCK/USDT",
+      "archetype": "csv_only_stale",
+      "notes": ""
+    },
+    {
+      "key": "mexc|A1X/USDT",
+      "archetype": "csv_only_stale",
+      "notes": ""
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "exchange": "mexc",
+  "symbol": "ABBC/USDT",
+  "raw": {
+    "exchange": "mexc",
+    "symbol": "ABBC/USDT",
+    "full_name": "ABBC Coin",
+    "mid_price": 0.0021939999999999998,
+    "spread_pct": 0.5469462169553461,
+    "bid_levels": 13,
+    "ask_levels": 50,
+    "bid_depth_1pct_quote": 1.31741668,
+    "ask_depth_1pct_quote": 2.7291808,
+    "depth_1pct_quote": 4.04659748,
+    "depth_2pct_quote": 9.43861818,
+    "depth_10pct_quote": 13.43573844,
+    "bid_larger_depth_quote": 6.76613472,
+    "ask_larger_depth_quote": 6.66960372,
+    "depth_2pct_capped": false,
+    "volume_quote": 202.183564,
+    "bid_volume_quote": 602.11,
+    "ask_volume_quote": 611.24,
+    "buy_volume_pct": 49.6237689042733,
+    "sell_volume_pct": 50.37623109572671,
+    "volume_depth_ratio": 49.96384369813822,
+    "max_fillable_buy_quote": 10981.0825979,
+    "liquidity_score": 0.6625633193161042,
+    "is_low_health": true,
+    "health_label_primary": "shallow_liquidity",
+    "health_labels_other": [
+      "fragmented_tight_depth",
+      "shallow_total_depth"
+    ],
+    "slippage": [
+      {
+        "size": 100,
+        "pct": 21.77643172871057,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 1000,
+        "pct": 82.24453153916144,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 5000,
+        "pct": 181.12627113053915,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 10000,
+        "pct": 256.3994175813469,
+        "omitted": false,
+        "fill_ratio": 1.0
+      },
+      {
+        "size": 25000,
+        "pct": null,
+        "omitted": true,
+        "fill_ratio": 0.43924330391599964
+      }
+    ],
+    "fetched_at": "2026-06-28T13:57:43+00:00"
+  }
+}

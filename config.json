@@ -1,0 +1,94 @@
+{
+  "listings_csv_path": "data/listings.csv",
+  "exchanges": ["mexc", "bitmart"],
+  "order_book_limit": 50,
+  "health_rules": {
+    "min_buy_orders": 5,
+    "min_sell_orders": 5,
+    "depth_band_pct": 0.01,
+    "larger_depth_band_pct": 0.1
+  },
+  "unhealthy_values": {
+    "min_bid_levels": 8,
+    "min_ask_levels": 15,
+    "min_bid_depth_quote_usdt": 5,
+    "min_ask_depth_quote_usdt": 5,
+    "min_bid_larger_depth_quote_usdt": 50,
+    "min_ask_larger_depth_quote_usdt": 50,
+    "max_bid_ask_spread_pct": 0.036,
+    "min_bid_depth_volume_ratio": 0.0002,
+    "min_ask_depth_volume_ratio": 0.0002,
+    "min_bid_larger_depth_volume_ratio": 0.001,
+    "min_ask_larger_depth_volume_ratio": 0.001
+  },
+  "min_liquidity_score": 0.25,
+  "health_labels": {
+    "priority": [
+      "few_orders",
+      "shallow_liquidity",
+      "wide_spread",
+      "under_depth_for_volume",
+      "fragmented_tight_depth",
+      "shallow_total_depth",
+      "low_liquidity_score"
+    ],
+    "few_orders": {
+      "min_bid_levels": 8,
+      "min_ask_levels": 15
+    },
+    "shallow_liquidity": {
+      "min_bid_larger_depth_quote_usdt": 50,
+      "min_ask_larger_depth_quote_usdt": 50
+    },
+    "wide_spread": {
+      "max_bid_ask_spread_pct": 0.036
+    },
+    "under_depth_for_volume": {
+      "min_bid_depth_volume_ratio": 0.0002,
+      "min_ask_depth_volume_ratio": 0.0002,
+      "min_bid_larger_depth_volume_ratio": 0.001,
+      "min_ask_larger_depth_volume_ratio": 0.001
+    },
+    "fragmented_tight_depth": {
+      "min_bid_depth_quote_usdt": 5,
+      "min_ask_depth_quote_usdt": 5
+    },
+    "shallow_total_depth": {
+      "min_bid_total_depth_quote_usdt": 2000,
+      "min_ask_total_depth_quote_usdt": 2000
+    },
+    "low_liquidity_score": {}
+  },
+  "ccxt_options": {
+    "maxRetriesOnFailure": 3,
+    "maxRetriesOnFailureDelay": 2000
+  },
+  "coingecko_options": {
+    "vsCurrency": "usd"
+  },
+  "daily_selection": {
+    "max_per_day": 3,
+    "history_csv_path": "data/selected_history.csv",
+    "cooldown_days": 30
+  },
+  "analysis": {
+    "output_dir": "data/analysis",
+    "rankings_min_volume_quote": 1000,
+    "checkpoint_every_n_pairs": 50,
+    "delisted_retention_days": 30
+  },
+  "delisting_risk": {
+    "exchanges": {
+      "mexc": {
+        "depth_band_pct": 0.02,
+        "min_depth_quote_usdt": 5000,
+        "min_volume_quote_usdt": 10000
+      },
+      "bitmart": {
+        "depth_band_pct": 0.02,
+        "min_depth_quote_usdt": 3000,
+        "min_volume_quote_usdt": 5000
+      }
+    }
+  }
+}
