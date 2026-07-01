@@ -24,7 +24,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install --prefer-binary -r requirements.txt
+          pip install --prefer-binary -r requirements.txt -r dev_requirements.txt
           pip install -e .
 
       - name: Pytest
