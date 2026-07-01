@@ -29,3 +29,74 @@ jobs:
 
       - name: Pytest
         run: python -m pytest tests/ -v
+
+  website-tests:
+    name: Website - unit tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: website
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: website/package-lock.json
+
+      - run: npm ci
+
+      - name: Unit and component tests
+        run: npm run test
+
+      - name: Production build
+        run: npm run build
+        env:
+          VITE_ANALYSIS_DATA_BASE: https://example.com/data/analysis
+          VITE_SITE_URL: https://example.com
+          VITE_POSTHOG_KEY: posthog-ci-placeholder
+          VITE_SENTRY_DSN: https://examplePublicKey@o0.ingest.de.sentry.io/0
+
+  deploy-website:
+    name: Deploy website to Cloudflare Workers
+    needs: [tests, website-tests]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    defaults:
+      run:
+        working-directory: website
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: website/package-lock.json
+
+      - run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          VITE_ANALYSIS_DATA_BASE: ${{ secrets.VITE_ANALYSIS_DATA_BASE }}
+          VITE_SITE_URL: ${{ secrets.VITE_SITE_URL }}
+          VITE_POSTHOG_KEY: ${{ secrets.VITE_POSTHOG_KEY }}
+          VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
+
+      - name: Deploy to Cloudflare Workers
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: website
+          command: deploy --var SITE_URL:${{ secrets.VITE_SITE_URL }} --var ANALYSIS_DATA_BASE:${{ secrets.VITE_ANALYSIS_DATA_BASE }}
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}

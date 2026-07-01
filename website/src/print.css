@@ -1,0 +1,402 @@
+.print-only {
+  display: none;
+}
+
+.pdf-print-header {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #333;
+}
+
+.pdf-print-title {
+  margin: 0 0 0.35rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.pdf-print-meta {
+  margin: 0 0 0.35rem;
+  font-size: 0.95rem;
+  color: #1a1a1a;
+}
+
+.pdf-print-disclaimer {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #333333;
+}
+
+.token-report-hero {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+@media print {
+  @page {
+    margin: 18mm;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .skip-link {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  html,
+  body,
+  #root {
+    background: #ffffff !important;
+    color: #1a1a1a !important;
+    color-scheme: light;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .app-shell {
+    min-height: auto !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+  }
+
+  .app-shell > div {
+    width: 100% !important;
+    max-width: none !important;
+  }
+
+  .screen-shell {
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+    background: #ffffff !important;
+  }
+
+  .token-report-print {
+    --score-dial-track: #e5e7eb;
+    --print-pad: 20px;
+    --print-gap: 24px;
+    --print-panel-pad: 16px;
+    --print-cell-pad-y: 10px;
+    --print-cell-pad-x: 16px;
+    color-scheme: light;
+    background: #ffffff !important;
+    color: #1a1a1a !important;
+    padding: var(--print-pad) !important;
+  }
+
+  .pdf-print-header {
+    margin: 0 0 var(--print-gap) !important;
+    padding: 0 0 var(--print-panel-pad) !important;
+  }
+
+  .token-report-layout {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: var(--print-gap) !important;
+  }
+
+  .token-report-cockpit {
+    background: #ffffff !important;
+    border-right: none !important;
+    border-bottom: 1px solid #d4d4d8 !important;
+    padding: 0 !important;
+    gap: var(--print-gap) !important;
+    grid-row: auto !important;
+  }
+
+  .token-report-investor-page {
+    break-before: page;
+    page-break-before: always;
+    padding-top: var(--print-pad) !important;
+  }
+
+  .token-report-detail {
+    background: #ffffff !important;
+    padding: 0 !important;
+    gap: var(--print-gap) !important;
+    grid-column: auto !important;
+  }
+
+  .health-metric-row {
+    display: grid !important;
+    grid-template-columns: auto 1fr auto !important;
+    align-items: center !important;
+    gap: 14px !important;
+  }
+
+  .health-metric-title {
+    min-width: 130px !important;
+  }
+
+  .peer-bar-row {
+    display: grid !important;
+    grid-template-columns: 90px 1fr 60px !important;
+    align-items: center !important;
+    gap: 12px !important;
+  }
+
+  .investor-sim-grid,
+  .impl-options-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 16px !important;
+  }
+
+  .improvements-grid-head,
+  .improvements-grid-row {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr 1.2fr !important;
+  }
+
+  .roadmap-grid-head,
+  .roadmap-grid-row {
+    display: grid !important;
+    grid-template-columns: 1fr 1.4fr 0.8fr 1fr !important;
+  }
+
+  .improvements-scroll,
+  .roadmap-scroll {
+    overflow: visible !important;
+  }
+
+  .improvements-table,
+  .roadmap-table {
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+
+  .token-report-panel,
+  .token-report-table,
+  .token-report-score-block {
+    background: #ffffff !important;
+    border-color: #d4d4d8 !important;
+    box-shadow: none !important;
+    page-break-inside: avoid;
+  }
+
+  .token-report-panel,
+  .token-report-score-block {
+    padding: var(--print-panel-pad) !important;
+  }
+
+  .token-report-hero {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: flex-start !important;
+    gap: var(--print-gap) !important;
+  }
+
+  .token-report-verdict {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+  }
+
+  .token-report-verdict-text {
+    font-size: 15px !important;
+    line-height: 1.5 !important;
+  }
+
+  .token-report-score-block {
+    flex: 0 0 auto;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0 !important;
+    padding: 12px !important;
+    max-width: none !important;
+  }
+
+  .print-only.token-report-score-compact {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 14px !important;
+  }
+
+  .no-print.token-report-score-compact {
+    display: none !important;
+  }
+
+  .token-report-score-points {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 2px !important;
+  }
+
+  .token-report-grade-group {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 2px !important;
+  }
+
+  .print-only.token-report-score-compact .token-report-score-value,
+  .print-only.token-report-score-compact .token-report-grade-letter {
+    font-size: 28px !important;
+    line-height: 1 !important;
+  }
+
+  .print-only.token-report-score-compact .token-report-score-denominator {
+    font-size: 10px !important;
+  }
+
+  .print-only.token-report-score-compact .token-report-grade-status {
+    font-size: 9px !important;
+    margin-top: 0 !important;
+  }
+
+  .token-report-table [style*='padding:'] {
+    padding: var(--print-cell-pad-y) var(--print-cell-pad-x) !important;
+  }
+
+  .token-report-print h3 {
+    margin: 0 0 12px !important;
+  }
+
+  .token-report-print .token-report-detail > p {
+    margin: 0 0 var(--print-gap) !important;
+  }
+
+  .token-report-print [style*='gap: 14'],
+  .token-report-print [style*='gap: 16'],
+  .token-report-print [style*='gap: 20'] {
+    gap: 12px !important;
+  }
+
+  .token-report-table-head {
+    background: #f4f4f5 !important;
+    border-color: #d4d4d8 !important;
+    color: #1a1a1a !important;
+  }
+
+  .token-report-peer-track {
+    background: #e5e7eb !important;
+  }
+
+  .token-report-score-dial-inner {
+    background: #ffffff !important;
+  }
+
+  .token-report-section {
+    page-break-inside: avoid;
+  }
+
+  /*
+   * React serializes theme colors as rgb(...) in inline styles, so hex-only
+   * selectors miss light ink text (#e8edf2 → rgb(232, 237, 242)).
+   * Match the color property only (not border/background rgb values).
+   */
+  .token-report-print [style*='color: rgb'],
+  .token-report-print [style*='color:rgb'],
+  .token-report-print [style*='color: #'],
+  .token-report-print [style*='color:#'] {
+    color: #1a1a1a !important;
+  }
+
+  .token-report-print h3,
+  .token-report-print p {
+    color: #1a1a1a !important;
+  }
+
+  .token-report-print h3 span {
+    color: #2d2d2d !important;
+  }
+
+  /* Semantic greens (issue chips, grades, improvements, severity low) */
+  .token-report-print [style*='color: rgb(70, 196, 106)'],
+  .token-report-print [style*='color:rgb(70, 196, 106)'],
+  .token-report-print [style*='color: #46c46a'],
+  .token-report-print [style*='color:#46c46a'] {
+    color: #15803d !important;
+  }
+
+  /* Semantic reds */
+  .token-report-print [style*='color: rgb(240, 88, 77)'],
+  .token-report-print [style*='color:rgb(240, 88, 77)'],
+  .token-report-print [style*='color: #f0584d'],
+  .token-report-print [style*='color:#f0584d'] {
+    color: #dc2626 !important;
+  }
+
+  /* Semantic ambers */
+  .token-report-print [style*='color: rgb(224, 168, 58)'],
+  .token-report-print [style*='color:rgb(224, 168, 58)'],
+  .token-report-print [style*='color: #e0a83a'],
+  .token-report-print [style*='color:#e0a83a'] {
+    color: #b45309 !important;
+  }
+
+  /* Accent teal — darken for contrast on white */
+  .token-report-print [style*='color: rgb(54, 214, 195)'],
+  .token-report-print [style*='color:rgb(54, 214, 195)'],
+  .token-report-print [style*='color: #36d6c3'],
+  .token-report-print [style*='color:#36d6c3'] {
+    color: #0f766e !important;
+  }
+
+  /* Accent ink (PRIMARY badge etc.) — already dark */
+  .token-report-print [style*='color: rgb(6, 35, 31)'],
+  .token-report-print [style*='color:rgb(6, 35, 31)'],
+  .token-report-print [style*='color: #06231f'],
+  .token-report-print [style*='color:#06231f'] {
+    color: #06231f !important;
+  }
+
+  /* Delisting chip text */
+  .token-report-print [style*='color: #1a1206'],
+  .token-report-print [style*='color:#1a1206'] {
+    color: #1a1206 !important;
+  }
+
+  /* Remap dark panel backgrounds that use theme tokens inline. */
+  .token-report-print [style*='background: #0f141b'],
+  .token-report-print [style*='background:#0f141b'],
+  .token-report-print [style*='background: rgb(15, 20, 27)'],
+  .token-report-print [style*='background: #0c1117'],
+  .token-report-print [style*='background:#0c1117'],
+  .token-report-print [style*='background: rgb(12, 17, 23)'],
+  .token-report-print [style*='background: #0a0d12'],
+  .token-report-print [style*='background:#0a0d12'],
+  .token-report-print [style*='background: rgb(10, 13, 18)'],
+  .token-report-print [style*='background: #141a22'],
+  .token-report-print [style*='background:#141a22'],
+  .token-report-print [style*='background: rgb(20, 26, 34)'] {
+    background: #ffffff !important;
+  }
+
+  .token-report-print [style*='linear-gradient'] {
+    background: #ffffff !important;
+  }
+
+  .token-report-print [style*='border: 1px solid #1d242e'],
+  .token-report-print [style*='border:1px solid #1d242e'],
+  .token-report-print [style*='border-bottom: 1px solid #1d242e'],
+  .token-report-print [style*='border-bottom:1px solid #1d242e'],
+  .token-report-print [style*='rgb(29, 36, 46)'] {
+    border-color: #d4d4d8 !important;
+  }
+
+  .token-report-print [style*='border: 1px solid #2a323d'],
+  .token-report-print [style*='border:1px solid #2a323d'],
+  .token-report-print [style*='rgb(42, 50, 61)'] {
+    border-color: #d4d4d8 !important;
+  }
+
+  .token-report-score-block *,
+  .token-report-panel * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

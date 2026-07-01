@@ -61,9 +61,20 @@ One row per exchange listing. Columns (see `liquidity_audit.infrastructure.listi
 - `rankings/{exchange}.json` — per-exchange rankings
 - `pairs/{exchange}/{BASE}_{QUOTE}.json` — per-pair analysis payloads
 
+## Website
+
+Public Crypto Liquidity Audit SPA (React + TypeScript). See [`website/README.md`](website/README.md) for full docs.
+
+```sh
+cd website
+npm install
+npm run sync:data   # copy ../data/analysis/ → public/data/analysis/
+npm run dev         # http://localhost:5173
+```
+
 ## Tests
 
-```powershell
+```sh
 pip install --prefer-binary -r requirements.txt -r dev_requirements.txt
 pip install -e .
 python -m pytest tests/ -v
@@ -75,8 +86,9 @@ Scoring benchmark golden files: set `UPDATE_SCORING_GOLDEN=1` to regenerate; tho
 
 [`.github/workflows/tests.yml`](.github/workflows/tests.yml) runs on push to `master` and on pull requests:
 
-1. `pip install -r requirements.txt -r dev_requirements.txt` and `pip install -e .`
-2. `python -m pytest tests/ -v`
+1. **Python tests:** `pip install -r requirements.txt -r dev_requirements.txt`, `pip install -e .`, `python -m pytest tests/ -v`
+2. **Website tests:** `npm ci`, `npm run test`, production `npm run build` in `website/`
+3. **Deploy website** (push to `master` only): build and deploy `website/` to Cloudflare Workers via Wrangler
 
 [`.github/workflows/update-analysis-data.yml`](.github/workflows/update-analysis-data.yml) runs on `workflow_dispatch` (optional cron commented in file):
 

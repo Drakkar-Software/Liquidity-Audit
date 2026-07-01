@@ -1,0 +1,17 @@
+{
+  "name": "Crypto Liquidity Audit",
+  "short_name": "Crypto Audit",
+  "description": "Independent token liquidity diagnostics from order-book snapshots.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#191c22",
+  "theme_color": "#191c22",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

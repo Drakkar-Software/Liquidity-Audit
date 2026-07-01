@@ -1,0 +1,767 @@
+/* Screen-only responsive layout. Print rules live in print.css. */
+@media screen {
+  .skip-link {
+    position: absolute;
+    left: -9999px;
+    top: auto;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    z-index: 100;
+    padding: 12px 16px;
+    font: 600 13px 'IBM Plex Mono', ui-monospace, monospace;
+    color: #06231f;
+    background: #36d6c3;
+    border-radius: 7px;
+    text-decoration: none;
+  }
+
+  .skip-link:focus {
+    position: fixed;
+    left: 16px;
+    top: 16px;
+    width: auto;
+    height: auto;
+    overflow: visible;
+  }
+
+  .app-shell {
+    padding: 16px 12px 48px;
+  }
+
+  .app-container {
+    width: 100%;
+    max-width: 1340px;
+    margin: 0 auto;
+  }
+
+  .screen-shell {
+    border-radius: 0;
+  }
+
+  .page-section {
+    padding: 28px 20px;
+  }
+
+  .comparison-hero {
+    padding: 32px 20px 28px;
+  }
+
+  .page-section-narrow {
+    padding: 28px 20px;
+    max-width: 920px;
+    margin: 0 auto;
+  }
+
+  .page-section-centered {
+    padding: 48px 20px;
+    text-align: center;
+  }
+
+  .page-hero-title {
+    font-size: clamp(26px, 5vw, 38px);
+  }
+
+  .grid-why,
+  .grid-two,
+  .grid-three,
+  .grid-score-report,
+  .grid-about-wide {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: 1fr;
+  }
+
+  .grid-two {
+    gap: 10px 18px;
+  }
+
+  .grid-about-wide {
+    gap: 24px;
+    align-items: start;
+  }
+
+  .comparison-search-row {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .comparison-search-row input {
+    min-height: 44px;
+  }
+
+  .comparison-search-row button[type='submit'] {
+    width: 100%;
+  }
+
+  .grades-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .grades-row > span {
+    flex: 1 1 calc(33% - 6px);
+    min-width: 72px;
+  }
+
+  .rankings-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+
+  .rankings-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid var(--line-color, #1d242e);
+    border-radius: 8px;
+  }
+
+  .rankings-table {
+    min-width: 480px;
+  }
+
+  .rankings-grid {
+    display: grid;
+    grid-template-columns: 48px 1.6fr 1fr 1fr;
+  }
+
+  .token-report-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .token-report-cockpit {
+    border-right: none;
+    border-bottom: 1px solid #1d242e;
+    grid-row: auto;
+  }
+
+  .token-report-detail {
+    grid-column: auto;
+    padding: 24px 20px;
+  }
+
+  .token-report-actions {
+    flex-direction: column;
+  }
+
+  .peer-bar-row {
+    display: grid;
+    grid-template-columns: 72px 1fr 52px;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .health-metric-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    align-items: start;
+  }
+
+  .investor-sim-grid,
+  .impl-options-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .improvements-scroll,
+  .roadmap-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid #1d242e;
+    border-radius: 8px;
+  }
+
+  .improvements-table {
+    min-width: 420px;
+  }
+
+  .roadmap-table {
+    min-width: 560px;
+  }
+
+  .improvements-grid-head,
+  .improvements-grid-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1.2fr;
+  }
+
+  .roadmap-grid-head,
+  .roadmap-grid-row {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr 0.8fr 1fr;
+  }
+
+  .learn-term-row,
+  .methodology-formula-row,
+  .methodology-formula-header {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .methodology-formula-header > span:last-child,
+  .methodology-formula-row > span:last-child {
+    padding-top: 0;
+  }
+
+  .footer-bar {
+    display: block;
+  }
+
+  .footer-columns {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    text-align: left;
+  }
+
+  .footer-brand {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .footer-disclaimer {
+    margin: 0;
+    color: #5f6b78;
+    font-size: 11px;
+    line-height: 1.5;
+  }
+
+  .footer-column-title {
+    margin: 0 0 12px;
+    font: 600 12px 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+    color: #e8edf2;
+  }
+
+  .footer-columns ul {
+    align-items: flex-start;
+  }
+
+  .footer-link-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+
+  .site-text-link {
+    color: #36d6c3;
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+
+  .site-text-link:hover,
+  .site-text-link:focus-visible {
+    color: #5ee8d6;
+    text-decoration: underline;
+  }
+
+  .guide-card-link {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+    text-align: center;
+    border: 1px solid #1d242e;
+    border-radius: 8px;
+    background: #0f141b;
+    padding: 18px;
+    text-decoration: none;
+    transition: border-color 0.15s ease;
+  }
+
+  .guide-illustration-animated {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .guide-illustration-animated svg {
+    transition: transform 0.25s ease;
+  }
+
+  .guide-card-title {
+    font: 600 14px 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+    color: #e8edf2;
+    margin-bottom: 6px;
+  }
+
+  .guide-card-blurb {
+    font: 400 12px/1.5 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+    color: #9aa7b4;
+  }
+
+
+  @keyframes guide-illustration-bob {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-3px);
+    }
+  }
+
+  .guide-section-with-visual {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    align-items: start;
+  }
+
+  .guide-section-visual {
+    justify-self: center;
+  }
+
+  .pillar-example {
+    width: 100%;
+  }
+
+  .pillar-prose {
+    max-width: none;
+  }
+
+  .pillar-example-visual {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 16px;
+  }
+
+  .pillar-example-visual svg {
+    width: min(100%, 300px);
+    height: auto;
+  }
+
+  .pillar-mid-illustration {
+    display: flex;
+    justify-content: center;
+  }
+
+  .pillar-mid-illustration svg {
+    width: min(100%, 200px);
+    height: auto;
+  }
+
+  .pillar-cta {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 32px;
+  }
+
+  .pillar-related-guides {
+    text-align: center;
+  }
+
+  .pillar-related-guides .guides-card-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .pillar-related-guides .guide-card-link {
+    flex: 1 1 200px;
+    max-width: 280px;
+  }
+
+  .guides-card-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .guide-card-link:hover,
+  .guide-card-link:focus-visible {
+    border-color: #36d6c3 !important;
+  }
+
+  .guide-card-link:hover .guide-illustration-animated svg,
+  .guide-card-link:focus-visible .guide-illustration-animated svg {
+    transform: translateY(-4px) scale(1.03);
+  }
+
+  .guide-card-link:hover .guide-illustration-motion,
+  .guide-card-link:focus-visible .guide-illustration-motion {
+    animation: guide-illustration-bob 0.55s ease-in-out;
+  }
+
+  .explore-further {
+    flex-wrap: wrap;
+  }
+
+  /* Prevent horizontal page scroll on token report (grid min-width: auto). */
+  .screen-content {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .screen-shell {
+    max-width: 100%;
+  }
+
+  .token-report-print {
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: clip;
+  }
+
+  .token-report-layout {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .token-report-cockpit {
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 24px 16px;
+    overflow-wrap: anywhere;
+  }
+
+  .token-report-detail {
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: clip;
+  }
+
+  .token-report-pair-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px 12px;
+  }
+
+  .token-report-pair-identity {
+    min-width: 0;
+    flex: 1 1 140px;
+  }
+
+  .token-report-pair-meta {
+    flex-shrink: 0;
+  }
+
+  .token-report-score-block {
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 100%;
+  }
+
+  .no-print.token-report-score-compact {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 22px;
+    width: 100%;
+  }
+
+  .token-report-verdict {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .token-report-verdict-text {
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .token-report-issues {
+    min-width: 0;
+    max-width: 100%;
+    overflow: visible;
+  }
+
+  .token-report-delisting-notice {
+    align-items: flex-start;
+  }
+
+  .token-report-delisting-notice > span:last-child {
+    min-width: 0;
+    overflow-wrap: break-word;
+  }
+
+  .token-report-section-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    min-width: 0;
+  }
+
+  .token-report-section-heading h3 {
+    margin: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .health-metric-title {
+    min-width: 0;
+  }
+
+  .improvements-scroll,
+  .roadmap-scroll {
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Site nav — mobile */
+  .site-nav {
+    position: relative;
+  }
+
+  .site-nav-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 20px;
+    border-bottom: 1px solid #1d242e;
+  }
+
+  .site-nav-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .site-nav-menu-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 1px solid #2a323d;
+    border-radius: 6px;
+    background: transparent;
+    color: #e8edf2;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .site-nav-links {
+    display: none;
+    flex-direction: column;
+    gap: 0;
+    padding: 8px 0;
+    border-bottom: 1px solid #1d242e;
+    background: #0f141b;
+  }
+
+  .site-nav-links.is-open {
+    display: flex;
+  }
+
+  .site-nav-links a {
+    padding: 12px 20px;
+    text-decoration: none;
+  }
+
+  .site-nav-links-desktop {
+    display: none;
+  }
+
+  .site-nav-spacer {
+    display: none;
+  }
+
+  @media (min-width: 640px) {
+    .app-shell {
+      padding: 32px 24px 64px;
+    }
+
+    .screen-shell {
+      border-radius: 12px;
+    }
+
+    .page-section {
+      padding: 32px 40px;
+    }
+
+    .comparison-hero {
+      padding: 48px 40px 36px;
+    }
+
+    .page-section-narrow {
+      padding: 36px 40px;
+    }
+
+    .page-section-centered {
+      padding: 80px 40px;
+    }
+
+    .grid-two,
+    .grid-three {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .comparison-search-row {
+      flex-direction: row;
+      align-items: stretch;
+    }
+
+    .comparison-search-row button[type='submit'] {
+      width: auto;
+    }
+
+    .investor-sim-grid,
+    .impl-options-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .learn-term-row,
+    .methodology-formula-row,
+    .methodology-formula-header {
+      grid-template-columns: 180px 1fr;
+      gap: 20px;
+    }
+
+    .methodology-formula-header {
+      grid-template-columns: 200px 1fr;
+      gap: 0;
+    }
+
+    .footer-bar {
+      display: block;
+    }
+
+    .footer-columns {
+      grid-template-columns: 1.2fr 1fr 1fr 1fr;
+      gap: 32px;
+    }
+
+    .guides-card-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .guide-section-with-visual {
+      grid-template-columns: 1fr auto;
+      gap: 24px;
+    }
+
+    .guide-section-visual {
+      justify-self: end;
+    }
+
+    .token-report-detail {
+      padding: 32px 36px;
+    }
+
+    .token-report-actions {
+      flex-direction: row;
+    }
+
+    .peer-bar-row {
+      grid-template-columns: 90px 1fr 60px;
+      gap: 12px;
+    }
+
+    .health-metric-row {
+      grid-template-columns: auto 1fr auto;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .token-report-cockpit {
+      padding: 32px 28px;
+    }
+
+    .health-metric-title {
+      min-width: 130px;
+    }
+
+    .site-nav-top {
+      padding: 14px 24px;
+      border-bottom: none;
+    }
+
+    .site-nav-menu-btn {
+      display: none;
+    }
+
+    .site-nav-links {
+      display: none !important;
+    }
+
+    .site-nav-links-desktop {
+      display: flex;
+      gap: 24px;
+    }
+
+    .site-nav-spacer {
+      display: block;
+      width: 9px;
+    }
+  }
+
+  @media (min-width: 900px) {
+    .guides-card-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .grid-why {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .grid-three {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .grid-score-report {
+      grid-template-columns: 1fr 1.3fr;
+      gap: 24px;
+    }
+
+    .grid-about-wide {
+      grid-template-columns: 1.4fr 1fr;
+    }
+
+    .token-report-layout {
+      grid-template-columns: minmax(320px, 430px) 1fr;
+    }
+
+    .token-report-cockpit {
+      border-right: 1px solid #1d242e;
+      border-bottom: none;
+      grid-row: 1 / -1;
+    }
+
+    .token-report-detail {
+      grid-column: 2;
+    }
+
+    .investor-sim-grid,
+    .impl-options-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .improvements-scroll,
+    .roadmap-scroll {
+      overflow: visible;
+    }
+
+    .improvements-table,
+    .roadmap-table {
+      min-width: 0;
+    }
+  }
+}

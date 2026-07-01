@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="Crypto Liquidity Audit">
+  <rect width="1200" height="630" fill="#0c1016"/>
+  <rect x="80" y="80" width="48" height="48" rx="6" fill="#36d6c3"/>
+  <text x="150" y="130" fill="#e8edf2" font-family="IBM Plex Sans, system-ui, sans-serif" font-size="52" font-weight="600">Crypto Liquidity Audit</text>
+  <text x="80" y="220" fill="#9aa7b4" font-family="IBM Plex Sans, system-ui, sans-serif" font-size="36">Independent token liquidity diagnostics</text>
+</svg>
