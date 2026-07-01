@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import pairAnalysisSample from '../../../../../design_specs/examples/pair-analysis.sample.json';
-import rankingsMexcSample from '../../../../../design_specs/examples/rankings-mexc.sample.json';
+import pairAnalysisSample from '../../../test/fixtures/pair-analysis.sample.json';
+import rankingsMexcSample from '../../../test/fixtures/rankings-mexc.sample.json';
 import { pairAnalysisToToken, rankingsToViewModel } from '../adapter';
 import type { PairAnalysisPayload, RankingsPayload } from '../loader';
 

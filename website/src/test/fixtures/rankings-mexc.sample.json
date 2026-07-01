@@ -1,0 +1,14 @@
+{
+  "exchange": "mexc",
+  "updated_at": "2026-06-14T20:00:00+00:00",
+  "pairs": [
+    { "symbol": "SOL/USDT", "score_100": 92, "volume_quote": 2100000000, "rank": 1 },
+    { "symbol": "ETH/USDT", "score_100": 95, "volume_quote": 18000000000, "rank": 2 },
+    { "symbol": "PEPE/USDT", "score_100": 78, "volume_quote": 890000000, "rank": 3 },
+    { "symbol": "ARB/USDT", "score_100": 85, "volume_quote": 320000000, "rank": 4 },
+    { "symbol": "OP/USDT", "score_100": 81, "volume_quote": 180000000, "rank": 5 },
+    { "symbol": "LINK/USDT", "score_100": 88, "volume_quote": 450000000, "rank": 6 },
+    { "symbol": "UNI/USDT", "score_100": 84, "volume_quote": 210000000, "rank": 7 },
+    { "symbol": "XYZ/USDT", "score_100": 42, "volume_quote": 1200000, "rank": 8 }
+  ]
+}

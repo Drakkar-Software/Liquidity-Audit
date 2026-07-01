@@ -1,0 +1,225 @@
+{
+  "exchange": "mexc",
+  "symbol": "XYZ/USDT",
+  "full_name": "XYZ Protocol",
+  "raw": {
+    "exchange": "mexc",
+    "symbol": "XYZ/USDT",
+    "full_name": "XYZ Protocol",
+    "fetched_at": "2026-06-14T18:30:00+00:00",
+    "spread_pct": 2.8,
+    "depth_band_quote": 9500,
+    "volume_quote": 1200000,
+    "liquidity_score": 0.42,
+    "bid_levels": 12,
+    "ask_levels": 11,
+    "slippage": [
+      { "size": 100, "pct": 0.3, "omitted": false },
+      { "size": 1000, "pct": 0.9, "omitted": false },
+      { "size": 5000, "pct": 4.7, "omitted": false },
+      { "size": 10000, "pct": 8.2, "omitted": false },
+      { "size": 20000, "pct": 15.0, "omitted": true }
+    ]
+  },
+  "analysis": {
+    "score_100": 42,
+    "grade": "D",
+    "status": "Poor",
+    "status_class": "status-poor",
+    "slippage_display_size": 10000,
+    "verdict": "XYZ/USDT loses ~2.4% to slippage on a $10k trade — 8× worse than comparable tokens.",
+    "issues": [
+      { "label": "Good volume", "ok": true },
+      { "label": "Wide spread", "ok": false },
+      { "label": "Low depth", "ok": false },
+      { "label": "High slippage", "ok": false },
+      { "label": "Quote gaps", "ok": false }
+    ],
+    "health_dashboard": [
+      {
+        "severity": "Critical",
+        "title": "Spread",
+        "impact": "4.6× above average",
+        "evidence": "2.8% vs 0.5% avg"
+      },
+      {
+        "severity": "Critical",
+        "title": "Depth ±2%",
+        "impact": "89% below average",
+        "evidence": "$9.5k vs $100k avg"
+      },
+      {
+        "severity": "Critical",
+        "title": "Slippage $10k",
+        "impact": "8× worse than average",
+        "evidence": "8.2% vs 1.0% avg"
+      },
+      {
+        "severity": "Moderate",
+        "title": "Volume consistency",
+        "impact": "Hollow volume risk",
+        "evidence": "Vol/depth 12.6×"
+      },
+      {
+        "severity": "Critical",
+        "title": "MM presence",
+        "impact": "No active market maker",
+        "evidence": "Not detected"
+      },
+      {
+        "severity": "Low",
+        "title": "Resilience",
+        "impact": "Within normal range",
+        "evidence": "4 min recovery"
+      }
+    ],
+    "delisting_risk": [
+      {
+        "title": "Low depth",
+        "severity": "Critical",
+        "evidence": "±2% depth $140 vs $5k minimum"
+      },
+      {
+        "title": "Low volume",
+        "severity": "Critical",
+        "evidence": "24h volume $8.2k vs $10k minimum"
+      }
+    ],
+    "mm_presence": {
+      "detected": false,
+      "label": "Not detected"
+    },
+    "peers": {
+      "criteria": "Similar volume tier and quote currency on exchange",
+      "rows": [
+        {
+          "name": "Yours",
+          "spread": 2.8,
+          "depth": 9500,
+          "slippage_pct": 8.2,
+          "slippage_trade_size": 10000,
+          "is_yours": true
+        },
+        {
+          "name": "Peer Alpha",
+          "spread": 0.6,
+          "depth": 85000,
+          "slippage_pct": 1.1,
+          "slippage_trade_size": 10000,
+          "is_yours": false
+        },
+        {
+          "name": "Peer Beta",
+          "spread": 0.4,
+          "depth": 120000,
+          "slippage_pct": 0.8,
+          "slippage_trade_size": 10000,
+          "is_yours": false
+        },
+        {
+          "name": "Peer Gamma",
+          "spread": 0.7,
+          "depth": 92000,
+          "slippage_pct": 1.3,
+          "slippage_trade_size": 10000,
+          "is_yours": false
+        },
+        {
+          "name": "Median",
+          "spread": 0.5,
+          "depth": 100000,
+          "slippage_pct": 1.0,
+          "slippage_trade_size": 10000,
+          "is_yours": false
+        }
+      ],
+      "median": {
+        "name": "Median",
+        "spread": 0.5,
+        "depth": 100000,
+        "slippage_pct": 1.0,
+        "slippage_trade_size": 10000,
+        "is_yours": false
+      }
+    },
+    "investor_simulator": [
+      {
+        "size": 1000,
+        "omitted": false,
+        "overpay_pct": 0.9,
+        "overpay_usd": 9,
+        "fair_price": 1.0,
+        "avg_price": 1.009
+      },
+      {
+        "size": 10000,
+        "omitted": false,
+        "overpay_pct": 8.2,
+        "overpay_usd": 820,
+        "fair_price": 1.0,
+        "avg_price": 1.082
+      },
+      {
+        "size": 25000,
+        "omitted": false,
+        "overpay_pct": 14.1,
+        "overpay_usd": 3525,
+        "fair_price": 1.0,
+        "avg_price": 1.141
+      },
+      {
+        "size": 20000,
+        "omitted": true,
+        "fill_ratio": 0.42,
+        "overpay_pct": null,
+        "overpay_usd": null,
+        "fair_price": 1.0,
+        "avg_price": null
+      }
+    ],
+    "lost_opportunity": {
+      "size": 20000,
+      "cost": 2800,
+      "range": "6–15%"
+    },
+    "root_causes": [
+      {
+        "rank": 1,
+        "title": "Insufficient resting liquidity",
+        "evidence": "Depth ±2% at $9.5k vs $100k peer median",
+        "impact": "Large orders move price 8%+"
+      },
+      {
+        "rank": 2,
+        "title": "Order book imbalance",
+        "evidence": "90% sell-side volume in 24h window",
+        "impact": "Buyers face wider effective spread"
+      }
+    ],
+    "improvements": [
+      { "metric": "Spread", "current": "2.8%", "potential": "0.5%" },
+      { "metric": "Depth ±2%", "current": "$9.5k", "potential": "$100k" },
+      { "metric": "Slippage $10k", "current": "8.2%", "potential": "1.0%" }
+    ],
+    "roadmap": [
+      {
+        "issue": "Wide spread",
+        "fix": "Resting orders both sides",
+        "cost": "Low–Med",
+        "impact": "−2.3% spread"
+      },
+      {
+        "issue": "Low depth",
+        "fix": "Depth injection program",
+        "cost": "Med",
+        "impact": "+$90k depth"
+      },
+      {
+        "issue": "Quote gaps",
+        "fix": "Continuous quoting",
+        "cost": "Low",
+        "impact": "95%+ uptime"
+      }
+    ]
+  }
+}

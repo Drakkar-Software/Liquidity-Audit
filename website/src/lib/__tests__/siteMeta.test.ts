@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import pairAnalysisSample from '../../../../design_specs/examples/pair-analysis.sample.json';
+import pairAnalysisSample from '../../test/fixtures/pair-analysis.sample.json';
 import {
   buildCanonical,
   buildDefaultOgImage,
