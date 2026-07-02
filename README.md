@@ -1,3 +1,28 @@
+<p align="center">
+  <a href="https://crypto-liquidity-audit.drakkar.software/">
+    <img src="https://img.shields.io/badge/website-crypto--liquidity--audit.drakkar.software-36d6c3" alt="Website" />
+  </a>
+  <a href="https://github.com/Drakkar-Software/Liquidity-Audit/actions">
+    <img src="https://github.com/Drakkar-Software/Liquidity-Audit/workflows/Liquidity-Audit%20-%20CI/badge.svg" alt="CI" />
+  </a>
+  <a href="https://github.com/Drakkar-Software/Liquidity-Audit/actions/workflows/update-analysis-data.yml">
+    <img src="https://github.com/Drakkar-Software/Liquidity-Audit/workflows/Update%20analysis%20data/badge.svg" alt="Update analysis data" />
+  </a>
+  <a href="https://www.python.org/downloads/">
+    <img src="https://img.shields.io/badge/python-3.13-blue.svg" alt="Python 3.13" />
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://crypto-liquidity-audit.drakkar.software/">
+    <img
+      src="https://raw.githubusercontent.com/Drakkar-Software/Liquidity-Audit/refs/heads/master/website/public/og-default.png"
+      alt="Crypto Liquidity Audit"
+      width="480"
+    />
+  </a>
+</p>
+
 # Crypto Liquidity Audit — open-source data pipeline
 
 This repository produces the analysis JSON that powers [crypto-liquidity-audit.drakkar.software](https://crypto-liquidity-audit.drakkar.software/): exchange rankings, per-pair liquidity reports, and the snapshot timestamp shown on each report.
