@@ -121,6 +121,7 @@ async def reanalyze_from_stored_raw(
         store.save_exchange_rankings(exchange_name, {
             "exchange": exchange_name,
             "updated_at": time_utils.utc_now_iso(),
+            "rankings_min_volume_quote": config.analysis.rankings_min_volume_quote,
             "pairs": rankings,
         })
         _LOGGER.info(

@@ -970,31 +970,47 @@ def build_roadmap(raw_metrics: ExtendedRawMetrics, peer_median: dict[str, typing
     return rows
 
 
+def _rankings_volume_quote(raw_metrics: ExtendedRawMetrics) -> float:
+    if raw_metrics.volume_quote is None:
+        return 0.0
+    return raw_metrics.volume_quote
+
+
+def _is_rankings_volume_eligible(
+    raw_metrics: ExtendedRawMetrics,
+    rankings_min_volume_quote: float,
+) -> bool:
+    return (
+        raw_metrics.volume_quote is not None
+        and raw_metrics.volume_quote >= rankings_min_volume_quote
+    )
+
+
 def build_rankings(
     raw_metrics_list: list[ExtendedRawMetrics],
     rankings_min_volume_quote: float,
 ) -> list[dict[str, typing.Any]]:
-    eligible = [
-        raw_metrics
-        for raw_metrics in raw_metrics_list
-        if raw_metrics.volume_quote is not None
-        and raw_metrics.volume_quote >= rankings_min_volume_quote
-    ]
-    eligible.sort(
+    sorted_metrics = sorted(
+        raw_metrics_list,
         key=lambda raw_metrics: (
             compute_score_100(raw_metrics, raw_metrics_list)[0],
-            raw_metrics.volume_quote or 0,
+            _rankings_volume_quote(raw_metrics),
         ),
         reverse=True,
     )
+    eligible_rank = 0
     rankings: list[dict[str, typing.Any]] = []
-    for rank_index, raw_metrics in enumerate(eligible, start=1):
+    for raw_metrics in sorted_metrics:
         score_100, _, _ = compute_score_100(raw_metrics, raw_metrics_list)
+        rank: typing.Optional[int] = None
+        if _is_rankings_volume_eligible(raw_metrics, rankings_min_volume_quote):
+            eligible_rank += 1
+            rank = eligible_rank
         rankings.append({
             "symbol": raw_metrics.symbol,
             "score_100": score_100,
-            "volume_quote": raw_metrics.volume_quote,
-            "rank": rank_index,
+            "volume_quote": _rankings_volume_quote(raw_metrics),
+            "rank": rank,
         })
     return rankings
 

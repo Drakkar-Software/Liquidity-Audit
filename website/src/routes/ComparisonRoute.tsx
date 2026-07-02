@@ -3,10 +3,10 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { rankingsToViewModel } from '../lib/data/adapter';
 import { DEFAULT_EXCHANGE, isExchangeSlug } from '../lib/data/exchanges';
 import {
-  buildPairCatalog,
   fetchRankings,
   normalizePairInput,
   pairToSlug,
+  type RankingsPayload,
 } from '../lib/data/loader';
 import { rankingsErrorMessage } from '../lib/data/loadErrors';
 import { useHomePageMeta, useLoadErrorPageMeta } from '../lib/pageMetaHooks';
@@ -21,7 +21,7 @@ export function ComparisonRoute() {
   const exchange = isExchangeSlug(exchangeParam) ? exchangeParam : DEFAULT_EXCHANGE;
 
   const [rankings, setRankings] = useState<RankingsViewModel | null>(null);
-  const [pairCatalog, setPairCatalog] = useState<string[]>([]);
+  const [rankingsPayload, setRankingsPayload] = useState<RankingsPayload | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -35,7 +35,7 @@ export function ComparisonRoute() {
           return;
         }
         setRankings(rankingsToViewModel(payload));
-        setPairCatalog(buildPairCatalog(payload));
+        setRankingsPayload(payload);
       })
       .catch((fetchError: unknown) => {
         if (cancelled) {
@@ -70,7 +70,7 @@ export function ComparisonRoute() {
       <Comparison
         rankings={rankings}
         exchange={exchange}
-        pairCatalog={pairCatalog}
+        rankingsPayload={rankingsPayload}
         rankingsError={error}
         onExchangeChange={handleExchangeChange}
         onOpenReport={handleOpenReport}

@@ -74,7 +74,11 @@ describe('SEO heading hierarchy', () => {
       <Comparison
         rankings={rankings}
         exchange="mexc"
-        pairCatalog={['SOL/USDT']}
+        rankingsPayload={{
+          exchange: 'mexc',
+          updated_at: '2026-06-14T20:00:00+00:00',
+          pairs: [{ symbol: 'SOL/USDT', score_100: 80, volume_quote: 1_200_000, rank: 1 }],
+        }}
         onExchangeChange={() => {}}
         onOpenReport={() => {}}
       />,

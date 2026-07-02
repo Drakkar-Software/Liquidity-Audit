@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { colors, fonts } from '../theme';
 import type { RankingsViewModel } from '../types';
 import { EXCHANGES } from '../lib/data/exchanges';
-import { filterPairCatalog, normalizePairInput } from '../lib/data/loader';
+import { normalizePairInput, resolvePairSuggestions, type RankingsPayload } from '../lib/data/loader';
 import { Screen } from '../components/Screen';
 import { ExchangeSelect } from '../components/ExchangeSelect';
 import { GuidesSection } from '../components/GuidesSection';
@@ -13,7 +13,7 @@ import { SiteTextLink } from '../components/SiteTextLink';
 export interface ComparisonProps {
   rankings: RankingsViewModel | null;
   exchange: string;
-  pairCatalog: string[];
+  rankingsPayload: RankingsPayload | null;
   rankingsError?: string | null;
   onExchangeChange: (exchange: string) => void;
   onOpenReport: (pair: string) => void;
@@ -51,7 +51,7 @@ const scoreColor = (score: number): string =>
 export function Comparison({
   rankings,
   exchange,
-  pairCatalog,
+  rankingsPayload,
   rankingsError = null,
   onExchangeChange,
   onOpenReport,
@@ -62,7 +62,7 @@ export function Comparison({
   const searchContainerRef = useRef<HTMLDivElement>(null);
   const pairSearchListboxId = 'pair-search-listbox';
   const quickLinks = rankings?.rows.slice(0, 4).map((row) => row.symbol) ?? [];
-  const suggestions = filterPairCatalog(pairCatalog, searchQuery);
+  const suggestions = rankingsPayload ? resolvePairSuggestions(rankingsPayload, searchQuery) : [];
   const suggestionsVisible = suggestionsOpen && suggestions.length > 0;
 
   useEffect(() => {

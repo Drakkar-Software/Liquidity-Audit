@@ -14,6 +14,7 @@ import {
   shouldShowImplementationOptions,
 } from './implementationOptions';
 import type { PairAnalysisPayload, RankingsPayload } from './loader';
+import { isRankingsEligible, resolveRankingsMinVolumeQuote } from './loader';
 
 const INVESTOR_SIMULATOR_MAX_CARDS = 3;
 const SLIPPAGE_DISPLAY_SIZE_PREFERENCE = [10000, 1000, 100] as const;
@@ -244,15 +245,19 @@ export function pairAnalysisToToken(pairAnalysis: PairAnalysisPayload): TokenVie
 
 export function rankingsToViewModel(rankingsPayload: RankingsPayload): RankingsViewModel {
   const exchange = rankingsPayload.exchange.toLowerCase();
+  const rankingsMinVolumeQuote = resolveRankingsMinVolumeQuote(rankingsPayload);
+  const eligibleRows = rankingsPayload.pairs.filter(
+    (row) => isRankingsEligible(row, rankingsMinVolumeQuote) && row.rank !== null,
+  );
   return {
     exchange,
     exchangeLabel: exchange.toUpperCase(),
     updatedLabel: formatUpdatedLabel(rankingsPayload.updated_at),
-    rows: rankingsPayload.pairs.slice(0, 20).map((row) => ({
+    rows: eligibleRows.slice(0, 20).map((row) => ({
       symbol: row.symbol,
       score: row.score_100,
       vol: fmtVolShort(row.volume_quote),
-      rank: row.rank,
+      rank: row.rank as number,
     })),
   };
 }

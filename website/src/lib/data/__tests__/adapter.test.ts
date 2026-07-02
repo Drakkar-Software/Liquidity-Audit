@@ -30,4 +30,19 @@ describe('rankingsToViewModel', () => {
     expect(viewModel.rows[0]?.score).toBe(92);
     expect(viewModel.rows[0]?.vol).toBe('2.1B');
   });
+
+  it('excludes low-volume pairs from the table rows', () => {
+    const payload: RankingsPayload = {
+      exchange: 'bitmart',
+      updated_at: '2026-06-14T20:00:00+00:00',
+      rankings_min_volume_quote: 1000,
+      pairs: [
+        { symbol: 'SOL/USDT', score_100: 92, volume_quote: 2_100_000_000, rank: 1 },
+        { symbol: 'ULX/USDT', score_100: 15, volume_quote: 0, rank: null },
+      ],
+    };
+
+    const viewModel = rankingsToViewModel(payload);
+    expect(viewModel.rows.map((row) => row.symbol)).toEqual(['SOL/USDT']);
+  });
 });

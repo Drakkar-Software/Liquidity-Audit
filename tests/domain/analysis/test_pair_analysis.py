@@ -421,6 +421,28 @@ class TestBuildRankings:
         symbols_by_rank = [row["symbol"] for row in rankings]
         assert symbols_by_rank.index("MID/USDT") < symbols_by_rank.index("STRONG/USDT")
 
+    def test_includes_ineligible_pairs_with_zero_volume_and_null_rank(self):
+        eligible = _minimal_raw_metrics_for_scoring(
+            symbol="SOL/USDT",
+            liquidity_score=0.8,
+            volume_quote=10_000.0,
+        )
+        ineligible = _minimal_raw_metrics_for_scoring(
+            symbol="ULX/USDT",
+            liquidity_score=0.15,
+            volume_quote=None,
+        )
+        rankings = token_analysis.build_rankings(
+            [eligible, ineligible],
+            rankings_min_volume_quote=1000.0,
+        )
+        assert len(rankings) == 2
+        ulx_row = next(row for row in rankings if row["symbol"] == "ULX/USDT")
+        assert ulx_row["volume_quote"] == 0
+        assert ulx_row["rank"] is None
+        sol_row = next(row for row in rankings if row["symbol"] == "SOL/USDT")
+        assert sol_row["rank"] == 1
+
 
 def _exchange_averages_for_volume_tests() -> dict[str, float]:
     return {

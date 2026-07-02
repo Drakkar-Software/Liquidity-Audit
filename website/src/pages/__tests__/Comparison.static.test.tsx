@@ -10,7 +10,7 @@ describe('Comparison static shell', () => {
         <Comparison
           rankings={null}
           exchange="mexc"
-          pairCatalog={[]}
+          rankingsPayload={null}
           onExchangeChange={() => {}}
           onOpenReport={() => {}}
         />
@@ -30,7 +30,7 @@ describe('Comparison static shell', () => {
         <Comparison
           rankings={null}
           exchange="mexc"
-          pairCatalog={[]}
+          rankingsPayload={null}
           rankingsError="Rankings unavailable for MEXC."
           onExchangeChange={() => {}}
           onOpenReport={() => {}}

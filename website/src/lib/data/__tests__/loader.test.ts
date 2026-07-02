@@ -1,13 +1,15 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   AnalysisFetchError,
-  buildPairCatalog,
+  buildRankingsCatalog,
+  buildSearchCatalog,
   fetchPairAnalysis,
   fetchRankings,
   filterPairCatalog,
   getAnalysisDataBase,
   normalizePairInput,
   pairToSlug,
+  resolvePairSuggestions,
   slugToPair,
   type RankingsPayload,
 } from '../loader';
@@ -42,17 +44,55 @@ describe('normalizePairInput', () => {
   });
 });
 
-describe('buildPairCatalog', () => {
-  it('maps pair symbols from rankings payload', () => {
+describe('buildRankingsCatalog', () => {
+  const payload: RankingsPayload = {
+    exchange: 'mexc',
+    updated_at: '2026-06-14T20:00:00+00:00',
+    rankings_min_volume_quote: 1000,
+    pairs: [
+      { symbol: 'SOL/USDT', score_100: 92, volume_quote: 1_200_000, rank: 1 },
+      { symbol: 'ULX/USDT', score_100: 15, volume_quote: 0, rank: null },
+      { symbol: 'XYZ/USDT', score_100: 42, volume_quote: 500, rank: null },
+    ],
+  };
+
+  it('returns only volume-eligible symbols in rank order', () => {
+    expect(buildRankingsCatalog(payload)).toEqual(['SOL/USDT']);
+  });
+});
+
+describe('buildSearchCatalog', () => {
+  it('returns every symbol from rankings payload', () => {
     const payload: RankingsPayload = {
-      exchange: 'mexc',
+      exchange: 'bitmart',
       updated_at: '2026-06-14T20:00:00+00:00',
       pairs: [
         { symbol: 'SOL/USDT', score_100: 92, volume_quote: 1, rank: 1 },
-        { symbol: 'XYZ/USDT', score_100: 42, volume_quote: 2, rank: 2 },
+        { symbol: 'ULX/USDT', score_100: 15, volume_quote: 0, rank: null },
       ],
     };
-    expect(buildPairCatalog(payload)).toEqual(['SOL/USDT', 'XYZ/USDT']);
+    expect(buildSearchCatalog(payload)).toEqual(['SOL/USDT', 'ULX/USDT']);
+  });
+});
+
+describe('resolvePairSuggestions', () => {
+  const payload: RankingsPayload = {
+    exchange: 'bitmart',
+    updated_at: '2026-06-14T20:00:00+00:00',
+    rankings_min_volume_quote: 1000,
+    pairs: [
+      { symbol: 'SOL/USDT', score_100: 92, volume_quote: 2_100_000_000, rank: 1 },
+      { symbol: 'ETH/USDT', score_100: 75, volume_quote: 900_000, rank: 2 },
+      { symbol: 'ULX/USDT', score_100: 15, volume_quote: 0, rank: null },
+    ],
+  };
+
+  it('uses volume-eligible pairs for the default dropdown', () => {
+    expect(resolvePairSuggestions(payload, '')).toEqual(['SOL/USDT', 'ETH/USDT']);
+  });
+
+  it('searches all pairs when the user types a query', () => {
+    expect(resolvePairSuggestions(payload, 'ULX')).toEqual(['ULX/USDT']);
   });
 });
 

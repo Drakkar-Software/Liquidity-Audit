@@ -63,15 +63,31 @@ async function fetchJson<T>(url: string): Promise<T> {
   }
 }
 
+export interface RankingsPairRow {
+  symbol: string;
+  score_100: number;
+  volume_quote: number;
+  rank: number | null;
+}
+
 export interface RankingsPayload {
   exchange: string;
   updated_at: string;
-  pairs: {
-    symbol: string;
-    score_100: number;
-    volume_quote: number;
-    rank: number;
-  }[];
+  rankings_min_volume_quote?: number;
+  pairs: RankingsPairRow[];
+}
+
+const DEFAULT_RANKINGS_MIN_VOLUME_QUOTE = 1000;
+
+export function resolveRankingsMinVolumeQuote(rankingsPayload: RankingsPayload): number {
+  return rankingsPayload.rankings_min_volume_quote ?? DEFAULT_RANKINGS_MIN_VOLUME_QUOTE;
+}
+
+export function isRankingsEligible(
+  row: RankingsPairRow,
+  rankingsMinVolumeQuote: number,
+): boolean {
+  return row.volume_quote >= rankingsMinVolumeQuote;
 }
 
 export interface PairAnalysisPayload {
@@ -93,7 +109,15 @@ export async function fetchPairAnalysis(exchange: string, pair: string): Promise
   return fetchJson<PairAnalysisPayload>(`${dataBase}/pairs/${exchange.toLowerCase()}/${slug}.json`);
 }
 
-export function buildPairCatalog(rankingsPayload: RankingsPayload): string[] {
+export function buildRankingsCatalog(rankingsPayload: RankingsPayload): string[] {
+  const rankingsMinVolumeQuote = resolveRankingsMinVolumeQuote(rankingsPayload);
+  return rankingsPayload.pairs
+    .filter((row) => isRankingsEligible(row, rankingsMinVolumeQuote))
+    .sort((leftRow, rightRow) => (leftRow.rank ?? Number.MAX_SAFE_INTEGER) - (rightRow.rank ?? Number.MAX_SAFE_INTEGER))
+    .map((row) => row.symbol);
+}
+
+export function buildSearchCatalog(rankingsPayload: RankingsPayload): string[] {
   return rankingsPayload.pairs.map((row) => row.symbol);
 }
 
@@ -105,4 +129,16 @@ export function filterPairCatalog(catalog: string[], query: string, maxResults =
   return catalog
     .filter((symbol) => symbol.toUpperCase().includes(normalizedQuery))
     .slice(0, maxResults);
+}
+
+export function resolvePairSuggestions(
+  rankingsPayload: RankingsPayload,
+  query: string,
+  maxResults = 8,
+): string[] {
+  const normalizedQuery = query.trim();
+  if (!normalizedQuery) {
+    return filterPairCatalog(buildRankingsCatalog(rankingsPayload), '', maxResults);
+  }
+  return filterPairCatalog(buildSearchCatalog(rankingsPayload), normalizedQuery, maxResults);
 }
