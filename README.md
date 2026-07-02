@@ -13,6 +13,10 @@
   </a>
 </p>
 
+# Crypto Liquidity Audit — open-source data pipeline
+
+This repository produces the analysis JSON that powers [crypto-liquidity-audit.drakkar.software](https://crypto-liquidity-audit.drakkar.software/): exchange rankings, per-pair liquidity reports, and the snapshot timestamp shown on each report.
+
 <p align="center">
   <a href="https://crypto-liquidity-audit.drakkar.software/">
     <img
@@ -22,10 +26,6 @@
     />
   </a>
 </p>
-
-# Crypto Liquidity Audit — open-source data pipeline
-
-This repository produces the analysis JSON that powers [crypto-liquidity-audit.drakkar.software](https://crypto-liquidity-audit.drakkar.software/): exchange rankings, per-pair liquidity reports, and the snapshot timestamp shown on each report.
 
 For what each metric means and how scores are calculated, see the live [Methodology](https://crypto-liquidity-audit.drakkar.software/methodology) page. This document explains **when and how** that data is refreshed, and **how to reproduce** a run locally.
 
