@@ -1,6 +1,11 @@
 import { Link } from 'react-router-dom';
 import { colors, fonts } from '../theme';
-import { AUDIT_LINKS, MARKET_MAKING_LINKS, PILLAR_GUIDE_LINKS } from '../lib/pillarGuides';
+import {
+  AUDIT_LINKS,
+  LIQUIDITY_AUDIT_GITHUB_URL,
+  MARKET_MAKING_LINKS,
+  PILLAR_GUIDE_LINKS,
+} from '../lib/pillarGuides';
 import { SiteBrand } from './SiteBrand';
 import { SiteTextLink } from './SiteTextLink';
 
@@ -21,6 +26,9 @@ export function Footer() {
         <div className="footer-brand">
           <SiteBrand />
           <p className="footer-disclaimer">Independent analysis · Not financial advice</p>
+          <SiteTextLink external href={LIQUIDITY_AUDIT_GITHUB_URL}>
+            Source code
+          </SiteTextLink>
         </div>
         <div>
           <p className="footer-column-title">Guides</p>

@@ -45,8 +45,6 @@ jobs:
             --endpoint-url "${R2_ENDPOINT}" || true
           aws s3 cp "s3://${R2_STATE_BUCKET}/selected_history.csv" data/selected_history.csv \
             --endpoint-url "${R2_ENDPOINT}" || true
-          aws s3 cp "s3://${R2_STATE_BUCKET}/contact_history.csv" data/selected_history.csv \
-            --endpoint-url "${R2_ENDPOINT}" || true
 
       - name: Prepare config.json
         run: cp config.example.json config.json

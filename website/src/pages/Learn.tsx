@@ -1,8 +1,13 @@
 import { colors, fonts } from '../theme';
 import { Screen } from '../components/Screen';
-import { Eyebrow } from '../components/SectionHeading';
 import { GuidesSection } from '../components/GuidesSection';
 import { SiteTextLink } from '../components/SiteTextLink';
+
+const sectionHeadingStyle = {
+  margin: '0 0 12px',
+  font: `600 20px ${fonts.sans}`,
+  color: colors.ink,
+} as const;
 
 const GLOSSARY: { term: string; def: string }[] = [
   {
@@ -63,14 +68,15 @@ export function Learn() {
     <Screen active="Learn">
       <div className="page-section-narrow">
         <h1 style={{ margin: '0 0 8px', font: `600 30px ${fonts.sans}`, color: colors.ink }}>
-          Learn
+          Crypto liquidity terms
         </h1>
         <p style={{ margin: '0 0 28px', font: `400 15px/1.6 ${fonts.sans}`, color: colors.ink2 }}>
           Terms used on token liquidity reports. See{' '}
           <SiteTextLink to="/methodology">methodology</SiteTextLink> for how metrics are computed.
         </p>
 
-        <Eyebrow>GLOSSARY</Eyebrow>
+        <section>
+          <h2 style={sectionHeadingStyle}>Crypto liquidity report glossary</h2>
         <div
           style={{
             display: 'flex',
@@ -101,9 +107,10 @@ export function Learn() {
             </div>
           ))}
         </div>
+        </section>
 
-        <div style={{ marginTop: 32 }}>
-          <Eyebrow>COMMON PITFALLS</Eyebrow>
+        <section style={{ marginTop: 32 }}>
+          <h2 style={sectionHeadingStyle}>Common crypto spot liquidity pitfalls</h2>
           <ul
             style={{
               margin: 0,
@@ -118,7 +125,7 @@ export function Learn() {
               </li>
             ))}
           </ul>
-        </div>
+        </section>
 
         <div style={{ marginTop: 32 }}>
           <GuidesSection />

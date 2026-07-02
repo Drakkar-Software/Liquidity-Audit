@@ -9,6 +9,7 @@ interface MetricDelta {
 
 interface CaseStudy {
   name: string;
+  heading: string;
   scoreFrom: number;
   scoreTo: number;
   metrics: MetricDelta[];
@@ -18,6 +19,7 @@ interface CaseStudy {
 const CASES: CaseStudy[] = [
   {
     name: 'Project A · 90 days',
+    heading: '90-day crypto liquidity recovery',
     scoreFrom: 38,
     scoreTo: 81,
     metrics: [
@@ -30,6 +32,7 @@ const CASES: CaseStudy[] = [
   },
   {
     name: 'Project B · 60 days',
+    heading: '60-day spread and depth improvement',
     scoreFrom: 45,
     scoreTo: 74,
     metrics: [
@@ -47,7 +50,7 @@ export function CaseStudies() {
     <Screen active="Case Studies">
       <div className="page-section">
         <h1 style={{ margin: '0 0 8px', font: `600 30px ${fonts.sans}`, color: colors.ink }}>
-          Case studies
+          Crypto liquidity case studies
         </h1>
         <p
           style={{
@@ -71,6 +74,15 @@ export function CaseStudies() {
                 padding: 22,
               }}
             >
+              <h2
+                style={{
+                  margin: '0 0 18px',
+                  font: `600 16px ${fonts.sans}`,
+                  color: colors.ink,
+                }}
+              >
+                {c.heading}
+              </h2>
               <div
                 style={{
                   display: 'flex',
@@ -79,7 +91,7 @@ export function CaseStudies() {
                   marginBottom: 18,
                 }}
               >
-                <span style={{ font: `600 14px ${fonts.mono}`, color: colors.ink }}>{c.name}</span>
+                <span style={{ font: `600 14px ${fonts.mono}`, color: colors.ink2 }}>{c.name}</span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                   <span style={{ font: `700 22px ${fonts.mono}`, color: colors.red }}>
                     {c.scoreFrom}

@@ -6,6 +6,9 @@ export const CRYPTO_MARKET_MAKING_BLOG_URL =
 export const OPEN_SOURCE_MARKET_MAKING_BLOG_URL =
   'https://market-making.octobot.cloud/en/blog/hummingbot-vs-octobot';
 
+export const LIQUIDITY_AUDIT_GITHUB_URL =
+  'https://github.com/Drakkar-Software/Liquidity-Audit';
+
 export type GuideIllustrationId = 'cryptoLiquidity' | 'orderBook' | 'bidAskSpread' | 'liquidityScore';
 
 export interface PillarGuideLink {

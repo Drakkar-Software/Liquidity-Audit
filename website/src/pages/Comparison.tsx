@@ -7,6 +7,7 @@ import { Screen } from '../components/Screen';
 import { ExchangeSelect } from '../components/ExchangeSelect';
 import { GuidesSection } from '../components/GuidesSection';
 import { QuickLinksSkeleton, RankingsTableSkeleton } from '../components/RankingsSkeleton';
+import { LIQUIDITY_AUDIT_GITHUB_URL } from '../lib/pillarGuides';
 import { SiteTextLink } from '../components/SiteTextLink';
 
 export interface ComparisonProps {
@@ -468,7 +469,7 @@ function Rankings({
     <div>
       <div className="rankings-header">
         <h2 style={{ margin: 0, font: `600 16px ${fonts.sans}`, color: colors.ink }}>
-          Public rankings
+          Crypto spot liquidity rankings
         </h2>
         <div style={{ display: 'flex', gap: 6 }}>
           {EXCHANGES.map((exchangeSlug) => {
@@ -507,7 +508,10 @@ function Rankings({
       {rankings ? (
         <>
           <p style={{ margin: '0 0 12px', font: `400 12px ${fonts.sans}`, color: colors.ink3 }}>
-            Top 20 spot pairs by liquidity score (24h volume ≥ $1k). Updated {rankings.updatedLabel}.
+            Top 20 spot pairs by liquidity score (24h volume ≥ $1k). Updated {rankings.updatedLabel}. ·{' '}
+            <SiteTextLink external href={LIQUIDITY_AUDIT_GITHUB_URL}>
+              Open-source pipeline
+            </SiteTextLink>
           </p>
 
           <div className="rankings-scroll" style={{ borderColor: colors.line }}>

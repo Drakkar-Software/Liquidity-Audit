@@ -14,9 +14,9 @@ export const PAGE_META = {
     description: DEFAULT_DESCRIPTION,
   },
   methodology: {
-    title: 'How to Check Token Liquidity · Methodology · Crypto Liquidity Audit',
+    title: 'Check Token Liquidity · Methodology · Crypto Liquidity Audit',
     description:
-      'How to check token liquidity, read the liquidity score, and what order book liquidity analysis includes from one visible CEX spot snapshot.',
+      'How to check crypto token liquidity on spot CEX pairs: read the liquidity score, order book depth, spread, and slippage from one visible snapshot.',
   },
   cryptoLiquidity: {
     title: 'Crypto Liquidity · Liquidity Analysis · Crypto Liquidity Audit',
@@ -34,34 +34,34 @@ export const PAGE_META = {
       'What bid ask spread means on spot pairs, how crypto spread affects fills, and how we read spread from a visible order book.',
   },
   liquidityScore: {
-    title: 'Liquidity Score · Token Liquidity Ranking · Crypto Liquidity Audit',
+    title: 'Liquidity Score · Crypto Pairs · Crypto Liquidity Audit',
     description:
-      'What the liquidity score measures on spot pairs, how liquidity score crypto rankings work, and how to open a pair report.',
+      'What the crypto liquidity score measures on spot pairs, how liquidity score rankings work per exchange, and how to open a token pair report.',
   },
   about: {
     title: 'About · Crypto Liquidity Audit',
     description:
-      'Independent liquidity analysis for token teams and investors: transparent scoring, exchange benchmarks, and numbers before recommendations.',
+      'Independent crypto liquidity analysis for token teams and investors: transparent spot-pair scoring, exchange benchmarks, and numbers before recommendations.',
   },
   learn: {
     title: 'Learn · Crypto Liquidity Audit',
     description:
-      'Definitions for liquidity report terms: spread, depth, slippage, peer median, volume consistency, letter grades, and more.',
+      'Crypto liquidity report glossary: spread, depth, slippage, peer median, volume consistency, and letter grades used on spot CEX pair reports.',
   },
   caseStudies: {
     title: 'Case Studies · Crypto Liquidity Audit',
     description:
-      'Before-and-after examples from real reports: spread, depth, and slippage over 90 days on spot pairs.',
+      'Crypto liquidity case studies with before-and-after spot pair metrics: spread, depth, and slippage improvements over 60–90 days on CEX listings.',
   },
   notFound: {
     title: 'Not found · Crypto Liquidity Audit',
     description:
-      'The page you requested is not on Crypto Liquidity Audit. Return to rankings, methodology, or browse a token liquidity report.',
+      'The crypto liquidity page you requested is not on Crypto Liquidity Audit. Return to token rankings, methodology, or browse a spot pair liquidity report.',
   },
   loadError: {
     title: 'Analysis unavailable · Crypto Liquidity Audit',
     description:
-      'This liquidity analysis is temporarily unavailable. Try again or choose another pair from the Crypto Liquidity Audit rankings.',
+      'This crypto spot pair liquidity analysis is temporarily unavailable. Try again or choose another token from the Crypto Liquidity Audit rankings.',
   },
 } as const;
 
@@ -80,11 +80,13 @@ export interface BreadcrumbItem {
   path: string;
 }
 
-export const META_DESCRIPTION_MIN_LENGTH = 80;
+export const META_DESCRIPTION_MIN_LENGTH = 120;
 
-export const META_DESCRIPTION_MAX_LENGTH = 160;
+export const META_DESCRIPTION_MAX_LENGTH = 320;
 
-export const META_TITLE_MAX_LENGTH = 60;
+export const META_TITLE_MIN_LENGTH = 30;
+
+export const META_TITLE_MAX_LENGTH = 65;
 
 export const META_IMAGE_ALT_MAX_LENGTH = 125;
 
@@ -251,15 +253,16 @@ export function buildPairOgDescription(
   const score = analysis.score_100;
   const grade = analysis.grade;
   const failedIssueLabels = buildFailedIssueLabels(analysis.issues);
-  const reportSuffix = `Full liquidity report on ${exchangeLabel} with spread, depth, slippage, and peer benchmarks.`;
+  const reportSuffix = `Full crypto spot liquidity report on ${exchangeLabel} with spread, depth, slippage, and peer benchmarks from one order-book snapshot.`;
 
   if (score != null && grade) {
-    const structuredDescription = `${pair} on ${exchangeLabel}: liquidity score ${score}/100 (${grade}).`;
+    const structuredDescription = `${pair} on ${exchangeLabel}: crypto liquidity score ${score}/100 (${grade}).`;
     if (failedIssueLabels) {
-      return finalizeMetaDescription(`${structuredDescription} ${failedIssueLabels}.`);
+      return finalizeMetaDescription(`${structuredDescription} ${failedIssueLabels}.`, reportSuffix);
     }
     return finalizeMetaDescription(
-      `${structuredDescription} Spread, depth, and slippage from a spot order-book snapshot.`,
+      `${structuredDescription} Spread, depth, and slippage from a visible CEX spot order-book snapshot.`,
+      reportSuffix,
     );
   }
 
@@ -269,7 +272,7 @@ export function buildPairOgDescription(
   }
 
   return finalizeMetaDescription(
-    `Liquidity report for ${pair} on ${exchangeLabel}, with spread, depth, slippage checks and a 0–100 score from one order-book snapshot.`,
+    `Crypto liquidity report for ${pair} on ${exchangeLabel}, with spread, depth, slippage checks and a 0–100 score from one visible CEX spot order-book snapshot.`,
   );
 }
 
@@ -341,23 +344,40 @@ export function buildPairMeta(
   };
 }
 
-export function buildWebSiteJsonLd(siteUrl: string): Record<string, unknown> {
+export function buildWebSiteJsonLdNode(siteUrl: string): Record<string, unknown> {
   const origin = normalizeSiteUrl(siteUrl);
   return {
-    '@context': 'https://schema.org',
     '@type': 'WebSite',
     '@id': `${origin}/#website`,
     name: SITE_NAME,
     url: `${origin}/`,
     description: DEFAULT_DESCRIPTION,
-    potentialAction: {
-      '@type': 'SearchAction',
-      target: {
-        '@type': 'EntryPoint',
-        urlTemplate: `${origin}/?exchange=mexc`,
-      },
-      'query-input': 'required name=search_term_string',
-    },
+  };
+}
+
+export function buildWebSiteJsonLd(siteUrl: string): Record<string, unknown> {
+  return {
+    '@context': 'https://schema.org',
+    ...buildWebSiteJsonLdNode(siteUrl),
+  };
+}
+
+export function buildHomePageJsonLd(
+  siteUrl: string,
+  title: string,
+  description: string,
+): Record<string, unknown> {
+  const canonicalUrl = buildCanonical(siteUrl, '/');
+  const webPageJsonLd = buildWebPageJsonLd({
+    siteUrl,
+    title,
+    description,
+    url: canonicalUrl,
+  });
+  const graph = webPageJsonLd['@graph'] as Record<string, unknown>[];
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [buildWebSiteJsonLdNode(siteUrl), ...graph],
   };
 }
 
@@ -457,8 +477,8 @@ export function buildPairReportJsonLd(options: {
   };
 }
 
-export function buildFaqPageJsonLd(faqs: FaqItem[]): Record<string, unknown> {
-  return {
+export function buildFaqPageJsonLd(faqs: FaqItem[], pageUrl?: string): Record<string, unknown> {
+  const faqPage: Record<string, unknown> = {
     '@type': 'FAQPage',
     mainEntity: faqs.map((faq) => ({
       '@type': 'Question',
@@ -469,11 +489,16 @@ export function buildFaqPageJsonLd(faqs: FaqItem[]): Record<string, unknown> {
       },
     })),
   };
+  if (pageUrl) {
+    faqPage['@id'] = `${pageUrl}#faq`;
+  }
+  return faqPage;
 }
 
 function mergeWebPageAndFaqJsonLd(
   webPageJsonLd: Record<string, unknown>,
   faqs?: FaqItem[],
+  pageUrl?: string,
 ): Record<string, unknown> {
   if (!faqs || faqs.length === 0) {
     return webPageJsonLd;
@@ -481,7 +506,7 @@ function mergeWebPageAndFaqJsonLd(
   const graph = webPageJsonLd['@graph'] as Record<string, unknown>[];
   return {
     '@context': 'https://schema.org',
-    '@graph': [...graph, buildFaqPageJsonLd(faqs)],
+    '@graph': [...graph, buildFaqPageJsonLd(faqs, pageUrl)],
   };
 }
 
@@ -514,7 +539,7 @@ export function buildStaticPageMeta(
     ogImage: buildDefaultOgImage(siteUrl),
     ogImageAlt: DEFAULT_OG_IMAGE_ALT,
     siteName: SITE_NAME,
-    jsonLd: mergeWebPageAndFaqJsonLd(webPageJsonLd, options?.faqs),
+    jsonLd: mergeWebPageAndFaqJsonLd(webPageJsonLd, options?.faqs, canonicalUrl),
   };
 }
 
@@ -530,7 +555,7 @@ export function buildHomePageMeta(siteUrl: string): PageMetaTags {
     ogImage: buildDefaultOgImage(siteUrl),
     ogImageAlt: DEFAULT_OG_IMAGE_ALT,
     siteName: SITE_NAME,
-    jsonLd: buildWebSiteJsonLd(siteUrl),
+    jsonLd: buildHomePageJsonLd(siteUrl, title, description),
   };
 }
 

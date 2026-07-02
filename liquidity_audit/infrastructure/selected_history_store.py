@@ -107,7 +107,7 @@ def selected_history_record_from_selection(
 
 
 def parse_selected_at(selected_at: str) -> datetime.datetime:
-    return select_cooldown.parse_contacted_at(selected_at)
+    return select_cooldown.parse_selected_at(selected_at)
 
 
 def is_within_cooldown(
@@ -160,7 +160,7 @@ def _record_to_row(record: models.SelectedHistoryRecord) -> dict[str, str]:
 
 
 def _row_to_record(row: dict[str, str]) -> models.SelectedHistoryRecord:
-    selected_at = row.get("selected_at") or row.get("contacted_at", "")
+    selected_at = row["selected_at"]
     return models.SelectedHistoryRecord(
         selected_at=selected_at,
         exchange=row["exchange"],

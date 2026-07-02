@@ -4,6 +4,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { Footer } from '../Footer';
 import {
   CRYPTO_MARKET_MAKING_BLOG_URL,
+  LIQUIDITY_AUDIT_GITHUB_URL,
   OPEN_SOURCE_MARKET_MAKING_BLOG_URL,
 } from '../../lib/pillarGuides';
 
@@ -20,6 +21,9 @@ describe('Footer', () => {
     renderFooter();
     expect(screen.getByRole('link', { name: /LIQUIDITY.*AUDIT/i })).toHaveAttribute('href', '/');
     expect(screen.getByText('Independent analysis · Not financial advice')).toBeInTheDocument();
+    const sourceCodeLink = screen.getByRole('link', { name: 'Source code' });
+    expect(sourceCodeLink).toHaveAttribute('href', LIQUIDITY_AUDIT_GITHUB_URL);
+    expect(sourceCodeLink).toHaveAttribute('target', '_blank');
   });
 
   it('lists guides with natural titles in a vertical list', () => {

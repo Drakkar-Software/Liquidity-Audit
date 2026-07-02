@@ -5,6 +5,7 @@ import {
   buildDefaultOgImage,
   buildFailedIssueLabels,
   buildFaqPageJsonLd,
+  buildHomePageJsonLd,
   buildHomePageMeta,
   buildPairMeta,
   buildPairOgDescription,
@@ -21,6 +22,7 @@ import {
   META_DESCRIPTION_MAX_LENGTH,
   META_DESCRIPTION_MIN_LENGTH,
   META_IMAGE_ALT_MAX_LENGTH,
+  META_TITLE_MIN_LENGTH,
   META_TITLE_MAX_LENGTH,
   PAGE_META,
   parsePairPath,
@@ -32,8 +34,22 @@ import type { PairAnalysisMetaFields, PairAnalysisMetaSource } from '../siteMeta
 
 const sampleAnalysis = (pairAnalysisSample as PairAnalysisMetaSource).analysis as PairAnalysisMetaFields;
 
+function assertValidJsonLdGraph(jsonLd: Record<string, unknown>): void {
+  expect(jsonLd['@context']).toBe('https://schema.org');
+  const graph = jsonLd['@graph'] as Record<string, unknown>[] | undefined;
+  if (graph) {
+    for (const node of graph) {
+      expect(node['@type']).toBeTruthy();
+    }
+    expect(JSON.parse(JSON.stringify(jsonLd))).toBeTruthy();
+    return;
+  }
+  expect(jsonLd['@type']).toBeTruthy();
+  expect(JSON.parse(JSON.stringify(jsonLd))).toBeTruthy();
+}
+
 describe('PAGE_META descriptions', () => {
-  it('keeps every static description between 80 and 160 characters', () => {
+  it('keeps every static description between 120 and 320 characters', () => {
     const descriptions = [
       DEFAULT_DESCRIPTION,
       ...Object.values(PAGE_META).map((page) => page.description),
@@ -46,9 +62,11 @@ describe('PAGE_META descriptions', () => {
 });
 
 describe('PAGE_META titles', () => {
-  it('keeps every static title at or below 60 characters', () => {
+  it('keeps every static title between 30 and 65 characters', () => {
     for (const page of Object.values(PAGE_META)) {
-      expect(finalizeMetaTitle(page.title).length).toBeLessThanOrEqual(META_TITLE_MAX_LENGTH);
+      const titleLength = finalizeMetaTitle(page.title).length;
+      expect(titleLength).toBeGreaterThanOrEqual(META_TITLE_MIN_LENGTH);
+      expect(titleLength).toBeLessThanOrEqual(META_TITLE_MAX_LENGTH);
     }
   });
 });
@@ -157,7 +175,7 @@ describe('finalizeMetaTitle', () => {
 describe('buildPairOgDescription', () => {
   it('prefers structured copy with failed issues over the full verdict', () => {
     const description = buildPairOgDescription('XYZ/USDT', 'mexc', sampleAnalysis);
-    expect(description).toContain('liquidity score 42/100 (D)');
+    expect(description).toContain('crypto liquidity score 42/100 (D)');
     expect(description).toContain('wide spread, thin depth, high slippage');
     expect(description).not.toContain('8× worse');
     expect(description.length).toBeGreaterThanOrEqual(META_DESCRIPTION_MIN_LENGTH);
@@ -170,7 +188,7 @@ describe('buildPairOgDescription', () => {
       grade: 'A',
       issues: [{ label: 'Good volume', ok: true }],
     });
-    expect(description).toContain('liquidity score 100/100 (A)');
+    expect(description).toContain('crypto liquidity score 100/100 (A)');
     expect(description).toContain('order-book snapshot');
     expect(description.length).toBeGreaterThanOrEqual(META_DESCRIPTION_MIN_LENGTH);
   });
@@ -179,7 +197,7 @@ describe('buildPairOgDescription', () => {
     const description = buildPairOgDescription('XYZ/USDT', 'mexc', {
       verdict: 'Wide spread on this pair.',
     });
-    expect(description).toContain('Full liquidity report on MEXC');
+    expect(description).toContain('Full crypto spot liquidity report on MEXC');
     expect(description.length).toBeGreaterThanOrEqual(META_DESCRIPTION_MIN_LENGTH);
   });
 
@@ -210,12 +228,26 @@ describe('buildPairOgImageAlt', () => {
 });
 
 describe('buildWebSiteJsonLd', () => {
-  it('includes website name and search action', () => {
+  it('includes website name without a search action', () => {
     const jsonLd = buildWebSiteJsonLd('https://example.com');
     expect(jsonLd['@type']).toBe('WebSite');
     expect(jsonLd.name).toBe(SITE_NAME);
     expect(jsonLd.description).toBe(DEFAULT_DESCRIPTION);
-    expect(jsonLd.potentialAction).toMatchObject({ '@type': 'SearchAction' });
+    expect(jsonLd.potentialAction).toBeUndefined();
+  });
+});
+
+describe('buildHomePageJsonLd', () => {
+  it('includes WebSite and WebPage nodes in the graph', () => {
+    const jsonLd = buildHomePageJsonLd(
+      'https://example.com',
+      'Token Liquidity Ranking · Crypto Liquidity Audit',
+      DEFAULT_DESCRIPTION,
+    );
+    assertValidJsonLdGraph(jsonLd);
+    const graph = jsonLd['@graph'] as Record<string, unknown>[];
+    expect(graph.some((node) => node['@type'] === 'WebSite')).toBe(true);
+    expect(graph.some((node) => node['@type'] === 'WebPage')).toBe(true);
   });
 });
 
@@ -262,7 +294,7 @@ describe('buildPairMeta', () => {
       pairAnalysisSample as PairAnalysisMetaSource,
     );
     expect(meta.title).toBe('XYZ/USDT: 42/100 (D) · MEXC · Crypto Liquidity Audit');
-    expect(meta.description).toContain('liquidity score 42/100 (D)');
+    expect(meta.description).toContain('crypto liquidity score 42/100 (D)');
     expect(meta.description).toContain('wide spread');
     expect(meta.ogImage).toBe('https://example.com/og-default.png');
     expect(meta.ogImageAlt).toContain('42/100 (D)');
@@ -273,16 +305,19 @@ describe('buildPairMeta', () => {
   it('uses generic copy when payload is missing', () => {
     const meta = buildPairMeta('https://example.com', 'mexc', 'XYZ_USDT', 'XYZ/USDT', null);
     expect(meta.title).toBe('XYZ/USDT · MEXC · Crypto Liquidity Audit');
-    expect(meta.description).toContain('Liquidity report for XYZ/USDT on MEXC');
+    expect(meta.description).toContain('Crypto liquidity report for XYZ/USDT on MEXC');
     expect(meta.description.length).toBeGreaterThanOrEqual(META_DESCRIPTION_MIN_LENGTH);
     expect(meta.description.length).toBeLessThanOrEqual(META_DESCRIPTION_MAX_LENGTH);
   });
 });
 
 describe('buildHomePageMeta', () => {
-  it('includes website json-ld and default image alt', () => {
+  it('includes website and webpage json-ld and default image alt', () => {
     const meta = buildHomePageMeta('https://example.com');
-    expect(meta.jsonLd).toMatchObject({ '@type': 'WebSite' });
+    assertValidJsonLdGraph(meta.jsonLd as Record<string, unknown>);
+    const graph = (meta.jsonLd as Record<string, unknown>)['@graph'] as Record<string, unknown>[];
+    expect(graph.some((node) => node['@type'] === 'WebSite')).toBe(true);
+    expect(graph.some((node) => node['@type'] === 'WebPage')).toBe(true);
     expect(meta.ogImage).toBe('https://example.com/og-default.png');
     expect(meta.ogImageAlt).toBe(DEFAULT_OG_IMAGE_ALT);
     expect(meta.title).toBe('Token Liquidity Ranking · Crypto Liquidity Audit');
@@ -314,12 +349,15 @@ describe('buildStaticPageMeta', () => {
     expect(meta.description.length).toBeGreaterThanOrEqual(META_DESCRIPTION_MIN_LENGTH);
   });
 
-  it('merges FAQ schema into the page json-ld graph', () => {
+  it('merges FAQ schema into the page json-ld graph with an @id', () => {
     const meta = buildStaticPageMeta('https://example.com', 'methodology', '/methodology', 'Methodology', {
       faqs: [{ question: 'How do you measure liquidity?', answer: 'Spread, depth, and slippage.' }],
     });
     const graph = (meta.jsonLd as Record<string, unknown>)['@graph'] as Record<string, unknown>[];
-    expect(graph.some((node) => node['@type'] === 'FAQPage')).toBe(true);
+    const faqNode = graph.find((node) => node['@type'] === 'FAQPage');
+    expect(faqNode).toBeDefined();
+    expect(faqNode?.['@id']).toBe('https://example.com/methodology#faq');
+    assertValidJsonLdGraph(meta.jsonLd as Record<string, unknown>);
   });
 
   it('includes pillar page meta keys', () => {
@@ -344,6 +382,7 @@ describe('injectMetaTags', () => {
     expect(output).toContain('<link rel="canonical" href="https://example.com/" />');
     expect(output).toContain('application/ld+json');
     expect(output).toContain('"@type":"WebSite"');
+    expect(output).toContain('"@type":"WebPage"');
     expect(output).toContain('<meta property="og:image" content="https://example.com/og-default.png" />');
     expect(output).toContain('<meta property="og:image:width" content="1200" />');
     expect(output).toContain('<meta property="og:image:height" content="630" />');

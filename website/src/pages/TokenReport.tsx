@@ -18,6 +18,8 @@ import {
 import { shouldShowImprovements } from '../lib/reportVisibility';
 import { fmtSignedUsd, fmtUsdShort } from '../format';
 import { pairToSlug } from '../lib/data/loader';
+import { LIQUIDITY_AUDIT_GITHUB_URL } from '../lib/pillarGuides';
+import { SiteTextLink } from '../components/SiteTextLink';
 import {
   comparisonColor,
   comparisonTextColor,
@@ -101,6 +103,16 @@ function Cockpit({ vm, accent }: { vm: TokenViewModel; accent: string }) {
     >
       {/* pair identity */}
       <div className="token-report-pair-header">
+        <h1
+          className="token-report-page-title"
+          style={{
+            margin: '0 0 8px',
+            font: `600 18px ${fonts.sans}`,
+            color: colors.ink,
+          }}
+        >
+          {vm.pair} crypto liquidity report
+        </h1>
         <div className="token-report-pair-identity">
           <div style={{ font: `600 22px ${fonts.mono}`, color: colors.ink }}>{vm.pair}</div>
           <div style={{ font: `400 12px ${fonts.sans}`, color: colors.ink2 }}>
@@ -759,11 +771,26 @@ function ImplementationOptions({ vm }: { vm: TokenViewModel }) {
 }
 
 function ExploreFurther() {
-  const links = [
+  type InternalExploreLink = { label: string; to: string; external?: false };
+  type ExternalExploreLink = { label: string; href: string; external: true };
+  type ExploreLink = InternalExploreLink | ExternalExploreLink;
+
+  const links: ExploreLink[] = [
     { label: 'Case studies', to: '/case-studies' },
     { label: 'Learn', to: '/learn' },
     { label: 'Methodology', to: '/methodology' },
+    {
+      label: 'Open-source audit pipeline on GitHub',
+      href: LIQUIDITY_AUDIT_GITHUB_URL,
+      external: true,
+    },
   ];
+  const linkStyle = {
+    font: `500 12px ${fonts.sans}`,
+    color: colors.accent,
+    textDecoration: 'none',
+  } as const;
+
   return (
     <div
       className="no-print explore-further"
@@ -777,17 +804,16 @@ function ExploreFurther() {
     >
       <span style={{ font: `500 12px ${fonts.sans}`, color: colors.ink3 }}>Explore further:</span>
       {links.map((link, index) => (
-        <React.Fragment key={link.to}>
-          <Link
-            to={link.to}
-            style={{
-              font: `500 12px ${fonts.sans}`,
-              color: colors.accent,
-              textDecoration: 'none',
-            }}
-          >
-            {link.label}
-          </Link>
+        <React.Fragment key={link.external ? link.href : link.to}>
+          {link.external ? (
+            <SiteTextLink external href={link.href} style={linkStyle}>
+              {link.label}
+            </SiteTextLink>
+          ) : (
+            <Link to={link.to} style={linkStyle}>
+              {link.label}
+            </Link>
+          )}
           {index < links.length - 1 ? <span style={{ color: colors.ink3 }}>·</span> : null}
         </React.Fragment>
       ))}

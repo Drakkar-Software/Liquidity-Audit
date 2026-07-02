@@ -13,14 +13,14 @@ export function CryptoLiquidity() {
       illustrationBeforeLastSection={<OrderBookIllustration />}
       sections={[
         {
-          heading: 'Liquidity analysis',
+          heading: 'Crypto liquidity analysis',
           paragraphs: [
             'Liquidity analysis starts with spread, depth near mid price, and how far prices move when you walk the book for a fixed buy size.',
             'Crypto Liquidity Audit runs that read on one snapshot per exchange so you can compare pairs on the same venue.',
           ],
         },
         {
-          heading: 'Trading liquidity',
+          heading: 'Crypto spot trading liquidity',
           paragraphs: [
             'Trading liquidity matters when you enter or exit a position. A tight spread and deep book near mid mean lower cost to trade the size you need.',
             'Rankings sort pairs by liquidity score so you can spot thin books before you open a report.',

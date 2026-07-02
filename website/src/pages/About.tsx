@@ -1,8 +1,22 @@
+import type { ReactNode } from 'react';
 import { colors, fonts } from '../theme';
 import { Screen } from '../components/Screen';
+import { SiteTextLink } from '../components/SiteTextLink';
+import { LIQUIDITY_AUDIT_GITHUB_URL } from '../lib/pillarGuides';
 
-const PRINCIPLES = [
-  { title: 'Transparency', body: 'Published methodology and a visible snapshot timestamp on every report.' },
+const PRINCIPLES: { title: string; body: ReactNode }[] = [
+  {
+    title: 'Transparency',
+    body: (
+      <>
+        Published methodology, a visible snapshot timestamp on every report, and the{' '}
+        <SiteTextLink external href={LIQUIDITY_AUDIT_GITHUB_URL}>
+          open-source audit pipeline
+        </SiteTextLink>{' '}
+        that produces the analysis JSON shown on this site.
+      </>
+    ),
+  },
   {
     title: 'Exchange-native benchmarks',
     body: 'Medians and peers on the same venue, matched by volume tier and quote currency.',
@@ -18,7 +32,7 @@ export function About() {
     <Screen active="About">
       <div className="page-section-narrow">
         <h1 style={{ margin: '0 0 10px', font: `600 30px ${fonts.sans}`, color: colors.ink }}>
-          Independent liquidity analysis
+          Independent crypto liquidity analysis
         </h1>
         <p
           style={{
@@ -32,7 +46,17 @@ export function About() {
           analysis stays independent.
         </p>
 
-        <div className="grid-three" style={{ gap: 12, marginBottom: 30 }}>
+        <section style={{ marginBottom: 30 }}>
+          <h2
+            style={{
+              margin: '0 0 14px',
+              font: `600 20px ${fonts.sans}`,
+              color: colors.ink,
+            }}
+          >
+            How we score crypto spot pairs
+          </h2>
+          <div className="grid-three" style={{ gap: 12 }}>
           {PRINCIPLES.map((p) => (
             <div
               key={p.title}
@@ -49,9 +73,10 @@ export function About() {
               <div style={{ font: `400 13px/1.5 ${fonts.sans}`, color: colors.ink2 }}>{p.body}</div>
             </div>
           ))}
-        </div>
+          </div>
+        </section>
 
-        <div
+        <section
           style={{
             border: `1px solid ${colors.line}`,
             borderRadius: 8,
@@ -60,16 +85,15 @@ export function About() {
             marginBottom: 30,
           }}
         >
-          <div
+          <h2
             style={{
-              font: `500 11px ${fonts.mono}`,
-              letterSpacing: '.1em',
-              color: colors.accent,
-              marginBottom: 10,
+              margin: '0 0 10px',
+              font: `600 20px ${fonts.sans}`,
+              color: colors.ink,
             }}
           >
-            SUPPORTED EXCHANGES
-          </div>
+            Supported crypto exchanges
+          </h2>
           <p style={{ margin: 0, font: `400 14px/1.7 ${fonts.sans}`, color: colors.ink2 }}>
             Rankings and reports currently cover MEXC and BitMart, the exchanges most requested so
             far. Want another venue added?{' '}
@@ -81,10 +105,10 @@ export function About() {
             </a>{' '}
             and tell us which exchange you need.
           </p>
-        </div>
+        </section>
 
         <div className="grid-about-wide">
-          <div
+          <section
             style={{
               border: `1px solid ${colors.line}`,
               borderRadius: 8,
@@ -92,16 +116,15 @@ export function About() {
               padding: 22,
             }}
           >
-            <div
+            <h2
               style={{
-                font: `500 11px ${fonts.mono}`,
-                letterSpacing: '.1em',
-                color: colors.accent,
-                marginBottom: 10,
+                margin: '0 0 10px',
+                font: `600 20px ${fonts.sans}`,
+                color: colors.ink,
               }}
             >
-              WHO BUILDS THIS
-            </div>
+              Who builds Crypto Liquidity Audit
+            </h2>
             <p style={{ margin: 0, font: `400 14px/1.7 ${fonts.sans}`, color: colors.ink2 }}>
               Built by practitioners at{' '}
               <a
@@ -124,7 +147,7 @@ export function About() {
               infrastructure. Reports remain independent analysis; any implementation options on
               low-scoring reports are clearly separated from the report itself.
             </p>
-          </div>
+          </section>
           <div
             style={{
               border: `1px solid ${colors.accent}`,

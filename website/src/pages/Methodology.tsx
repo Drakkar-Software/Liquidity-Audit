@@ -2,6 +2,7 @@ import { SiteTextLink } from '../components/SiteTextLink';
 import { colors, fonts } from '../theme';
 import { Screen } from '../components/Screen';
 import { Eyebrow } from '../components/SectionHeading';
+import { LIQUIDITY_AUDIT_GITHUB_URL } from '../lib/pillarGuides';
 import {
   MethodologyBookSchematicIllustration,
   MethodologyGradeStripIllustration,
@@ -41,7 +42,11 @@ export function Methodology() {
         </h1>
         <p style={{ margin: '0 0 28px', font: `400 15px/1.6 ${fonts.sans}`, color: colors.ink2 }}>
           Every report is built from a single point-in-time snapshot of the visible spot order book.
-          We publish exactly how each number is produced.
+          We publish exactly how each number is produced in the{' '}
+          <SiteTextLink external href={LIQUIDITY_AUDIT_GITHUB_URL}>
+            open-source audit pipeline
+          </SiteTextLink>
+          .
         </p>
 
         <section className="guide-section-with-visual" style={{ marginBottom: 28 }}>
@@ -200,6 +205,11 @@ export function Methodology() {
               One point-in-time visible order book per run (top 50 bid/ask levels) plus 24h ticker.
               Reports show <span style={{ fontFamily: fonts.mono, color: colors.ink }}>fetched … ago</span>;
               pairs re-analyzed on every daily run. Depth bands: ±2% (reports) and ±10% (scoring).
+              Daily runs and the analysis JSON on this site are produced by the{' '}
+              <SiteTextLink external href={LIQUIDITY_AUDIT_GITHUB_URL}>
+                open-source CLI
+              </SiteTextLink>{' '}
+              in that repository.
             </p>
           </div>
           <div>

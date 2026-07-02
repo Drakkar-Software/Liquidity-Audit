@@ -80,7 +80,7 @@ describe('pillar example sections', () => {
   it('renders Example before the first body section on crypto liquidity', () => {
     renderPillar(<CryptoLiquidity />);
     const exampleSection = document.querySelector('.pillar-example') as HTMLElement;
-    const firstBodySectionHeading = screen.getByRole('heading', { level: 2, name: 'Liquidity analysis' });
+    const firstBodySectionHeading = screen.getByRole('heading', { level: 2, name: 'Crypto liquidity analysis' });
     expect(exampleSection.compareDocumentPosition(firstBodySectionHeading) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 });

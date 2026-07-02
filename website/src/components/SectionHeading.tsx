@@ -11,10 +11,10 @@ export interface SectionHeadingProps {
 export function SectionHeading({ title, sub }: SectionHeadingProps) {
   return (
     <div className="token-report-section-heading">
-      <h3 style={{ font: `600 15px ${fonts.sans}`, color: colors.ink }}>
+      <h2 style={{ font: `600 15px ${fonts.sans}`, color: colors.ink }}>
         {title}
         {sub ? <span style={{ color: colors.ink3, fontWeight: 400 }}> {sub}</span> : null}
-      </h3>
+      </h2>
     </div>
   );
 }
