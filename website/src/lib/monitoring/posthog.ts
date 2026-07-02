@@ -37,7 +37,7 @@ export function buildPostHogOptions(): Partial<PostHogConfig> {
 }
 
 export function initPostHogMonitoring(): void {
-  if (posthogInitialized || !isPostHogEnabled()) {
+  if (typeof window === 'undefined' || posthogInitialized || !isPostHogEnabled()) {
     return;
   }
 

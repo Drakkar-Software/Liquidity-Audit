@@ -12,7 +12,7 @@ export function isSentryEnabled(): boolean {
 }
 
 export function initSentryMonitoring(): void {
-  if (sentryInitialized || !isSentryEnabled()) {
+  if (typeof window === 'undefined' || sentryInitialized || !isSentryEnabled()) {
     return;
   }
 

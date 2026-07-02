@@ -2,8 +2,12 @@ import { StrictMode } from 'react';
 import { createRoot, hydrateRoot } from 'react-dom/client';
 import { createBrowserRouter, RouterProvider, type HydrationState } from 'react-router-dom';
 import { AppMonitoring } from './components/AppMonitoring';
+import { initPostHogMonitoring, initSentryMonitoring } from './lib/monitoring';
 import { createAppRoutes } from './router';
 import './responsive.css';
+
+initSentryMonitoring();
+initPostHogMonitoring();
 
 declare global {
   interface Window {
