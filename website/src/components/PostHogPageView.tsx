@@ -1,13 +1,12 @@
-import { usePostHog } from '@posthog/react';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { isPostHogEnabled } from '../lib/monitoring';
+import { getPostHogClient, isPostHogEnabled } from '../lib/monitoring';
 
 export function PostHogPageView(): null {
   const location = useLocation();
-  const posthog = usePostHog();
 
   useEffect(() => {
+    const posthog = getPostHogClient();
     if (!isPostHogEnabled() || !posthog) {
       return;
     }
@@ -15,7 +14,7 @@ export function PostHogPageView(): null {
     posthog.capture('$pageview', {
       $current_url: window.location.href,
     });
-  }, [location.pathname, posthog]);
+  }, [location.pathname]);
 
   return null;
 }
