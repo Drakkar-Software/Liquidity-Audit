@@ -51,7 +51,7 @@ export const PAGE_META = {
   caseStudies: {
     title: 'Case Studies · Crypto Liquidity Audit',
     description:
-      'Crypto liquidity case studies with before-and-after spot pair metrics: spread, depth, and slippage improvements over 60–90 days on CEX listings.',
+      'Case studies on lowering CEX–DEX arbitrage with DEX price feeds and staying listed on MEXC by tightening spread and depth with automated quoting.',
   },
   notFound: {
     title: 'Not found · Crypto Liquidity Audit',

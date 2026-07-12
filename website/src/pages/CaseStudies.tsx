@@ -18,30 +18,30 @@ interface CaseStudy {
 
 const CASES: CaseStudy[] = [
   {
-    name: 'Project A · 90 days',
-    heading: '90-day crypto liquidity recovery',
-    scoreFrom: 38,
-    scoreTo: 81,
+    name: 'Project A · 45 days',
+    heading: 'Lowering CEX–DEX arbitrage with automated DEX pricing',
+    scoreFrom: 41,
+    scoreTo: 76,
     metrics: [
-      { label: 'SPREAD', from: '3.1%', to: '0.4%' },
-      { label: 'DEPTH', from: '$8k', to: '$110k' },
-      { label: 'SLIP$10K', from: '9.4%', to: '0.9%' },
+      { label: 'ARB GAP', from: '2.6%', to: '0.3%' },
+      { label: 'PRICE DEV', from: '1.8%', to: '0.2%' },
+      { label: 'SPREAD', from: '1.4%', to: '0.4%' },
     ],
     quote:
-      '"The report gave us a number our exchange contact actually respected. We knew exactly which gaps to close first."',
+      '"Once CEX quotes tracked our DEX pool, the arb gap stopped bleeding us. Bots had nothing left to harvest every time we repriced manually."',
   },
   {
-    name: 'Project B · 60 days',
-    heading: '60-day spread and depth improvement',
-    scoreFrom: 45,
-    scoreTo: 74,
+    name: 'Project B · MEXC · 60 days',
+    heading: 'Staying listed on MEXC with tighter spread and deeper book',
+    scoreFrom: 34,
+    scoreTo: 79,
     metrics: [
-      { label: 'SPREAD', from: '1.9%', to: '0.5%' },
-      { label: 'DEPTH', from: '$14k', to: '$95k' },
-      { label: 'SLIP$10K', from: '5.2%', to: '1.1%' },
+      { label: 'SPREAD', from: '2.3%', to: '0.5%' },
+      { label: 'DEPTH', from: '$0.5', to: '$6' },
+      { label: 'DELIST', from: 'Flagged', to: 'Clear' },
     ],
     quote:
-      '"Continuous quoting fixed the quote-gap flag within weeks. The peer comparison made the target obvious."',
+      '"MEXC had us flagged on spread and depth. Automated quoting pulled both into line before review — we never got the delist notice."',
   },
 ];
 
@@ -59,8 +59,8 @@ export function CaseStudies() {
             color: colors.ink2,
           }}
         >
-          How pairs moved after addressing the issues a report surfaced. Anonymized examples of what
-          teams often see after acting on a report.
+          Anonymized examples of how teams reduced CEX–DEX arbitrage and kept exchange listings
+          healthy using automated quoting and external price references.
         </p>
 
         <div className="grid-two" style={{ gap: 16 }}>

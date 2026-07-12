@@ -65,8 +65,8 @@ describe('SEO heading hierarchy', () => {
     renderPage(<CaseStudies />);
     expectSingleH1();
     expect(screen.getByRole('heading', { level: 1, name: 'Crypto liquidity case studies' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { level: 2, name: '90-day crypto liquidity recovery' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { level: 2, name: '60-day spread and depth improvement' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 2, name: 'Lowering CEX–DEX arbitrage with automated DEX pricing' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 2, name: 'Staying listed on MEXC with tighter spread and deeper book' })).toBeInTheDocument();
   });
 
   it('Home comparison has one H1 and multiple H2 sections', () => {
