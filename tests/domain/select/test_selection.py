@@ -1,3 +1,5 @@
+import datetime
+
 import liquidity_audit.domain.select.selection as select_selection
 import liquidity_audit.domain.models as models
 import liquidity_audit.domain.website.website_resolution as website_resolution
@@ -77,8 +79,11 @@ class TestSelectDailyProjects:
 
     def test_excludes_listings_within_cooldown(self):
         listing = _listing("OLD/USDT")
+        recent_selected_at = (
+            datetime.datetime.now(datetime.UTC) - datetime.timedelta(days=5)
+        ).isoformat()
         recent_selection_by_key = {
-            listing.key(): _history_record("OLD/USDT", "2026-06-10T12:00:00+00:00"),
+            listing.key(): _history_record("OLD/USDT", recent_selected_at),
         }
         selections = select_selection.select_daily_projects(
             {listing.key(): listing},
