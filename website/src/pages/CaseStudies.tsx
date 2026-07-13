@@ -37,7 +37,7 @@ const CASES: CaseStudy[] = [
     scoreTo: 79,
     metrics: [
       { label: 'SPREAD', from: '2.3%', to: '0.5%' },
-      { label: 'DEPTH', from: '$0.5', to: '$6' },
+      { label: 'DEPTH', from: '$0.5K', to: '$6K' },
       { label: 'DELIST', from: 'Flagged', to: 'Clear' },
     ],
     quote:
