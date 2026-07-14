@@ -1,13 +1,16 @@
 import argparse
 import asyncio
+import json
 import logging
 import pathlib
 import sys
+import typing
 
 import liquidity_audit.application.workflows.daily_run as daily_run_workflow
 import liquidity_audit.application.workflows.identify_selected_only as identify_selected_only_workflow
 import liquidity_audit.application.workflows.re_evaluate_data as re_evaluate_data_workflow
 import liquidity_audit.application.workflows.resolve_websites as resolve_websites_workflow
+import liquidity_audit.application.workflows.standalone_fetch as standalone_fetch_workflow
 import liquidity_audit.config as app_config
 import liquidity_audit.infrastructure.dotenv_loader as dotenv_loader
 import liquidity_audit.infrastructure.mattermost_notifier as mattermost_notifier
@@ -25,12 +28,12 @@ class _ShortNameFormatter(logging.Formatter):
             record.name = original_name
 
 
-def _configure_logging() -> None:
-    log_handler = logging.StreamHandler()
+def _configure_logging(*, log_stream: typing.Optional[typing.TextIO] = None) -> None:
+    log_handler = logging.StreamHandler(log_stream)
     log_handler.setFormatter(_ShortNameFormatter(
         "%(asctime)s %(levelname)s [%(name)s] %(message)s",
     ))
-    logging.basicConfig(level=logging.INFO, handlers=[log_handler])
+    logging.basicConfig(level=logging.INFO, handlers=[log_handler], force=True)
     logging.getLogger("ccxt").setLevel(logging.WARNING)
 
 
@@ -64,6 +67,17 @@ def _build_parser() -> argparse.ArgumentParser:
         help="Resolve CoinGecko websites for selection candidates and save to listings.csv",
     )
 
+    standalone_parser = subparsers.add_parser(
+        "standalone",
+        help="Fetch and analyze specific pairs; print JSON to stdout (exchange data only)",
+    )
+    standalone_parser.add_argument(
+        "pairs",
+        nargs="+",
+        metavar="BASE/QUOTE:exchange",
+        help="One or more pair specs, e.g. ULX/USDT:bitmart",
+    )
+
     return parser
 
 
@@ -71,7 +85,7 @@ def _parse_args(argv: list[str]) -> argparse.Namespace:
     return _build_parser().parse_args(argv)
 
 
-async def _dispatch(command: str, args: argparse.Namespace, config: app_config.AppConfig) -> None:
+async def _dispatch(command: str, args: argparse.Namespace, config: app_config.AppConfig) -> typing.Any:
     if command == "run":
         if args.identify_only:
             _LOGGER.info("Identify-only mode enabled")
@@ -105,16 +119,21 @@ async def _dispatch(command: str, args: argparse.Namespace, config: app_config.A
         _LOGGER.info("Update-websites complete: %s listing(s) updated", resolved_count)
         return
 
+    if command == "standalone":
+        return await standalone_fetch_workflow.run(config, args.pairs)
+
     raise ValueError(f"Unknown command: {command}")
 
 
 def main(argv: list[str] | None = None) -> int:
     dotenv_loader.load_project_dotenv()
-    _configure_logging()
     try:
         args = _parse_args(argv or sys.argv[1:])
     except SystemExit as error:
         return int(error.code or 2)
+    _configure_logging(
+        log_stream=sys.stderr if args.command == "standalone" else None,
+    )
     config = app_config.load_config(args.config)
     _LOGGER.info(
         "Config loaded: exchanges=%s, listings_csv=%s",
@@ -122,7 +141,12 @@ def main(argv: list[str] | None = None) -> int:
         config.listings_csv_path,
     )
     try:
-        asyncio.run(_dispatch(args.command, args, config))
+        dispatch_result = asyncio.run(_dispatch(args.command, args, config))
+        if args.command == "standalone":
+            print(json.dumps(dispatch_result, ensure_ascii=False), flush=True)
+            if any("error" in item for item in dispatch_result):
+                return 1
+            return 0
     except ValueError as error:
         _LOGGER.error("%s", error)
         return 1

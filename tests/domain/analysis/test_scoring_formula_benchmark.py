@@ -33,6 +33,7 @@ class TestScoringFormulaAnchorGolden:
             universes,
             exchange_averages_by_exchange,
             config.health_labels,
+            config=config,
         )
         actual = scoring_benchmark_loader.golden_fields_from_analysis(analysis_payload)
         golden = expected_by_key[anchor_key]
@@ -64,6 +65,7 @@ class TestScoringFormulaAnchorInvariants:
                 universes,
                 exchange_averages_by_exchange,
                 config.health_labels,
+                config=config,
             )
             issues = analysis_payload["analysis"]["issues"]
             golden = scoring_benchmark_loader.load_expected()[anchor_key]
@@ -79,6 +81,7 @@ class TestScoringFormulaAnchorInvariants:
                 universes,
                 exchange_averages_by_exchange,
                 config.health_labels,
+                config=config,
             )
             health_dashboard = analysis_payload["analysis"]["health_dashboard"]
             golden = scoring_benchmark_loader.load_expected()[anchor_key]

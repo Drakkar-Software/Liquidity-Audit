@@ -5,6 +5,90 @@ import liquidity_audit.domain.models as models
 import cli as liquidity_audit_cli
 
 
+class TestCliStandalone:
+    def test_standalone_prints_json_array_to_stdout(
+        self,
+        tmp_path: pathlib.Path,
+        monkeypatch,
+        capsys,
+    ):
+        config_path = tmp_path / "config.json"
+        config_path.write_text("{}", encoding="utf-8")
+        loaded_config = liquidity_audit_cli.app_config.load_config(
+            pathlib.Path(__file__).resolve().parents[2] / "config.example.json",
+        )
+        payload = [
+            {
+                "exchange": "bitmart",
+                "symbol": "ULX/USDT",
+                "full_name": "ULX",
+                "raw": {"symbol": "ULX/USDT"},
+                "analysis": {"score_100": 42},
+            },
+        ]
+
+        def fake_load_config(path):
+            return loaded_config
+
+        async def fake_standalone_run(config, pair_specs):
+            assert pair_specs == ["ULX/USDT:bitmart"]
+            return payload
+
+        monkeypatch.setattr(liquidity_audit_cli.app_config, "load_config", fake_load_config)
+        monkeypatch.setattr(
+            liquidity_audit_cli.standalone_fetch_workflow,
+            "run",
+            fake_standalone_run,
+        )
+
+        exit_code = liquidity_audit_cli.main([
+            "--config",
+            str(config_path),
+            "standalone",
+            "ULX/USDT:bitmart",
+        ])
+
+        captured = capsys.readouterr()
+        assert exit_code == 0
+        assert json.loads(captured.out) == payload
+
+    def test_standalone_exits_nonzero_on_errors(
+        self,
+        tmp_path: pathlib.Path,
+        monkeypatch,
+        capsys,
+    ):
+        config_path = tmp_path / "config.json"
+        config_path.write_text("{}", encoding="utf-8")
+        loaded_config = liquidity_audit_cli.app_config.load_config(
+            pathlib.Path(__file__).resolve().parents[2] / "config.example.json",
+        )
+
+        def fake_load_config(path):
+            return loaded_config
+
+        async def fake_standalone_run(config, pair_specs):
+            return [{"pair": "ULX/USDT:bitmart", "error": "BadSymbol"}]
+
+        monkeypatch.setattr(liquidity_audit_cli.app_config, "load_config", fake_load_config)
+        monkeypatch.setattr(
+            liquidity_audit_cli.standalone_fetch_workflow,
+            "run",
+            fake_standalone_run,
+        )
+
+        exit_code = liquidity_audit_cli.main([
+            "--config",
+            str(config_path),
+            "standalone",
+            "ULX/USDT:bitmart",
+        ])
+
+        captured = capsys.readouterr()
+        assert exit_code == 1
+        assert json.loads(captured.out)[0]["error"] == "BadSymbol"
+
+
 class TestCliRunNotifications:
     def test_run_posts_mattermost_when_daily_run_returns_result(
         self,

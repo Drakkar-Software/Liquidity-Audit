@@ -20,6 +20,7 @@ import liquidity_audit.infrastructure.ccxt_client as ccxt_client
 import liquidity_audit.config as app_config
 import liquidity_audit.domain.analysis.delisting_risk as delisting_risk
 import liquidity_audit.infrastructure.listings_store as listings_store
+import liquidity_audit.infrastructure.market_cap_fetch as market_cap_fetch
 import liquidity_audit.domain.models as models
 import liquidity_audit.domain.analysis.pair_analysis as token_analysis
 
@@ -483,6 +484,57 @@ class TestRunAnalysisManifestDelistedCounters:
         assert saved_manifest["pairs_delisted_skipped"] == 6
 
 
+class TestRunAnalysisMarketCapBatch:
+    @pytest.mark.asyncio
+    async def test_fetches_market_caps_once_and_passes_task_to_process_exchange(
+        self,
+        tmp_path: pathlib.Path,
+        monkeypatch,
+    ):
+        csv_path = tmp_path / "listings.csv"
+        output_dir = tmp_path / "analysis"
+        config = _analysis_config(csv_path, output_dir)
+        listings = [
+            _listing(exchange="mexc", symbol="BTC/USDT"),
+            _listing(exchange="bitmart", symbol="ETH/USDT"),
+        ]
+        fetch_calls: list[list[models.ListingRecord]] = []
+        process_exchange_tasks: list[object] = []
+
+        async def fake_fetch_market_cap_by_symbol_for_listings(config_arg, listings_arg):
+            fetch_calls.append(listings_arg)
+            return {"BTC/USDT": 1_000_000.0, "ETH/USDT": 500_000.0}
+
+        async def fake_process_exchange(*args, **kwargs):
+            process_exchange_tasks.append(kwargs.get("market_cap_task"))
+            return [], [], {}, 0, 0
+
+        monkeypatch.setattr(
+            market_cap_fetch,
+            "fetch_market_cap_by_symbol_for_listings",
+            fake_fetch_market_cap_by_symbol_for_listings,
+        )
+        monkeypatch.setattr(
+            analysis_exchange_processor,
+            "process_exchange",
+            fake_process_exchange,
+        )
+        monkeypatch.setattr(
+            listings_store.ListingsStore,
+            "load_all",
+            lambda self: {listing.key(): listing for listing in listings},
+        )
+        monkeypatch.setattr(analysis_store.AnalysisStore, "save_manifest", lambda self, payload: None)
+
+        await run_analysis_workflow.run(config)
+
+        assert len(fetch_calls) == 1
+        assert fetch_calls[0] == listings
+        assert len(process_exchange_tasks) == 2
+        assert process_exchange_tasks[0] is process_exchange_tasks[1]
+        assert process_exchange_tasks[0] is not None
+
+
 class TestReanalyzeFromStoredRaw:
     @pytest.mark.asyncio
     async def test_rebuilds_analysis_and_rankings_without_fetch(
@@ -531,3 +583,51 @@ class TestReanalyzeFromStoredRaw:
         ]
         assert updated_listing.last_analyzed_at is not None
         assert updated_listing.analysis_json_path is not None
+
+    @pytest.mark.asyncio
+    async def test_fetches_market_caps_once_for_all_exchanges(
+        self,
+        tmp_path: pathlib.Path,
+        monkeypatch,
+    ):
+        csv_path = tmp_path / "listings.csv"
+        output_dir = tmp_path / "analysis"
+        config = _analysis_config(csv_path, output_dir)
+        mexc_listing = _listing(exchange="mexc", symbol="BTC/USDT", coingecko_id="bitcoin")
+        bitmart_listing = _listing(exchange="bitmart", symbol="ETH/USDT", coingecko_id="ethereum")
+        listings_store.ListingsStore(csv_path).append_or_update([
+            mexc_listing,
+            bitmart_listing,
+        ])
+
+        store = analysis_store.AnalysisStore(output_dir)
+        store.save_pair_analysis(
+            "mexc",
+            "BTC/USDT",
+            {"raw": _minimal_raw_metrics("mexc", "BTC/USDT").to_dict()},
+        )
+        store.save_pair_analysis(
+            "bitmart",
+            "ETH/USDT",
+            {"raw": _minimal_raw_metrics("bitmart", "ETH/USDT").to_dict()},
+        )
+
+        fetch_calls: list[list[models.ListingRecord]] = []
+
+        async def fake_fetch_market_cap_by_symbol_for_listings(config_arg, listings_arg):
+            fetch_calls.append(listings_arg)
+            return {
+                "BTC/USDT": 1_000_000_000_000.0,
+                "ETH/USDT": 400_000_000_000.0,
+            }
+
+        monkeypatch.setattr(
+            market_cap_fetch,
+            "fetch_market_cap_by_symbol_for_listings",
+            fake_fetch_market_cap_by_symbol_for_listings,
+        )
+
+        await reanalyze_stored_raw.reanalyze_from_stored_raw(config)
+
+        assert len(fetch_calls) == 1
+        assert {listing.symbol for listing in fetch_calls[0]} == {"BTC/USDT", "ETH/USDT"}

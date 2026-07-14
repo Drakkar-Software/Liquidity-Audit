@@ -794,3 +794,274 @@ class TestOmittedSlippageAtTenThousand:
         trade_size, slippage_pct = token_analysis.resolve_slippage_display(slippage_rows_only_small)
         assert trade_size == 100
         assert slippage_pct == 0.5
+
+
+def _peer_selection_settings(**overrides) -> token_analysis.PeerSelectionSettings:
+    defaults = {
+        "min_relevant_usdt_volume": 100.0,
+        "peer_volume_tier_ratios": (5.0, 20.0, 100.0),
+        "peer_count": 3,
+    }
+    defaults.update(overrides)
+    return token_analysis.PeerSelectionSettings(**defaults)
+
+
+def _peer_raw_metrics(**overrides) -> token_analysis.ExtendedRawMetrics:
+    defaults = {
+        "exchange": "bitmart",
+        "symbol": "AAA/USDT",
+        "full_name": "AAA",
+        "mid_price": 1.0,
+        "spread_pct": 1.0,
+        "bid_levels": 10,
+        "ask_levels": 10,
+        "bid_depth_1pct_quote": 100.0,
+        "ask_depth_1pct_quote": 100.0,
+        "depth_1pct_quote": 200.0,
+        "depth_2pct_quote": 300.0,
+        "depth_10pct_quote": 500.0,
+        "bid_larger_depth_quote": 250.0,
+        "ask_larger_depth_quote": 250.0,
+        "depth_2pct_capped": False,
+        "volume_quote": 10_000.0,
+        "bid_volume_quote": 5000.0,
+        "ask_volume_quote": 5000.0,
+        "buy_volume_pct": 50.0,
+        "sell_volume_pct": 50.0,
+        "volume_depth_ratio": 5.0,
+        "max_fillable_buy_quote": 1000.0,
+        "liquidity_score": 0.5,
+        "is_low_health": False,
+        "health_label_primary": "",
+        "health_labels_other": [],
+        "slippage": [],
+        "fetched_at": "2026-06-12T00:00:00+00:00",
+    }
+    defaults.update(overrides)
+    return token_analysis.ExtendedRawMetrics(**defaults)
+
+
+class TestResolvePeerVolume:
+    def test_uses_quote_volume_when_present(self):
+        raw_metrics = _peer_raw_metrics(volume_quote=12_345.0, bid_volume_quote=1.0, ask_volume_quote=2.0)
+        assert token_analysis.resolve_peer_volume(raw_metrics) == 12_345.0
+
+    def test_uses_bid_ask_sum_when_quote_volume_missing(self):
+        raw_metrics = _peer_raw_metrics(
+            volume_quote=None,
+            bid_volume_quote=1_790_254.0,
+            ask_volume_quote=427_383.0,
+        )
+        assert token_analysis.resolve_peer_volume(raw_metrics) == pytest.approx(2_217_637.0)
+
+    def test_returns_zero_when_all_volume_fields_missing(self):
+        raw_metrics = _peer_raw_metrics(
+            volume_quote=None,
+            bid_volume_quote=None,
+            ask_volume_quote=None,
+        )
+        assert token_analysis.resolve_peer_volume(raw_metrics) == 0.0
+
+
+class TestSelectPeerSymbolsWithFallback:
+    def test_ulx_like_proxy_volume_matches_volume_5x_tier(self):
+        target = _peer_raw_metrics(
+            symbol="ULX/USDT",
+            volume_quote=None,
+            bid_volume_quote=1_790_254.0,
+            ask_volume_quote=427_383.0,
+            liquidity_score=0.15,
+        )
+        peer_close = _peer_raw_metrics(
+            symbol="BBB/USDT",
+            volume_quote=2_000_000.0,
+            liquidity_score=0.8,
+        )
+        peers, tier, _criteria = token_analysis.select_peer_symbols_with_fallback(
+            target,
+            [target, peer_close],
+            _peer_selection_settings(),
+        )
+        assert len(peers) == 1
+        assert peers[0].symbol == "BBB/USDT"
+        assert tier == "volume_5x"
+
+    def test_micro_bucket_matches_only_micro_volume_peers(self):
+        target = _peer_raw_metrics(
+            symbol="MICRO/USDT",
+            volume_quote=None,
+            bid_volume_quote=30.0,
+            ask_volume_quote=20.0,
+            liquidity_score=0.2,
+        )
+        micro_peer = _peer_raw_metrics(
+            symbol="MICRO2/USDT",
+            volume_quote=50.0,
+            liquidity_score=0.7,
+        )
+        peers, tier, _criteria = token_analysis.select_peer_symbols_with_fallback(
+            target,
+            [target, micro_peer],
+            _peer_selection_settings(),
+        )
+        assert [peer.symbol for peer in peers] == ["MICRO2/USDT"]
+        assert tier == "volume_micro_bucket"
+
+    def test_widens_to_20x_when_5x_insufficient(self):
+        target = _peer_raw_metrics(symbol="TARGET/USDT", volume_quote=10_000.0)
+        peer_5x = _peer_raw_metrics(symbol="PEER5/USDT", volume_quote=40_000.0, liquidity_score=0.9)
+        peer_15x = _peer_raw_metrics(symbol="PEER15/USDT", volume_quote=150_000.0, liquidity_score=0.8)
+        peers, tier, _criteria = token_analysis.select_peer_symbols_with_fallback(
+            target,
+            [target, peer_5x, peer_15x],
+            _peer_selection_settings(peer_count=2),
+        )
+        assert {peer.symbol for peer in peers} == {"PEER5/USDT", "PEER15/USDT"}
+        assert tier == "volume_20x"
+
+    def test_closest_market_cap_fallback(self):
+        target = _peer_raw_metrics(
+            symbol="TARGET/USDT",
+            volume_quote=10_000.0,
+            liquidity_score=0.2,
+        )
+        near_cap_peer = _peer_raw_metrics(
+            symbol="NEAR/USDT",
+            volume_quote=9_000_000.0,
+            liquidity_score=0.7,
+        )
+        far_cap_peer = _peer_raw_metrics(
+            symbol="FAR/USDT",
+            volume_quote=8_000_000.0,
+            liquidity_score=0.9,
+        )
+        market_cap_by_symbol = {
+            "TARGET/USDT": 1_000_000.0,
+            "NEAR/USDT": 2_000_000.0,
+            "FAR/USDT": 1_000_000_000.0,
+        }
+        peers, tier, _criteria = token_analysis.select_peer_symbols_with_fallback(
+            target,
+            [target, near_cap_peer, far_cap_peer],
+            _peer_selection_settings(),
+            market_cap_by_symbol,
+        )
+        assert peers[0].symbol == "NEAR/USDT"
+        assert tier == "marketcap_closest"
+
+    def test_unknown_market_cap_uses_micro_bucket_pool(self):
+        target = _peer_raw_metrics(
+            symbol="TARGET/USDT",
+            volume_quote=None,
+            bid_volume_quote=10.0,
+            ask_volume_quote=10.0,
+            liquidity_score=0.2,
+        )
+        unknown_peer = _peer_raw_metrics(
+            symbol="UNKNOWN/USDT",
+            volume_quote=None,
+            bid_volume_quote=5.0,
+            ask_volume_quote=5.0,
+            liquidity_score=0.6,
+        )
+        market_cap_by_symbol = {
+            "TARGET/USDT": None,
+            "UNKNOWN/USDT": None,
+        }
+        peers, tier, _criteria = token_analysis.select_peer_symbols_with_fallback(
+            target,
+            [target, unknown_peer],
+            _peer_selection_settings(),
+            market_cap_by_symbol,
+        )
+        assert peers[0].symbol == "UNKNOWN/USDT"
+        assert tier == "volume_micro_bucket"
+
+    def test_last_resort_uses_liquidity_score(self):
+        target = _peer_raw_metrics(symbol="TARGET/USDT", volume_quote=10_000.0)
+        best_peer = _peer_raw_metrics(symbol="BEST/USDT", volume_quote=9_000_000.0, liquidity_score=0.99)
+        peers, tier, _criteria = token_analysis.select_peer_symbols_with_fallback(
+            target,
+            [target, best_peer],
+            _peer_selection_settings(),
+        )
+        assert peers[0].symbol == "BEST/USDT"
+        assert tier == "liquidity_score"
+
+    def test_no_same_quote_peers_returns_none_tier(self):
+        target = _peer_raw_metrics(symbol="ONLY/USDT")
+        peers, tier, criteria = token_analysis.select_peer_symbols_with_fallback(
+            target,
+            [target],
+            _peer_selection_settings(),
+        )
+        assert peers == []
+        assert tier == "none"
+        assert criteria == token_analysis.PEER_TIER_CRITERIA["none"]
+
+    def test_excludes_self_and_wrong_quote(self):
+        target = _peer_raw_metrics(symbol="AAA/USDT", volume_quote=10_000.0)
+        usdt_peer = _peer_raw_metrics(symbol="BBB/USDT", volume_quote=12_000.0, liquidity_score=0.9)
+        btc_peer = _peer_raw_metrics(symbol="CCC/BTC", volume_quote=12_000.0, liquidity_score=0.95)
+        peers, _tier, _criteria = token_analysis.select_peer_symbols_with_fallback(
+            target,
+            [target, usdt_peer, btc_peer],
+            _peer_selection_settings(),
+        )
+        assert len(peers) == 1
+        assert peers[0].symbol == "BBB/USDT"
+
+
+class TestBuildPeerMedianEmpty:
+    def test_returns_none_without_peer_rows(self):
+        yours_row = token_analysis.peer_row_from_raw(_peer_raw_metrics(), is_yours=True)
+        assert token_analysis.build_peer_median([yours_row]) is None
+
+
+class TestBuildImprovementsNoPeers:
+    def test_uses_em_dash_potential_when_peer_median_missing(self):
+        raw_metrics = _peer_raw_metrics(spread_pct=66.7, depth_2pct_quote=0.0)
+        improvements = token_analysis.build_improvements(raw_metrics, None)
+        assert improvements[0]["potential"] == "—"
+        assert improvements[1]["potential"] == "—"
+
+
+class TestBuildPairAnalysisPeerFallback:
+    def test_includes_peer_tier_metadata_and_non_zero_median_for_proxy_volume(self):
+        target = _peer_raw_metrics(
+            symbol="ULX/USDT",
+            volume_quote=None,
+            bid_volume_quote=1_790_254.0,
+            ask_volume_quote=427_383.0,
+            spread_pct=66.7,
+            depth_2pct_quote=0.0,
+            liquidity_score=0.15,
+            is_low_health=True,
+            health_label_primary="wide_spread",
+        )
+        peer = _peer_raw_metrics(
+            symbol="PEER/USDT",
+            volume_quote=2_000_000.0,
+            spread_pct=1.0,
+            depth_2pct_quote=5_000.0,
+            liquidity_score=0.8,
+        )
+        exchange_averages = {
+            "exchange_avg_spread_pct": 0.82,
+            "exchange_avg_depth_2pct": 5_400.0,
+            "exchange_avg_slippage_10k": 2.28,
+            "exchange_median_volume_depth_ratio": 60.0,
+        }
+        payload = token_analysis.build_pair_analysis(
+            target,
+            [target, peer],
+            exchange_averages,
+            health_label_fixtures.default_health_labels(),
+            peer_selection_settings=_peer_selection_settings(),
+        )
+        peers_block = payload["analysis"]["peers"]
+        assert peers_block["tier"] == "volume_5x"
+        assert peers_block["median"] is not None
+        assert peers_block["median"]["depth"] == 5_000.0
+        assert len([row for row in peers_block["rows"] if not row["is_yours"] and row["name"] != "Median"]) == 1
+        assert payload["analysis"]["score_breakdown"]["peer_relative_100"] is not None

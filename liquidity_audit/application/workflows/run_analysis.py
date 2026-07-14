@@ -8,6 +8,7 @@ import liquidity_audit.domain.website.website_resolution_worker as website_resol
 import liquidity_audit.infrastructure.analysis_store as analysis_store
 import liquidity_audit.config as app_config
 import liquidity_audit.infrastructure.listings_store as listings_store
+import liquidity_audit.infrastructure.market_cap_fetch as market_cap_fetch
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -37,21 +38,28 @@ async def run(
     total_newly_delisted = 0
     total_skipped_delisted = 0
 
-    exchange_results = await asyncio.gather(
-        *[
-            analysis_exchange_processor.process_exchange(
-                exchange_name,
-                listings,
-                config,
-                store,
-                listings_store_instance,
-                listings_csv_lock,
-                run_started_at,
-                website_worker=website_worker,
-            )
-            for exchange_name in config.exchanges
-        ]
+    market_cap_task = asyncio.create_task(
+        market_cap_fetch.fetch_market_cap_by_symbol_for_listings(config, listings),
     )
+    try:
+        exchange_results = await asyncio.gather(
+            *[
+                analysis_exchange_processor.process_exchange(
+                    exchange_name,
+                    listings,
+                    config,
+                    store,
+                    listings_store_instance,
+                    listings_csv_lock,
+                    run_started_at,
+                    website_worker=website_worker,
+                    market_cap_task=market_cap_task,
+                )
+                for exchange_name in config.exchanges
+            ]
+        )
+    finally:
+        await market_cap_task
     for (
         universe,
         failures,

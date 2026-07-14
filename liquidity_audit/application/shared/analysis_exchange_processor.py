@@ -29,6 +29,9 @@ async def process_exchange(
     run_started_at: str,
     *,
     website_worker: typing.Optional[website_resolution_worker.WebsiteResolutionWorker] = None,
+    market_cap_task: typing.Optional[
+        asyncio.Task[dict[str, typing.Optional[float]]]
+    ] = None,
 ) -> tuple[
     list[pair_analysis.ExtendedRawMetrics],
     list[dict[str, str]],
@@ -160,6 +163,14 @@ async def process_exchange(
         universe,
         config.analysis.rankings_min_volume_quote,
     )
+    market_cap_by_symbol = (
+        await market_cap_task
+        if market_cap_task is not None
+        else None
+    )
+    peer_selection_settings = pair_analysis.peer_selection_settings_from_analysis_config(
+        config.analysis,
+    )
     for listing in candidates:
         raw_metrics = raw_metrics_by_symbol.get(listing.symbol)
         if raw_metrics is None:
@@ -178,6 +189,8 @@ async def process_exchange(
             exchange_averages,
             config.health_labels,
             delisting_risk_cards=delisting_risk_cards,
+            peer_selection_settings=peer_selection_settings,
+            market_cap_by_symbol=market_cap_by_symbol,
         )
         pair_analysis_by_symbol[listing.symbol] = pair_analysis_payload
         store.save_pair_analysis(exchange_name, listing.symbol, pair_analysis_payload)

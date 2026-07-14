@@ -1,10 +1,12 @@
 """Extended liquidity analysis for 10-candidate reports (raw metrics + display layer)."""
 
 import dataclasses
+import math
 import statistics
 import typing
 
 import liquidity_audit.config as app_config
+import liquidity_audit.config.analysis as analysis_config
 import liquidity_audit.domain.models as models
 import liquidity_audit.domain.health.evaluation as health_evaluation
 import liquidity_audit.domain.health.order_book as health_order_book
@@ -22,6 +24,39 @@ PEER_METRIC_DEADBAND = 0.95
 VOLUME_TIER_RATIO = 5.0
 DEPTH_ASYMMETRY_THRESHOLD = 0.4
 VOLUME_SKEW_THRESHOLD = 70.0
+
+PEER_TIER_CRITERIA: dict[str, str] = {
+    "volume_micro_bucket": "Similar micro-volume tier and quote currency on exchange",
+    "volume_5x": "Similar volume tier (5x) and quote currency on exchange",
+    "volume_20x": "Similar volume tier (20x) and quote currency on exchange",
+    "volume_100x": "Similar volume tier (100x) and quote currency on exchange",
+    "marketcap_closest": "Closest market cap and quote currency on exchange",
+    "liquidity_score": "Top liquidity score and quote currency on exchange",
+    "none": "No other same-quote pairs on exchange",
+}
+
+
+@dataclasses.dataclass(frozen=True)
+class PeerSelectionSettings:
+    min_relevant_usdt_volume: float
+    peer_volume_tier_ratios: tuple[float, ...]
+    peer_count: int = PEER_COUNT
+
+
+def peer_selection_settings_from_analysis_config(
+    analysis_config: app_config.AnalysisConfig,
+) -> PeerSelectionSettings:
+    return PeerSelectionSettings(
+        min_relevant_usdt_volume=analysis_config.min_relevant_usdt_volume,
+        peer_volume_tier_ratios=analysis_config.peer_volume_tier_ratios,
+    )
+
+
+def default_peer_selection_settings() -> PeerSelectionSettings:
+    return PeerSelectionSettings(
+        min_relevant_usdt_volume=analysis_config.DEFAULT_MIN_RELEVANT_USDT_VOLUME,
+        peer_volume_tier_ratios=analysis_config.DEFAULT_PEER_VOLUME_TIER_RATIOS,
+    )
 
 
 def symbol_to_slug(symbol: str) -> str:
@@ -342,6 +377,189 @@ def listings_share_quote(left_symbol: str, right_symbol: str) -> bool:
     return left_symbol.split("/", 1)[1] == right_symbol.split("/", 1)[1]
 
 
+def resolve_peer_volume(raw_metrics: ExtendedRawMetrics) -> float:
+    if raw_metrics.volume_quote is not None and raw_metrics.volume_quote > 0:
+        return raw_metrics.volume_quote
+    bid_volume = raw_metrics.bid_volume_quote
+    ask_volume = raw_metrics.ask_volume_quote
+    if bid_volume is not None and ask_volume is not None:
+        side_volume_total = bid_volume + ask_volume
+        if side_volume_total > 0:
+            return side_volume_total
+    return 0.0
+
+
+def _is_micro_volume(volume: float, min_relevant_usdt_volume: float) -> bool:
+    return volume < min_relevant_usdt_volume
+
+
+def _volume_within_tier(
+    target_volume: float,
+    candidate_volume: float,
+    max_tier_ratio: float,
+) -> bool:
+    if target_volume <= 0 or candidate_volume <= 0:
+        return False
+    ratio = max(target_volume, candidate_volume) / min(target_volume, candidate_volume)
+    return ratio <= max_tier_ratio
+
+
+def _volume_tier_label(max_ratio_used: float) -> str:
+    if max_ratio_used <= 5:
+        return "volume_5x"
+    if max_ratio_used <= 20:
+        return "volume_20x"
+    return "volume_100x"
+
+
+def _resolve_market_cap_usd(
+    symbol: str,
+    market_cap_by_symbol: typing.Optional[dict[str, typing.Optional[float]]],
+) -> typing.Optional[float]:
+    if market_cap_by_symbol is None:
+        return None
+    market_cap = market_cap_by_symbol.get(symbol)
+    if market_cap is None or market_cap <= 0:
+        return None
+    return market_cap
+
+
+def _is_unknown_market_cap_peer(
+    raw_metrics: ExtendedRawMetrics,
+    market_cap_by_symbol: typing.Optional[dict[str, typing.Optional[float]]],
+    min_relevant_usdt_volume: float,
+) -> bool:
+    if _resolve_market_cap_usd(raw_metrics.symbol, market_cap_by_symbol) is not None:
+        return False
+    return _is_micro_volume(resolve_peer_volume(raw_metrics), min_relevant_usdt_volume)
+
+
+def _marketcap_log_distance(left_market_cap: float, right_market_cap: float) -> float:
+    return abs(math.log(left_market_cap) - math.log(right_market_cap))
+
+
+def _same_quote_candidates(
+    target: ExtendedRawMetrics,
+    universe: list[ExtendedRawMetrics],
+    excluded_symbols: set[str],
+) -> list[ExtendedRawMetrics]:
+    return [
+        raw_metrics
+        for raw_metrics in universe
+        if raw_metrics.symbol != target.symbol
+        and raw_metrics.symbol not in excluded_symbols
+        and listings_share_quote(target.symbol, raw_metrics.symbol)
+    ]
+
+
+def select_peer_symbols_with_fallback(
+    target: ExtendedRawMetrics,
+    universe: list[ExtendedRawMetrics],
+    settings: PeerSelectionSettings,
+    market_cap_by_symbol: typing.Optional[dict[str, typing.Optional[float]]] = None,
+) -> tuple[list[ExtendedRawMetrics], str, str]:
+    target_volume = resolve_peer_volume(target)
+    selected: list[ExtendedRawMetrics] = []
+    selected_symbols: set[str] = set()
+    tier = "none"
+    max_volume_ratio_used = 0.0
+
+    def add_peers(candidates: list[ExtendedRawMetrics]) -> None:
+        for candidate in candidates:
+            if len(selected) >= settings.peer_count:
+                return
+            if candidate.symbol in selected_symbols:
+                continue
+            selected.append(candidate)
+            selected_symbols.add(candidate.symbol)
+
+    if _is_micro_volume(target_volume, settings.min_relevant_usdt_volume):
+        micro_candidates = [
+            candidate
+            for candidate in _same_quote_candidates(target, universe, selected_symbols)
+            if _is_micro_volume(resolve_peer_volume(candidate), settings.min_relevant_usdt_volume)
+        ]
+        micro_candidates.sort(key=lambda raw_metrics: raw_metrics.liquidity_score, reverse=True)
+        if micro_candidates:
+            add_peers(micro_candidates)
+            tier = "volume_micro_bucket"
+
+    if (
+        not _is_micro_volume(target_volume, settings.min_relevant_usdt_volume)
+        and len(selected) < settings.peer_count
+    ):
+        for tier_ratio in settings.peer_volume_tier_ratios:
+            if len(selected) >= settings.peer_count:
+                break
+            tier_candidates = [
+                candidate
+                for candidate in _same_quote_candidates(target, universe, selected_symbols)
+                if not _is_micro_volume(resolve_peer_volume(candidate), settings.min_relevant_usdt_volume)
+                and _volume_within_tier(
+                    target_volume,
+                    resolve_peer_volume(candidate),
+                    tier_ratio,
+                )
+            ]
+            tier_candidates.sort(key=lambda raw_metrics: raw_metrics.liquidity_score, reverse=True)
+            before_count = len(selected)
+            add_peers(tier_candidates)
+            if len(selected) > before_count:
+                max_volume_ratio_used = max(max_volume_ratio_used, tier_ratio)
+        if max_volume_ratio_used > 0:
+            tier = _volume_tier_label(max_volume_ratio_used)
+
+    if len(selected) < settings.peer_count:
+        target_market_cap = _resolve_market_cap_usd(target.symbol, market_cap_by_symbol)
+        if target_market_cap is not None:
+            market_cap_candidates = [
+                candidate
+                for candidate in _same_quote_candidates(target, universe, selected_symbols)
+                if _resolve_market_cap_usd(candidate.symbol, market_cap_by_symbol) is not None
+            ]
+            market_cap_candidates.sort(
+                key=lambda raw_metrics: (
+                    _marketcap_log_distance(
+                        target_market_cap,
+                        _resolve_market_cap_usd(raw_metrics.symbol, market_cap_by_symbol) or 0.0,
+                    ),
+                    -raw_metrics.liquidity_score,
+                ),
+            )
+            before_count = len(selected)
+            add_peers(market_cap_candidates)
+            if len(selected) > before_count:
+                tier = "marketcap_closest"
+        else:
+            unknown_cap_candidates = [
+                candidate
+                for candidate in _same_quote_candidates(target, universe, selected_symbols)
+                if _is_unknown_market_cap_peer(
+                    candidate,
+                    market_cap_by_symbol,
+                    settings.min_relevant_usdt_volume,
+                )
+            ]
+            unknown_cap_candidates.sort(key=lambda raw_metrics: raw_metrics.liquidity_score, reverse=True)
+            before_count = len(selected)
+            add_peers(unknown_cap_candidates)
+            if len(selected) > before_count:
+                tier = "marketcap_closest"
+
+    if len(selected) < settings.peer_count:
+        liquidity_score_candidates = _same_quote_candidates(target, universe, selected_symbols)
+        liquidity_score_candidates.sort(key=lambda raw_metrics: raw_metrics.liquidity_score, reverse=True)
+        before_count = len(selected)
+        add_peers(liquidity_score_candidates)
+        if len(selected) > before_count:
+            tier = "liquidity_score"
+
+    if not selected:
+        tier = "none"
+
+    return selected, tier, PEER_TIER_CRITERIA[tier]
+
+
 def _volume_in_same_tier(
     target_volume: typing.Optional[float],
     candidate_volume: typing.Optional[float],
@@ -359,15 +577,13 @@ def select_peer_symbols(
     universe: list[ExtendedRawMetrics],
     peer_count: int = PEER_COUNT,
 ) -> list[ExtendedRawMetrics]:
-    candidates = [
-        raw_metrics
-        for raw_metrics in universe
-        if raw_metrics.symbol != target.symbol
-        and listings_share_quote(target.symbol, raw_metrics.symbol)
-        and _volume_in_same_tier(target.volume_quote, raw_metrics.volume_quote)
-    ]
-    candidates.sort(key=lambda raw_metrics: raw_metrics.liquidity_score, reverse=True)
-    return candidates[:peer_count]
+    settings = PeerSelectionSettings(
+        min_relevant_usdt_volume=0.0,
+        peer_volume_tier_ratios=(VOLUME_TIER_RATIO,),
+        peer_count=peer_count,
+    )
+    peers, _, _ = select_peer_symbols_with_fallback(target, universe, settings)
+    return peers
 
 
 def peer_row_from_raw(raw_metrics: ExtendedRawMetrics, is_yours: bool) -> dict[str, typing.Any]:
@@ -382,17 +598,12 @@ def peer_row_from_raw(raw_metrics: ExtendedRawMetrics, is_yours: bool) -> dict[s
     }
 
 
-def build_peer_median(peer_rows: list[dict[str, typing.Any]]) -> dict[str, typing.Any]:
+def build_peer_median(
+    peer_rows: list[dict[str, typing.Any]],
+) -> typing.Optional[dict[str, typing.Any]]:
     non_yours = [row for row in peer_rows if not row.get("is_yours")]
     if not non_yours:
-        return {
-            "name": "Median",
-            "spread": 0.0,
-            "depth": 0.0,
-            "slippage_trade_size": None,
-            "slippage_pct": None,
-            "is_yours": False,
-        }
+        return None
     return {
         "name": "Median",
         "spread": _median_or_none([row["spread"] for row in non_yours]) or 0.0,
@@ -418,8 +629,17 @@ def _peer_metric_score(ratio: float) -> float:
 def peer_median_for_target(
     target: ExtendedRawMetrics,
     universe: list[ExtendedRawMetrics],
+    *,
+    settings: typing.Optional[PeerSelectionSettings] = None,
+    market_cap_by_symbol: typing.Optional[dict[str, typing.Optional[float]]] = None,
 ) -> typing.Optional[dict[str, typing.Any]]:
-    peer_candidates = select_peer_symbols(target, universe)
+    peer_selection_settings = settings or default_peer_selection_settings()
+    peer_candidates, _, _ = select_peer_symbols_with_fallback(
+        target,
+        universe,
+        peer_selection_settings,
+        market_cap_by_symbol,
+    )
     if not peer_candidates:
         return None
     peer_rows = [peer_row_from_raw(peer, is_yours=False) for peer in peer_candidates]
@@ -464,9 +684,17 @@ def compute_peer_relative_score(
 def compute_composite_score(
     raw_metrics: ExtendedRawMetrics,
     universe: list[ExtendedRawMetrics],
+    *,
+    settings: typing.Optional[PeerSelectionSettings] = None,
+    market_cap_by_symbol: typing.Optional[dict[str, typing.Optional[float]]] = None,
 ) -> tuple[float, typing.Optional[float]]:
     internal_score = raw_metrics.liquidity_score
-    peer_median = peer_median_for_target(raw_metrics, universe)
+    peer_median = peer_median_for_target(
+        raw_metrics,
+        universe,
+        settings=settings,
+        market_cap_by_symbol=market_cap_by_symbol,
+    )
     if peer_median is None:
         return internal_score, None
     peer_relative_score = compute_peer_relative_score(raw_metrics, peer_median)
@@ -478,9 +706,17 @@ def compute_composite_score(
 def compute_score_100(
     raw_metrics: ExtendedRawMetrics,
     universe: list[ExtendedRawMetrics],
+    *,
+    settings: typing.Optional[PeerSelectionSettings] = None,
+    market_cap_by_symbol: typing.Optional[dict[str, typing.Optional[float]]] = None,
 ) -> tuple[int, int, typing.Optional[int]]:
     internal_score = raw_metrics.liquidity_score
-    composite_score, peer_relative_score = compute_composite_score(raw_metrics, universe)
+    composite_score, peer_relative_score = compute_composite_score(
+        raw_metrics,
+        universe,
+        settings=settings,
+        market_cap_by_symbol=market_cap_by_symbol,
+    )
     internal_100 = round(internal_score * 100)
     peer_relative_100 = (
         None if peer_relative_score is None else round(peer_relative_score * 100)
@@ -864,7 +1100,7 @@ def _depth_asymmetry(raw_metrics: ExtendedRawMetrics) -> float:
 
 def build_root_causes(
     raw_metrics: ExtendedRawMetrics,
-    peer_median_depth: float,
+    peer_median_depth: typing.Optional[float],
 ) -> list[dict[str, str]]:
     causes: list[dict[str, str]] = []
     liquidity_trigger = (
@@ -873,10 +1109,16 @@ def build_root_causes(
         or raw_metrics.max_fillable_buy_quote < 5000
     )
     if liquidity_trigger:
-        depth_evidence = (
-            f"Depth ±2% at {_format_usd_short(raw_metrics.depth_2pct_quote)}"
-            f" vs {_format_usd_short(peer_median_depth)} peer median"
-        )
+        if peer_median_depth is not None:
+            depth_evidence = (
+                f"Depth ±2% at {_format_usd_short(raw_metrics.depth_2pct_quote)}"
+                f" vs {_format_usd_short(peer_median_depth)} peer median"
+            )
+        else:
+            depth_evidence = (
+                f"Depth ±2% at {_format_usd_short(raw_metrics.depth_2pct_quote)}"
+                " vs no comparable peers"
+            )
         slippage_trade_size, slippage_pct = resolve_slippage_display(raw_metrics.slippage)
         if slippage_pct is not None:
             size_label = format_slippage_trade_size_label(slippage_trade_size)
@@ -916,9 +1158,27 @@ def build_root_causes(
 
 def build_improvements(
     raw_metrics: ExtendedRawMetrics,
-    peer_median: dict[str, typing.Any],
+    peer_median: typing.Optional[dict[str, typing.Any]],
 ) -> list[dict[str, str]]:
     slippage_trade_size, slippage_pct = resolve_slippage_display(raw_metrics.slippage)
+    if peer_median is None:
+        return [
+            {
+                "metric": "Spread",
+                "current": f"{raw_metrics.spread_pct:.1f}%" if raw_metrics.spread_pct is not None else "—",
+                "potential": "—",
+            },
+            {
+                "metric": "Depth ±2%",
+                "current": _format_usd_short(raw_metrics.depth_2pct_quote),
+                "potential": "—",
+            },
+            {
+                "metric": slippage_metric_title(slippage_trade_size),
+                "current": f"{slippage_pct:.1f}%" if slippage_pct is not None else "—",
+                "potential": "—",
+            },
+        ]
     return [
         {
             "metric": "Spread",
@@ -942,8 +1202,13 @@ def build_improvements(
     ]
 
 
-def build_roadmap(raw_metrics: ExtendedRawMetrics, peer_median: dict[str, typing.Any]) -> list[dict[str, str]]:
+def build_roadmap(
+    raw_metrics: ExtendedRawMetrics,
+    peer_median: typing.Optional[dict[str, typing.Any]],
+) -> list[dict[str, str]]:
     rows: list[dict[str, str]] = []
+    if peer_median is None:
+        return rows
     if _has_label(raw_metrics, health_evaluation.LABEL_WIDE_SPREAD):
         spread_delta = (raw_metrics.spread_pct or 0) - peer_median["spread"]
         rows.append({
@@ -1021,21 +1286,36 @@ def build_pair_analysis(
     exchange_averages: dict[str, typing.Optional[float]],
     health_labels: app_config.HealthLabelsConfig,
     delisting_risk_cards: typing.Optional[list[dict[str, str]]] = None,
+    *,
+    peer_selection_settings: typing.Optional[PeerSelectionSettings] = None,
+    market_cap_by_symbol: typing.Optional[dict[str, typing.Optional[float]]] = None,
 ) -> dict[str, typing.Any]:
-    score_100, internal_100, peer_relative_100 = compute_score_100(raw_metrics, universe)
+    selection_settings = peer_selection_settings or default_peer_selection_settings()
+    score_100, internal_100, peer_relative_100 = compute_score_100(
+        raw_metrics,
+        universe,
+        settings=selection_settings,
+        market_cap_by_symbol=market_cap_by_symbol,
+    )
     mm_presence = detect_mm_presence(raw_metrics, health_labels)
 
-    peer_candidates = select_peer_symbols(raw_metrics, universe)
+    peer_candidates, peer_tier, peer_criteria = select_peer_symbols_with_fallback(
+        raw_metrics,
+        universe,
+        selection_settings,
+        market_cap_by_symbol,
+    )
     peer_rows = [peer_row_from_raw(raw_metrics, is_yours=True)]
     peer_rows.extend(peer_row_from_raw(peer, is_yours=False) for peer in peer_candidates)
     peer_median = build_peer_median(peer_rows)
-    peer_rows.append(peer_median)
+    if peer_median is not None:
+        peer_rows.append(peer_median)
     display_slippage_trade_size, _display_slippage_pct = resolve_slippage_display(raw_metrics.slippage)
 
     issues = build_issues(
         raw_metrics,
         exchange_averages,
-        peer_median.get("slippage_pct"),
+        peer_median.get("slippage_pct") if peer_median is not None else None,
         health_labels,
     )
     health_dashboard = build_health_dashboard(raw_metrics, exchange_averages)
@@ -1066,13 +1346,17 @@ def build_pair_analysis(
             "delisting_risk": delisting_risk_cards or [],
             "mm_presence": mm_presence,
             "peers": {
-                "criteria": "Similar volume tier and quote currency on exchange",
+                "tier": peer_tier,
+                "criteria": peer_criteria,
                 "rows": peer_rows,
                 "median": peer_median,
             },
             "investor_simulator": build_investor_simulator(raw_metrics),
             "lost_opportunity": build_lost_opportunity(raw_metrics),
-            "root_causes": build_root_causes(raw_metrics, peer_median["depth"]),
+            "root_causes": build_root_causes(
+                raw_metrics,
+                peer_median["depth"] if peer_median is not None else None,
+            ),
             "improvements": build_improvements(raw_metrics, peer_median),
             "roadmap": build_roadmap(raw_metrics, peer_median),
         },

@@ -8,6 +8,7 @@ import liquidity_audit.domain.analysis.pair_analysis as pair_analysis
 import liquidity_audit.infrastructure.analysis_store as analysis_store
 import liquidity_audit.config as app_config
 import liquidity_audit.infrastructure.listings_store as listings_store
+import liquidity_audit.infrastructure.market_cap_fetch as market_cap_fetch
 import liquidity_audit.domain.models as models
 
 _LOGGER = logging.getLogger(__name__)
@@ -32,6 +33,11 @@ async def reanalyze_from_stored_raw(
     pairs_skipped_no_json = 0
     pairs_skipped_delisted = 0
     updated_listings: list[models.ListingRecord] = []
+
+    market_cap_by_symbol = await market_cap_fetch.fetch_market_cap_by_symbol_for_listings(
+        config,
+        listings,
+    )
 
     for exchange_name in config.exchanges:
         candidates = [
@@ -73,6 +79,9 @@ async def reanalyze_from_stored_raw(
             universe,
             config.analysis.rankings_min_volume_quote,
         )
+        peer_selection_settings = pair_analysis.peer_selection_settings_from_analysis_config(
+            config.analysis,
+        )
         for listing in candidates:
             raw_metrics = raw_metrics_by_symbol.get(listing.symbol)
             if raw_metrics is None:
@@ -99,6 +108,8 @@ async def reanalyze_from_stored_raw(
                 exchange_averages,
                 config.health_labels,
                 delisting_risk_cards=delisting_risk_cards,
+                peer_selection_settings=peer_selection_settings,
+                market_cap_by_symbol=market_cap_by_symbol,
             )
             store.save_pair_analysis(exchange_name, listing.symbol, pair_analysis_payload)
             json_path = store.pair_json_relative_path(exchange_name, listing.symbol)

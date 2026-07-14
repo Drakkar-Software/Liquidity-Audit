@@ -67,14 +67,22 @@ def build_anchor_analysis(
     universes: dict[str, list[pair_analysis.ExtendedRawMetrics]],
     exchange_averages_by_exchange: dict[str, dict[str, typing.Optional[float]]],
     health_labels: app_config.HealthLabelsConfig,
+    *,
+    config: typing.Optional[app_config.AppConfig] = None,
 ) -> dict[str, typing.Any]:
     raw_metrics = anchors[key]
     exchange_averages = exchange_averages_by_exchange[raw_metrics.exchange]
+    peer_selection_settings = None
+    if config is not None:
+        peer_selection_settings = pair_analysis.peer_selection_settings_from_analysis_config(
+            config.analysis,
+        )
     return pair_analysis.build_pair_analysis(
         raw_metrics,
         universes[raw_metrics.exchange],
         exchange_averages,
         health_labels,
+        peer_selection_settings=peer_selection_settings,
     )
 
 

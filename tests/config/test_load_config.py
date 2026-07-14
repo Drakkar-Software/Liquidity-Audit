@@ -72,6 +72,8 @@ class TestLoadConfigHealthRules:
         assert config.min_liquidity_score == 0.25
         assert config.health_rules.larger_depth_band_pct == 0.1
         assert config.health_labels.priority[0] == "few_orders"
+        assert config.analysis.min_relevant_usdt_volume == 100.0
+        assert config.analysis.peer_volume_tier_ratios == (5.0, 20.0, 100.0)
 
 
 class TestLoadConfigDailySelection:
