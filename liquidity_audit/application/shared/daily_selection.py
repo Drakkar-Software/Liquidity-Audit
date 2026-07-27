@@ -1,9 +1,13 @@
+import logging
+
 import liquidity_audit.application.shared.time_utils as time_utils
 import liquidity_audit.infrastructure.selected_history_store as selected_history_store
 import liquidity_audit.config as app_config
 import liquidity_audit.domain.select.selection as select_selection
 import liquidity_audit.infrastructure.listings_store as listings_store
 import liquidity_audit.domain.models as models
+
+_LOGGER = logging.getLogger(__name__)
 
 
 def new_low_health_listings(listings: list[models.ListingRecord]) -> list[models.ListingRecord]:
@@ -34,12 +38,26 @@ def select_and_record_daily_selections(
     new_listing_keys: set[tuple[str, str]],
 ) -> list[models.DailyProjectSelection]:
     all_records = store.load_all()
+    configured_exchanges = {
+        exchange_name.strip().lower() for exchange_name in config.exchanges
+    }
+    eligible_records = {
+        key: record
+        for key, record in all_records.items()
+        if record.exchange.strip().lower() in configured_exchanges
+    }
+    excluded_count = len(all_records) - len(eligible_records)
+    _LOGGER.info(
+        "Selecting from %s listing(s) on configured exchanges (%s excluded)",
+        len(eligible_records),
+        excluded_count,
+    )
     history_store = selected_history_store.SelectedHistoryStore(
         config.daily_selection.history_csv_path,
     )
     recent_selection_by_key = history_store.load_recent_by_key()
     daily_selections = select_selection.select_daily_projects(
-        all_records,
+        eligible_records,
         new_listing_keys,
         recent_selection_by_key,
         config.daily_selection.max_per_day,

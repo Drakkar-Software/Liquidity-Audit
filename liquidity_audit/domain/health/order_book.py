@@ -11,12 +11,23 @@ def sorted_asks(asks: list) -> list:
 
 def parse_volume_quote(ticker: dict) -> typing.Optional[float]:
     volume_quote_raw = ticker.get("quoteVolume")
-    if volume_quote_raw is None:
-        return None
-    volume_quote = float(volume_quote_raw)
-    if volume_quote <= 0:
-        return None
-    return volume_quote
+    if volume_quote_raw is not None:
+        volume_quote = float(volume_quote_raw)
+        if volume_quote > 0:
+            return volume_quote
+
+    base_volume_raw = ticker.get("baseVolume")
+    if base_volume_raw is not None:
+        base_volume = float(base_volume_raw)
+        if base_volume > 0:
+            for price_key in ("close", "last"):
+                price_raw = ticker.get(price_key)
+                if price_raw is not None:
+                    price = float(price_raw)
+                    if price > 0:
+                        return base_volume * price
+
+    return None
 
 
 def compute_mid_price(

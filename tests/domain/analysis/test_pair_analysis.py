@@ -443,6 +443,21 @@ class TestBuildRankings:
         sol_row = next(row for row in rankings if row["symbol"] == "SOL/USDT")
         assert sol_row["rank"] == 1
 
+    def test_assigns_rank_when_volume_quote_from_derived_volume(self):
+        derived_volume_quote = 2870.0 * 10000.0
+        eligible = _minimal_raw_metrics_for_scoring(
+            symbol="BTC/USDT",
+            liquidity_score=0.8,
+            volume_quote=derived_volume_quote,
+        )
+        rankings = token_analysis.build_rankings(
+            [eligible],
+            rankings_min_volume_quote=1000.0,
+        )
+        btc_row = rankings[0]
+        assert btc_row["volume_quote"] == derived_volume_quote
+        assert btc_row["rank"] == 1
+
 
 def _exchange_averages_for_volume_tests() -> dict[str, float]:
     return {
