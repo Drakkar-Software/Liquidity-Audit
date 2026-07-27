@@ -88,13 +88,13 @@
       },
       "coinex": {
         "depth_band_pct": 0.02,
-        "min_depth_quote_usdt": 5000,
-        "min_volume_quote_usdt": 10000
+        "min_depth_quote_usdt": 3000,
+        "min_volume_quote_usdt": 5000
       },
       "bingx": {
         "depth_band_pct": 0.02,
-        "min_depth_quote_usdt": 5000,
-        "min_volume_quote_usdt": 10000
+        "min_depth_quote_usdt": 3000,
+        "min_volume_quote_usdt": 5000
       }
     }
   }
