@@ -55,13 +55,14 @@ def _config(csv_path: pathlib.Path) -> app_config.AppConfig:
 def _listing(
     symbol: str = "NEW/USDT",
     *,
+    exchange: str = "mexc",
     is_low_health: bool = True,
     website: str | None = None,
     website_resolution_status: str | None = None,
 ) -> models.ListingRecord:
     base = symbol.split("/")[0]
     return models.ListingRecord(
-        exchange="mexc",
+        exchange=exchange,
         symbol=symbol,
         base=base,
         quote="USDT",
@@ -70,6 +71,65 @@ def _listing(
         is_low_health=is_low_health,
         website=website,
         website_resolution_status=website_resolution_status,
+    )
+
+
+def _mock_ccxt_client(exchange_name: str) -> mock.AsyncMock:
+    client = mock.AsyncMock()
+    client.rateLimit = 50 if exchange_name == "mexc" else 2.5
+    client.throttle = mock.AsyncMock()
+    client.open = mock.Mock()
+    client.close = mock.AsyncMock()
+    return client
+
+
+_UNPATCHED = object()
+
+
+def _patch_worker_infrastructure(
+    monkeypatch,
+    *,
+    mexc_website: str | None | object = _UNPATCHED,
+    coinex_website: str | None | object = _UNPATCHED,
+):
+    async def fake_load_coingecko_index(self, coingecko_client):
+        return None
+
+    monkeypatch.setattr(
+        website_resolution_worker.website_finder.WebsiteFinder,
+        "load_coingecko_index",
+        fake_load_coingecko_index,
+    )
+    monkeypatch.setattr(
+        website_resolution_worker.exchange_website_resolvers,
+        "create_mexc_http_session",
+        lambda: mock.AsyncMock(),
+    )
+    monkeypatch.setattr(
+        website_resolution_worker.exchange_website_resolvers,
+        "create_coinex_http_session",
+        lambda: mock.AsyncMock(),
+    )
+    if mexc_website is not _UNPATCHED:
+        monkeypatch.setattr(
+            website_resolution_worker.exchange_website_resolvers,
+            "resolve_mexc_website",
+            mock.AsyncMock(return_value=mexc_website),
+        )
+    if coinex_website is not _UNPATCHED:
+        monkeypatch.setattr(
+            website_resolution_worker.exchange_website_resolvers,
+            "resolve_coinex_website",
+            mock.AsyncMock(return_value=coinex_website),
+        )
+
+    def fake_create_exchange(exchange_name, **kwargs):
+        return _mock_ccxt_client(exchange_name)
+
+    monkeypatch.setattr(
+        website_resolution_worker.ccxt_client,
+        "create_exchange",
+        fake_create_exchange,
     )
 
 
@@ -89,16 +149,59 @@ class TestWebsiteResolutionWorkerTryEnqueue:
             listings_csv_lock,
         )
         monkeypatch.setattr(worker, "start", mock.AsyncMock())
-        worker._consumer_task = asyncio.create_task(asyncio.sleep(3600))
 
         listing = _listing()
         worker.try_enqueue(listing)
         worker.try_enqueue(listing)
 
         assert len(worker._enqueued_keys) == 1
-        worker._consumer_task.cancel()
-        with pytest.raises(asyncio.CancelledError):
-            await worker._consumer_task
+        assert worker._mexc_queue.qsize() == 1
+
+    @pytest.mark.asyncio
+    async def test_routes_coinex_to_coinex_queue(self, tmp_path: pathlib.Path, monkeypatch):
+        csv_path = tmp_path / "listings.csv"
+        config = _config(csv_path)
+        listings_csv_lock = asyncio.Lock()
+        store = listings_store.ListingsStore(csv_path)
+
+        worker = website_resolution_worker.WebsiteResolutionWorker(
+            store,
+            config,
+            set(),
+            {},
+            listings_csv_lock,
+        )
+        monkeypatch.setattr(worker, "start", mock.AsyncMock())
+
+        listing = _listing("AIOZ/USDT", exchange="coinex")
+        worker.try_enqueue(listing)
+
+        assert worker._coinex_queue.qsize() == 1
+        assert worker._mexc_queue.qsize() == 0
+        assert worker._coingecko_queue.qsize() == 0
+
+    @pytest.mark.asyncio
+    async def test_routes_bingx_to_coingecko_queue(self, tmp_path: pathlib.Path, monkeypatch):
+        csv_path = tmp_path / "listings.csv"
+        config = _config(csv_path)
+        listings_csv_lock = asyncio.Lock()
+        store = listings_store.ListingsStore(csv_path)
+
+        worker = website_resolution_worker.WebsiteResolutionWorker(
+            store,
+            config,
+            set(),
+            {},
+            listings_csv_lock,
+        )
+        monkeypatch.setattr(worker, "start", mock.AsyncMock())
+
+        listing = _listing("TOKEN/USDT", exchange="bingx")
+        worker.try_enqueue(listing)
+
+        assert worker._coingecko_queue.qsize() == 1
+        assert worker._mexc_queue.qsize() == 0
+        assert worker._coinex_queue.qsize() == 0
 
 
 class TestWebsiteResolutionWorkerShutdown:
@@ -113,8 +216,7 @@ class TestWebsiteResolutionWorkerShutdown:
         max_active_resolves = 0
         resolve_order: list[str] = []
 
-        async def fake_load_coingecko_index(self, coingecko_client):
-            return None
+        _patch_worker_infrastructure(monkeypatch, mexc_website=None)
 
         async def fake_resolve_website(self, coingecko_client, full_name, base_symbol):
             nonlocal active_resolves, max_active_resolves
@@ -130,18 +232,8 @@ class TestWebsiteResolutionWorkerShutdown:
 
         monkeypatch.setattr(
             website_resolution_worker.website_finder.WebsiteFinder,
-            "load_coingecko_index",
-            fake_load_coingecko_index,
-        )
-        monkeypatch.setattr(
-            website_resolution_worker.website_finder.WebsiteFinder,
             "resolve_website",
             fake_resolve_website,
-        )
-        monkeypatch.setattr(
-            website_resolution_worker.ccxt_client,
-            "create_exchange",
-            lambda *args, **kwargs: mock.AsyncMock(),
         )
 
         worker = await website_resolution_worker.WebsiteResolutionWorker.create_and_start(
@@ -166,8 +258,7 @@ class TestWebsiteResolutionWorkerShutdown:
         store = listings_store.ListingsStore(csv_path)
         listing = _listing("SAVE/USDT")
 
-        async def fake_load_coingecko_index(self, coingecko_client):
-            return None
+        _patch_worker_infrastructure(monkeypatch, mexc_website=None)
 
         async def fake_resolve_website(self, coingecko_client, full_name, base_symbol):
             return website_resolution.WebsiteResolutionResult(
@@ -177,18 +268,8 @@ class TestWebsiteResolutionWorkerShutdown:
 
         monkeypatch.setattr(
             website_resolution_worker.website_finder.WebsiteFinder,
-            "load_coingecko_index",
-            fake_load_coingecko_index,
-        )
-        monkeypatch.setattr(
-            website_resolution_worker.website_finder.WebsiteFinder,
             "resolve_website",
             fake_resolve_website,
-        )
-        monkeypatch.setattr(
-            website_resolution_worker.ccxt_client,
-            "create_exchange",
-            lambda *args, **kwargs: mock.AsyncMock(),
         )
 
         worker = await website_resolution_worker.WebsiteResolutionWorker.create_and_start(
@@ -215,8 +296,7 @@ class TestWebsiteResolutionWorkerShutdown:
         listings_csv_lock = asyncio.Lock()
         store = listings_store.ListingsStore(csv_path)
 
-        async def fake_load_coingecko_index(self, coingecko_client):
-            return None
+        _patch_worker_infrastructure(monkeypatch, mexc_website=None)
 
         async def slow_resolve_website(self, coingecko_client, full_name, base_symbol):
             await asyncio.sleep(5.0)
@@ -237,18 +317,8 @@ class TestWebsiteResolutionWorkerShutdown:
         )
         monkeypatch.setattr(
             website_resolution_worker.website_finder.WebsiteFinder,
-            "load_coingecko_index",
-            fake_load_coingecko_index,
-        )
-        monkeypatch.setattr(
-            website_resolution_worker.website_finder.WebsiteFinder,
             "resolve_website",
             slow_resolve_website,
-        )
-        monkeypatch.setattr(
-            website_resolution_worker.ccxt_client,
-            "create_exchange",
-            lambda *args, **kwargs: mock.AsyncMock(),
         )
 
         worker = await website_resolution_worker.WebsiteResolutionWorker.create_and_start(
@@ -272,8 +342,7 @@ class TestWebsiteResolutionWorkerConsumerLoop:
         listings_csv_lock = asyncio.Lock()
         store = listings_store.ListingsStore(csv_path)
 
-        async def fake_load_coingecko_index(self, coingecko_client):
-            return None
+        _patch_worker_infrastructure(monkeypatch, mexc_website=None)
 
         async def fake_resolve_website(self, coingecko_client, full_name, base_symbol):
             if base_symbol == "FAIL":
@@ -285,18 +354,8 @@ class TestWebsiteResolutionWorkerConsumerLoop:
 
         monkeypatch.setattr(
             website_resolution_worker.website_finder.WebsiteFinder,
-            "load_coingecko_index",
-            fake_load_coingecko_index,
-        )
-        monkeypatch.setattr(
-            website_resolution_worker.website_finder.WebsiteFinder,
             "resolve_website",
             fake_resolve_website,
-        )
-        monkeypatch.setattr(
-            website_resolution_worker.ccxt_client,
-            "create_exchange",
-            lambda *args, **kwargs: mock.AsyncMock(),
         )
 
         worker = await website_resolution_worker.WebsiteResolutionWorker.create_and_start(
@@ -313,3 +372,112 @@ class TestWebsiteResolutionWorkerConsumerLoop:
         assert worker._failed_count == 1
         saved = store.load_all()[_listing("OK/USDT").key()]
         assert saved.website == "https://ok.example/"
+
+
+class TestWebsiteResolutionWorkerExchangeFallback:
+    @pytest.mark.asyncio
+    async def test_uses_exchange_website_without_calling_coingecko(
+        self,
+        tmp_path: pathlib.Path,
+        monkeypatch,
+    ):
+        csv_path = tmp_path / "listings.csv"
+        config = _config(csv_path)
+        listings_csv_lock = asyncio.Lock()
+        store = listings_store.ListingsStore(csv_path)
+        listing = _listing("OPTIMUS/USDT")
+
+        _patch_worker_infrastructure(
+            monkeypatch,
+            mexc_website="https://www.optimustoken.io/",
+        )
+
+        async def fake_resolve_website(self, coingecko_client, full_name, base_symbol):
+            raise AssertionError("CoinGecko should not be called when exchange resolves website")
+
+        monkeypatch.setattr(
+            website_resolution_worker.website_finder.WebsiteFinder,
+            "resolve_website",
+            fake_resolve_website,
+        )
+
+        worker = await website_resolution_worker.WebsiteResolutionWorker.create_and_start(
+            store,
+            config,
+            {listing.key()},
+            listings_csv_lock,
+        )
+        worker.try_enqueue(listing)
+        await worker.shutdown()
+
+        saved = store.load_all()[listing.key()]
+        assert saved.website == "https://www.optimustoken.io/"
+        assert saved.coingecko_id is None
+
+    @pytest.mark.asyncio
+    async def test_mexc_failure_enqueues_coingecko_fallback(
+        self,
+        tmp_path: pathlib.Path,
+        monkeypatch,
+    ):
+        csv_path = tmp_path / "listings.csv"
+        config = _config(csv_path)
+        listings_csv_lock = asyncio.Lock()
+        store = listings_store.ListingsStore(csv_path)
+        listing = _listing("FALLBACK/USDT")
+
+        _patch_worker_infrastructure(monkeypatch, mexc_website=None)
+
+        async def fake_resolve_website(self, coingecko_client, full_name, base_symbol):
+            return website_resolution.WebsiteResolutionResult(
+                website="https://fallback.example/",
+                coingecko_id="fallback",
+            )
+
+        monkeypatch.setattr(
+            website_resolution_worker.website_finder.WebsiteFinder,
+            "resolve_website",
+            fake_resolve_website,
+        )
+
+        worker = await website_resolution_worker.WebsiteResolutionWorker.create_and_start(
+            store,
+            config,
+            {listing.key()},
+            listings_csv_lock,
+        )
+        worker.try_enqueue(listing)
+        await worker.shutdown()
+
+        saved = store.load_all()[listing.key()]
+        assert saved.website == "https://fallback.example/"
+        assert saved.coingecko_id == "fallback"
+
+    @pytest.mark.asyncio
+    async def test_awaits_mexc_throttle_before_resolve(
+        self,
+        tmp_path: pathlib.Path,
+        monkeypatch,
+    ):
+        csv_path = tmp_path / "listings.csv"
+        config = _config(csv_path)
+        listings_csv_lock = asyncio.Lock()
+        store = listings_store.ListingsStore(csv_path)
+        listing = _listing("THROTTLE/USDT")
+
+        _patch_worker_infrastructure(
+            monkeypatch,
+            mexc_website="https://throttle.example/",
+        )
+
+        worker = await website_resolution_worker.WebsiteResolutionWorker.create_and_start(
+            store,
+            config,
+            {listing.key()},
+            listings_csv_lock,
+        )
+        worker.try_enqueue(listing)
+        await worker.shutdown()
+
+        worker._mexc_throttle_client.throttle.assert_awaited_once_with(1)
+

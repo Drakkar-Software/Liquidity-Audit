@@ -37,17 +37,19 @@ async def run(
         ]
     )
 
+    saved_listings: list[models.ListingRecord] = []
     new_listings: list[models.ListingRecord] = []
     all_failed_enrichments: list[models.FailedListingEnrichment] = []
-    for exchange_new_listings, failed_enrichments in exchange_results:
+    for exchange_saved_listings, exchange_new_listings, failed_enrichments in exchange_results:
+        saved_listings.extend(exchange_saved_listings)
         new_listings.extend(exchange_new_listings)
         all_failed_enrichments.extend(failed_enrichments)
 
-    if new_listings:
-        store.append_or_update(new_listings)
-        _LOGGER.info("Saved %s new listing(s)", len(new_listings))
+    if saved_listings:
+        store.append_or_update(saved_listings)
+        _LOGGER.info("Saved %s listing(s) to store", len(saved_listings))
     else:
-        _LOGGER.info("No new listings to save")
+        _LOGGER.info("No listings to save")
 
     daily_selections: list[models.DailyProjectSelection] = []
     run_summary: models.RunSummary | None = None

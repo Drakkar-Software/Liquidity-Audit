@@ -1,6 +1,6 @@
 {
   "listings_csv_path": "data/listings.csv",
-  "exchanges": ["mexc", "bitmart"],
+  "exchanges": ["mexc", "coinex", "bingx"],
   "order_book_limit": 50,
   "health_rules": {
     "min_buy_orders": 5,
@@ -86,10 +86,15 @@
         "min_depth_quote_usdt": 5000,
         "min_volume_quote_usdt": 10000
       },
-      "bitmart": {
+      "coinex": {
         "depth_band_pct": 0.02,
-        "min_depth_quote_usdt": 3000,
-        "min_volume_quote_usdt": 5000
+        "min_depth_quote_usdt": 5000,
+        "min_volume_quote_usdt": 10000
+      },
+      "bingx": {
+        "depth_band_pct": 0.02,
+        "min_depth_quote_usdt": 5000,
+        "min_volume_quote_usdt": 10000
       }
     }
   }

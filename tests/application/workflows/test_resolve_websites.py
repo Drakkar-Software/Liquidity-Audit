@@ -113,7 +113,68 @@ class TestResolveWebsitesForSelectionCandidates:
 
         messages = [record.message for record in caplog.records]
         assert resolved_count == 1
-        assert any("Loaded 1 listing(s), 1 need CoinGecko website resolution" in message for message in messages)
+        assert any("Loaded 1 listing(s), 1 need website resolution" in message for message in messages)
         assert any("CoinGecko index loaded, resolving 1 listing(s)" in message for message in messages)
-        assert any("CoinGecko website enrichment progress: 1/1 (100%)" in message for message in messages)
+        assert any("website enrichment progress: 1/1 (100%)" in message for message in messages)
         assert any("Saving 1 resolved listing(s) to listings.csv" in message for message in messages)
+
+    @pytest.mark.asyncio
+    async def test_uses_exchange_website_without_calling_coingecko(
+        self,
+        tmp_path: pathlib.Path,
+        monkeypatch,
+    ):
+        csv_path = tmp_path / "listings.csv"
+        config = _config(csv_path)
+        listing = _listing()
+        store = listings_store.ListingsStore(csv_path)
+        store.append_or_update([listing])
+
+        async def fake_load_coingecko_index(self, coingecko_client):
+            return None
+
+        async def fake_resolve_website(self, coingecko_client, full_name, base_symbol):
+            raise AssertionError("CoinGecko should not be called when exchange resolves website")
+
+        async def fake_resolve_listing_website(
+            listing,
+            website_finder,
+            coingecko_client,
+            coingecko_lock,
+        ):
+            return website_resolution.WebsiteResolutionResult(
+                website="https://www.optimustoken.io/",
+                coingecko_id=None,
+            )
+
+        monkeypatch.setattr(
+            resolve_websites_workflow.website_finder.WebsiteFinder,
+            "load_coingecko_index",
+            fake_load_coingecko_index,
+        )
+        monkeypatch.setattr(
+            resolve_websites_workflow.website_finder.WebsiteFinder,
+            "resolve_website",
+            fake_resolve_website,
+        )
+        monkeypatch.setattr(
+            resolve_websites_workflow.exchange_website_resolvers,
+            "resolve_listing_website",
+            fake_resolve_listing_website,
+        )
+        monkeypatch.setattr(
+            resolve_websites_workflow.ccxt_client,
+            "create_exchange",
+            lambda *args, **kwargs: mock.AsyncMock(),
+        )
+
+        resolved_count = await resolve_websites_workflow.resolve_websites_for_selection_candidates(
+            store,
+            config,
+            set(),
+        )
+
+        assert resolved_count == 1
+        saved = store.load_all()[listing.key()]
+        assert saved.website == "https://www.optimustoken.io/"
+        assert saved.coingecko_id is None

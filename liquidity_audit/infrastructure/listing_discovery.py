@@ -79,6 +79,10 @@ def _market_to_listing(
 
     if exchange_name == "mexc":
         full_name = _extract_mexc_full_name(market, symbol)
+    elif exchange_name in {"coinex", "bingx"}:
+        if not isinstance(base, str) or not base.strip():
+            raise ListingDiscoveryError(f"{exchange_name} market {symbol!r} has invalid base")
+        full_name = base.strip()
     else:
         raise ListingDiscoveryError(f"unsupported exchange for listing discovery: {exchange_name}")
 
@@ -129,28 +133,53 @@ async def fetch_current_listings(
     return listings
 
 
+def exchange_has_listing_history(
+    exchange_name: str,
+    known_keys: set[tuple[str, str]],
+) -> bool:
+    normalized_exchange = exchange_name.strip().lower()
+    return any(
+        exchange_key == normalized_exchange
+        for exchange_key, _symbol in known_keys
+    )
+
+
 def filter_new_listings(
     listings: list[models.ListingRecord],
     known_keys: set[tuple[str, str]],
+    exchange_name: str | None = None,
 ) -> list[models.ListingRecord]:
-    new_listings = [
+    candidates = [
         listing
         for listing in listings
         if listing.key() not in known_keys
     ]
-    _LOGGER.info(
-        "Found %s new listing(s) out of %s current listing(s)",
-        len(new_listings),
-        len(listings),
+    is_bootstrap_sync = (
+        exchange_name is not None
+        and not exchange_has_listing_history(exchange_name, known_keys)
     )
-    for listing in new_listings:
+    if is_bootstrap_sync:
+        if candidates:
+            _LOGGER.info(
+                "First sync for %s: seeding %s listing(s) into store "
+                "(not counted as new listings)",
+                exchange_name,
+                len(candidates),
+            )
+    else:
         _LOGGER.info(
-            "New listing: %s %s (%s)",
-            listing.exchange,
-            listing.symbol,
-            listing.full_name,
+            "Found %s new listing(s) out of %s current listing(s)",
+            len(candidates),
+            len(listings),
         )
-    return new_listings
+        for listing in candidates:
+            _LOGGER.info(
+                "New listing: %s %s (%s)",
+                listing.exchange,
+                listing.symbol,
+                listing.full_name,
+            )
+    return candidates
 
 
 async def fetch_exchange_listings(

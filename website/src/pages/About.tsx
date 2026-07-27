@@ -95,7 +95,7 @@ export function About() {
             Supported crypto exchanges
           </h2>
           <p style={{ margin: 0, font: `400 14px/1.7 ${fonts.sans}`, color: colors.ink2 }}>
-            Rankings and reports currently cover MEXC and BitMart, the exchanges most requested so
+            Rankings and reports currently cover MEXC, CoinEx, and BingX, the exchanges most requested so
             far. Want another venue added?{' '}
             <a
               href="mailto:contact@octobot.cloud"

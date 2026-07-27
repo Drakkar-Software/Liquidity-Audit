@@ -4,7 +4,7 @@ import liquidity_audit.config as app_config
 def default_delisting_risk_config_block(
     exchanges: list[str] | None = None,
 ) -> dict:
-    exchange_names = exchanges or ["mexc", "bitmart"]
+    exchange_names = exchanges or ["mexc", "coinex", "bingx"]
     return {
         "exchanges": {
             exchange_name: {
@@ -20,7 +20,7 @@ def default_delisting_risk_config_block(
 def default_delisting_risk(
     exchanges: list[str] | None = None,
 ) -> app_config.DelistingRiskConfig:
-    exchange_names = exchanges or ["mexc", "bitmart"]
+    exchange_names = exchanges or ["mexc", "coinex", "bingx"]
     return app_config.DelistingRiskConfig(
         exchanges={
             exchange_name: app_config.DelistingRiskExchangeThresholds(

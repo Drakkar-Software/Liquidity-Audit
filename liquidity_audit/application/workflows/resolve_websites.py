@@ -5,6 +5,7 @@ import liquidity_audit.application.shared.progress as progress
 import liquidity_audit.config as app_config
 import liquidity_audit.domain.website.website_resolution as website_resolution
 import liquidity_audit.infrastructure.ccxt_client as ccxt_client
+import liquidity_audit.infrastructure.exchange_website_resolvers as exchange_website_resolvers
 import liquidity_audit.infrastructure.listings_store as listings_store
 import liquidity_audit.infrastructure.selected_history_store as selected_history_store
 import liquidity_audit.infrastructure.website_finder as website_finder
@@ -34,16 +35,16 @@ async def resolve_websites_for_selection_candidates(
         )
     ]
     _LOGGER.info(
-        "Loaded %s listing(s), %s need CoinGecko website resolution",
+        "Loaded %s listing(s), %s need website resolution",
         len(all_records),
         len(resolution_pool),
     )
     if not resolution_pool:
-        _LOGGER.info("No selection candidates need CoinGecko website resolution")
+        _LOGGER.info("No selection candidates need website resolution")
         return 0
 
     _LOGGER.info(
-        "Resolving websites for %s selection candidate(s) via CoinGecko",
+        "Resolving websites for %s selection candidate(s)",
         len(resolution_pool),
     )
     website_finder_instance = website_finder.WebsiteFinder()
@@ -67,16 +68,16 @@ async def resolve_websites_for_selection_candidates(
             if not listing.base:
                 base, _quote = listings_store.parse_base_quote_from_symbol(listing.symbol)
                 listing.base = base
-            async with coingecko_lock:
-                resolution = await website_finder_instance.resolve_website(
-                    coingecko_client,
-                    listing.full_name,
-                    listing.base,
-                )
+            resolution = await exchange_website_resolvers.resolve_listing_website(
+                listing,
+                website_finder_instance,
+                coingecko_client,
+                coingecko_lock,
+            )
             website_resolution.apply_resolution_to_listing(listing, resolution)
             updated_records.append(listing)
             progress.maybe_log_enrichment_progress(
-                "CoinGecko website",
+                "website",
                 listing_index,
                 total_to_resolve,
             )
@@ -100,7 +101,7 @@ async def resolve_websites_for_selection_candidates(
 
 
 async def run(config: app_config.AppConfig) -> int:
-    _LOGGER.info("Updating websites for selection candidates via CoinGecko")
+    _LOGGER.info("Updating websites for selection candidates")
     store = listings_store.ListingsStore(config.listings_csv_path)
     resolved_count = await resolve_websites_for_selection_candidates(
         store,

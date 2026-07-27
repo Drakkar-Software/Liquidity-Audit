@@ -49,6 +49,20 @@ class TestExtractMexcFullName:
             listing_discovery._extract_mexc_full_name(market, "BTC/USDT")
 
 
+class TestExchangeHasListingHistory:
+    def test_true_when_exchange_has_known_keys(self):
+        known_keys = {("mexc", "BTC/USDT"), ("coinex", "ETH/USDT")}
+        assert listing_discovery.exchange_has_listing_history("mexc", known_keys) is True
+        assert listing_discovery.exchange_has_listing_history("coinex", known_keys) is True
+
+    def test_false_when_exchange_has_no_known_keys(self):
+        known_keys = {("mexc", "BTC/USDT")}
+        assert listing_discovery.exchange_has_listing_history("coinex", known_keys) is False
+
+    def test_false_when_known_keys_empty(self):
+        assert listing_discovery.exchange_has_listing_history("coinex", set()) is False
+
+
 class TestFilterNewListings:
     def test_returns_only_unknown_keys(self):
         listings = [
@@ -59,6 +73,19 @@ class TestFilterNewListings:
         result = listing_discovery.filter_new_listings(listings, known_keys)
         assert len(result) == 1
         assert result[0].symbol == "ETH/USDT"
+
+    def test_returns_candidates_on_bootstrap_without_per_coin_new_logs(self):
+        listings = [
+            models.ListingRecord("coinex", "BTC/USDT", "BTC", "USDT", "BTC"),
+            models.ListingRecord("coinex", "ETH/USDT", "ETH", "USDT", "ETH"),
+        ]
+        known_keys = {("mexc", "AAA/USDT")}
+        result = listing_discovery.filter_new_listings(
+            listings,
+            known_keys,
+            exchange_name="coinex",
+        )
+        assert len(result) == 2
 
 
 class TestFetchCurrentListings:
@@ -76,6 +103,30 @@ class TestFetchCurrentListings:
         assert len(listings) == 2
         assert {listing.symbol for listing in listings} == {"BTC/USDT", "ETH/USDC"}
         assert listings[0].full_name == "Bitcoin"
+
+    @pytest.mark.asyncio
+    async def test_coinex_uses_base_as_full_name(self):
+        class FakeClient:
+            markets = {
+                "BTC/USDT": _spot_market("BTC", "USDT", {}),
+            }
+
+        listings = await listing_discovery.fetch_current_listings(FakeClient(), "coinex")
+        assert len(listings) == 1
+        assert listings[0].full_name == "BTC"
+        assert listings[0].exchange == "coinex"
+
+    @pytest.mark.asyncio
+    async def test_bingx_uses_base_as_full_name(self):
+        class FakeClient:
+            markets = {
+                "ETH/USDC": _spot_market("ETH", "USDC", {}),
+            }
+
+        listings = await listing_discovery.fetch_current_listings(FakeClient(), "bingx")
+        assert len(listings) == 1
+        assert listings[0].full_name == "ETH"
+        assert listings[0].exchange == "bingx"
 
     @pytest.mark.asyncio
     async def test_bitmart_uses_currency_name(self):

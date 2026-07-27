@@ -38,9 +38,18 @@ async def process_exchange(
     known_keys: set[tuple[str, str]],
     config: app_config.AppConfig,
     identify_only: bool,
-) -> tuple[list[models.ListingRecord], list[models.FailedListingEnrichment]]:
-    exchange_new_listings: list[models.ListingRecord] = []
+) -> tuple[
+    list[models.ListingRecord],
+    list[models.ListingRecord],
+    list[models.FailedListingEnrichment],
+]:
+    saved_listings: list[models.ListingRecord] = []
+    new_listings: list[models.ListingRecord] = []
     failed_enrichments: list[models.FailedListingEnrichment] = []
+    has_listing_history = listing_discovery.exchange_has_listing_history(
+        exchange_name,
+        known_keys,
+    )
 
     _LOGGER.info("Discovering listings on %s", exchange_name)
     async with ccxt_client.exchange_client(
@@ -54,18 +63,20 @@ async def process_exchange(
         exchange_new_candidates = listing_discovery.filter_new_listings(
             current_listings,
             known_keys,
+            exchange_name,
         )
         if exchange_new_candidates:
             total_to_register = len(exchange_new_candidates)
-            _LOGGER.info(
-                "Registering %s new listing(s) on %s",
-                total_to_register,
-                exchange_name,
-            )
+            if has_listing_history:
+                _LOGGER.info(
+                    "Registering %s new listing(s) on %s",
+                    total_to_register,
+                    exchange_name,
+                )
             for listing_index, listing in enumerate(exchange_new_candidates, start=1):
                 try:
                     registered = register_new_listing(listing)
-                    if not identify_only:
+                    if not identify_only and has_listing_history:
                         progress.maybe_log_enrichment_progress(
                             exchange_name,
                             listing_index,
@@ -87,19 +98,21 @@ async def process_exchange(
                         listing,
                         time_utils.utc_now_iso(),
                     )
-                    exchange_new_listings.append(stub_listing)
+                    saved_listings.append(stub_listing)
                     continue
 
-                exchange_new_listings.append(registered)
+                saved_listings.append(registered)
+                if has_listing_history:
+                    new_listings.append(registered)
 
             logging_summaries.log_failed_enrichments(failed_enrichments, exchange_name)
             _LOGGER.info(
                 "%s registration complete: %s listing(s) processed, %s failed",
                 exchange_name,
-                len(exchange_new_listings),
+                len(saved_listings),
                 len(failed_enrichments),
             )
         else:
             _LOGGER.info("No new listings on %s", exchange_name)
 
-    return exchange_new_listings, failed_enrichments
+    return saved_listings, new_listings, failed_enrichments

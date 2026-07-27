@@ -1,14 +1,28 @@
 import { describe, expect, it } from 'vitest';
-import { capitalizeExchange, isExchangeSlug } from '../exchanges';
+import { capitalizeExchange, isActiveExchangeSlug, isExchangeSlug } from '../exchanges';
 
 describe('isExchangeSlug', () => {
-  it('accepts supported exchanges', () => {
+  it('accepts active exchanges', () => {
     expect(isExchangeSlug('mexc')).toBe(true);
+    expect(isExchangeSlug('coinex')).toBe(true);
+    expect(isExchangeSlug('bingx')).toBe(true);
+  });
+
+  it('accepts legacy loadable exchanges', () => {
     expect(isExchangeSlug('bitmart')).toBe(true);
   });
 
   it('rejects unknown exchanges', () => {
     expect(isExchangeSlug('binance')).toBe(false);
+  });
+});
+
+describe('isActiveExchangeSlug', () => {
+  it('accepts only active exchanges', () => {
+    expect(isActiveExchangeSlug('mexc')).toBe(true);
+    expect(isActiveExchangeSlug('coinex')).toBe(true);
+    expect(isActiveExchangeSlug('bingx')).toBe(true);
+    expect(isActiveExchangeSlug('bitmart')).toBe(false);
   });
 });
 
