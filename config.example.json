@@ -67,7 +67,7 @@
     "vsCurrency": "usd"
   },
   "daily_selection": {
-    "max_per_day": 3,
+    "max_per_day": 6,
     "history_csv_path": "data/selected_history.csv",
     "cooldown_days": 30
   },
