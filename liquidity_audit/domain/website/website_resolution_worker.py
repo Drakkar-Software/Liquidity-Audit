@@ -38,6 +38,7 @@ class WebsiteResolutionWorker:
         self._listings_csv_lock = listings_csv_lock
         self._mexc_queue: asyncio.Queue[typing.Any] = asyncio.Queue()
         self._coinex_queue: asyncio.Queue[typing.Any] = asyncio.Queue()
+        self._weex_queue: asyncio.Queue[typing.Any] = asyncio.Queue()
         self._coingecko_queue: asyncio.Queue[typing.Any] = asyncio.Queue()
         self._enqueued_keys: set[tuple[str, str]] = set()
         self._coingecko_lock = asyncio.Lock()
@@ -47,8 +48,10 @@ class WebsiteResolutionWorker:
         self._coingecko_client: typing.Any = None
         self._mexc_throttle_client: typing.Any = None
         self._coinex_throttle_client: typing.Any = None
+        self._weex_throttle_client: typing.Any = None
         self._mexc_http_session: aiohttp.ClientSession | None = None
         self._coinex_http_session: aiohttp.ClientSession | None = None
+        self._weex_http_session: aiohttp.ClientSession | None = None
         self._consumer_tasks: list[asyncio.Task[None]] = []
 
     @classmethod
@@ -74,7 +77,7 @@ class WebsiteResolutionWorker:
         return worker
 
     async def start(self) -> None:
-        _LOGGER.info("Starting website resolution workers (mexc, coinex, coingecko)")
+        _LOGGER.info("Starting website resolution workers (mexc, coinex, weex, coingecko)")
         self._coingecko_client = ccxt_client.create_exchange(
             "coingecko",
             ccxt_options=self._config.ccxt_options,
@@ -90,8 +93,13 @@ class WebsiteResolutionWorker:
             "coinex",
             ccxt_options=self._config.ccxt_options,
         )
+        self._weex_throttle_client = ccxt_client.create_exchange(
+            "weex",
+            ccxt_options=self._config.ccxt_options,
+        )
         self._mexc_throttle_client.open()
         self._coinex_throttle_client.open()
+        self._weex_throttle_client.open()
         _LOGGER.info(
             "mexc website throttle rateLimit=%s ms (from CCXT)",
             self._mexc_throttle_client.rateLimit,
@@ -100,14 +108,20 @@ class WebsiteResolutionWorker:
             "coinex website throttle rateLimit=%s ms (from CCXT)",
             self._coinex_throttle_client.rateLimit,
         )
+        _LOGGER.info(
+            "weex website throttle rateLimit=%s ms (from CCXT)",
+            self._weex_throttle_client.rateLimit,
+        )
 
         self._mexc_http_session = exchange_website_resolvers.create_mexc_http_session()
         self._coinex_http_session = exchange_website_resolvers.create_coinex_http_session()
+        self._weex_http_session = exchange_website_resolvers.create_weex_http_session()
 
         _LOGGER.info("Website resolution workers ready")
         self._consumer_tasks = [
             asyncio.create_task(self._mexc_consumer_loop()),
             asyncio.create_task(self._coinex_consumer_loop()),
+            asyncio.create_task(self._weex_consumer_loop()),
             asyncio.create_task(self._coingecko_consumer_loop()),
         ]
 
@@ -130,6 +144,9 @@ class WebsiteResolutionWorker:
         elif exchange_name == "coinex":
             target_queue = self._coinex_queue
             queue_name = "coinex"
+        elif exchange_name == "weex":
+            target_queue = self._weex_queue
+            queue_name = "weex"
         else:
             target_queue = self._coingecko_queue
             queue_name = "coingecko"
@@ -157,6 +174,7 @@ class WebsiteResolutionWorker:
         all_queues = [
             self._mexc_queue,
             self._coinex_queue,
+            self._weex_queue,
             self._coingecko_queue,
         ]
         try:
@@ -168,14 +186,16 @@ class WebsiteResolutionWorker:
             pending_counts = {
                 "mexc": self._mexc_queue.qsize(),
                 "coinex": self._coinex_queue.qsize(),
+                "weex": self._weex_queue.qsize(),
                 "coingecko": self._coingecko_queue.qsize(),
             }
             _LOGGER.warning(
                 "Website resolution queue drain timed out after %ss "
-                "(pending mexc=%s coinex=%s coingecko=%s, resolved=%s failed=%s enqueued=%s)",
+                "(pending mexc=%s coinex=%s weex=%s coingecko=%s, resolved=%s failed=%s enqueued=%s)",
                 SHUTDOWN_QUEUE_DRAIN_TIMEOUT_SECONDS,
                 pending_counts["mexc"],
                 pending_counts["coinex"],
+                pending_counts["weex"],
                 pending_counts["coingecko"],
                 self._resolved_count,
                 self._failed_count,
@@ -204,10 +224,14 @@ class WebsiteResolutionWorker:
             await self._mexc_http_session.close()
         if self._coinex_http_session is not None:
             await self._coinex_http_session.close()
+        if self._weex_http_session is not None:
+            await self._weex_http_session.close()
         if self._mexc_throttle_client is not None:
             await self._mexc_throttle_client.close()
         if self._coinex_throttle_client is not None:
             await self._coinex_throttle_client.close()
+        if self._weex_throttle_client is not None:
+            await self._weex_throttle_client.close()
         if self._coingecko_client is not None:
             await self._coingecko_client.close()
 
@@ -277,6 +301,24 @@ class WebsiteResolutionWorker:
             finally:
                 self._coinex_queue.task_done()
 
+    async def _weex_consumer_loop(self) -> None:
+        while True:
+            listing = await self._weex_queue.get()
+            try:
+                if listing is _SHUTDOWN_SENTINEL:
+                    break
+                try:
+                    await self._resolve_via_weex(listing)
+                except Exception:
+                    self._failed_count += 1
+                    _LOGGER.exception(
+                        "weex website resolution failed for %s %s",
+                        listing.exchange,
+                        listing.symbol,
+                    )
+            finally:
+                self._weex_queue.task_done()
+
     async def _coingecko_consumer_loop(self) -> None:
         while True:
             listing = await self._coingecko_queue.get()
@@ -296,9 +338,12 @@ class WebsiteResolutionWorker:
                 self._coingecko_queue.task_done()
 
     def _ensure_listing_base(self, listing: models.ListingRecord) -> None:
-        if not listing.base:
-            base, _quote = listings_store.parse_base_quote_from_symbol(listing.symbol)
-            listing.base = base
+        if not listing.base or not listing.quote:
+            base, quote = listings_store.parse_base_quote_from_symbol(listing.symbol)
+            if not listing.base:
+                listing.base = base
+            if not listing.quote:
+                listing.quote = quote
 
     async def _resolve_via_mexc(self, listing: models.ListingRecord) -> None:
         self._ensure_listing_base(listing)
@@ -329,6 +374,23 @@ class WebsiteResolutionWorker:
                 coingecko_id=None,
             )
             await self._persist_resolution(listing, resolution, source="coinex")
+            return
+        self._enqueue_coingecko_fallback(listing)
+
+    async def _resolve_via_weex(self, listing: models.ListingRecord) -> None:
+        self._ensure_listing_base(listing)
+        await self._weex_throttle_client.throttle(1)
+        website = await exchange_website_resolvers.resolve_weex_website(
+            listing.base,
+            listing.quote,
+            self._weex_http_session,
+        )
+        if website:
+            resolution = website_resolution.WebsiteResolutionResult(
+                website=website,
+                coingecko_id=None,
+            )
+            await self._persist_resolution(listing, resolution, source="weex")
             return
         self._enqueue_coingecko_fallback(listing)
 

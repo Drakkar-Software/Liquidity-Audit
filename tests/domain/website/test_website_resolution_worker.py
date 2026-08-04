@@ -110,6 +110,11 @@ def _patch_worker_infrastructure(
         "create_coinex_http_session",
         lambda: mock.AsyncMock(),
     )
+    monkeypatch.setattr(
+        website_resolution_worker.exchange_website_resolvers,
+        "create_weex_http_session",
+        lambda: mock.AsyncMock(),
+    )
     if mexc_website is not _UNPATCHED:
         monkeypatch.setattr(
             website_resolution_worker.exchange_website_resolvers,
@@ -202,6 +207,30 @@ class TestWebsiteResolutionWorkerTryEnqueue:
         assert worker._coingecko_queue.qsize() == 1
         assert worker._mexc_queue.qsize() == 0
         assert worker._coinex_queue.qsize() == 0
+
+    @pytest.mark.asyncio
+    async def test_routes_weex_to_weex_queue(self, tmp_path: pathlib.Path, monkeypatch):
+        csv_path = tmp_path / "listings.csv"
+        config = _config(csv_path)
+        listings_csv_lock = asyncio.Lock()
+        store = listings_store.ListingsStore(csv_path)
+
+        worker = website_resolution_worker.WebsiteResolutionWorker(
+            store,
+            config,
+            set(),
+            {},
+            listings_csv_lock,
+        )
+        monkeypatch.setattr(worker, "start", mock.AsyncMock())
+
+        listing = _listing("BTC/USDT", exchange="weex")
+        worker.try_enqueue(listing)
+
+        assert worker._weex_queue.qsize() == 1
+        assert worker._mexc_queue.qsize() == 0
+        assert worker._coinex_queue.qsize() == 0
+        assert worker._coingecko_queue.qsize() == 0
 
 
 class TestWebsiteResolutionWorkerShutdown:

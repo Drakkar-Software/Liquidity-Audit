@@ -45,10 +45,12 @@ flowchart LR
 
 Each run follows these steps:
 
-1. **Discover listings** — For each configured exchange (currently **MEXC**, **CoinEx**, and **BingX**), the pipeline loads active **spot** markets quoted in **USDT** or **USDC** via [CCXT](https://github.com/ccxt/ccxt).
+1. **Discover listings** — For each configured exchange (currently **MEXC**, **CoinEx**, **BingX**, and **WEEX**), the pipeline loads active **spot** markets quoted in **USDT** or **USDC** via [CCXT](https://github.com/ccxt/ccxt).
 2. **Analyze each pair** — For every non-delisted listing, the pipeline fetches one **visible order-book snapshot** (top 50 levels) and the **24h ticker**, then computes spread, depth, slippage, health labels, and the 0–100 liquidity score. See [`fetch_pair_metrics.py`](liquidity_audit/application/shared/fetch_pair_metrics.py).
 3. **Write JSON** — Results are written under `data/analysis/` (see [Published artifacts](#published-artifacts) below). A run manifest records start time, completion time, pair counts, and any failures.
 4. **Publish** — All `*.json` files under `data/analysis/` are upserted to R2 (`aws s3 sync` without `--delete`): active pairs overwrite existing objects at the same path, and delisted pair reports already on R2 are left unchanged. The website reads this published JSON at runtime; it does not call exchanges directly.
+
+**Project websites** — MEXC and CoinEx expose official URLs via exchange APIs; BingX falls back to CoinGecko. WEEX official Spot API has no website field; the pipeline scrapes the SSR **Links** section on `https://www.weex.com/spot/{BASE}-{QUOTE}` when resolving websites for selection candidates.
 
 ### What the website uses
 

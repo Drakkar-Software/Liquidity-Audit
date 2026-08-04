@@ -6,6 +6,7 @@ describe('isExchangeSlug', () => {
     expect(isExchangeSlug('mexc')).toBe(true);
     expect(isExchangeSlug('coinex')).toBe(true);
     expect(isExchangeSlug('bingx')).toBe(true);
+    expect(isExchangeSlug('weex')).toBe(true);
   });
 
   it('accepts legacy loadable exchanges', () => {
@@ -22,6 +23,7 @@ describe('isActiveExchangeSlug', () => {
     expect(isActiveExchangeSlug('mexc')).toBe(true);
     expect(isActiveExchangeSlug('coinex')).toBe(true);
     expect(isActiveExchangeSlug('bingx')).toBe(true);
+    expect(isActiveExchangeSlug('weex')).toBe(true);
     expect(isActiveExchangeSlug('bitmart')).toBe(false);
   });
 });

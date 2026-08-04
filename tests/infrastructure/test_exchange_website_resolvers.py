@@ -58,6 +58,27 @@ class TestWebsiteFromCoinexPayload:
         assert exchange_website_resolvers._website_from_coinex_payload(payload) is None
 
 
+class TestWebsiteFromWeexHtml:
+    def test_extracts_website_link_from_links_section(self):
+        html = (
+            "<section><h3>Links</h3><ul>"
+            "<li><a href=\"https://bitcoin.org/\" target=\"_blank\">Website</a></li>"
+            "<li><a href=\"https://bitcoin.org/bitcoin.pdf\">Whitepaper</a></li>"
+            "</ul></section>"
+        )
+        assert (
+            exchange_website_resolvers._website_from_weex_html(html)
+            == "https://bitcoin.org/"
+        )
+
+    def test_returns_none_when_links_section_missing(self):
+        assert exchange_website_resolvers._website_from_weex_html("<html></html>") is None
+
+    def test_returns_none_when_website_anchor_missing(self):
+        html = "<h3>Links</h3><ul><li><a href=\"https://example.com\">Explorer</a></li></ul>"
+        assert exchange_website_resolvers._website_from_weex_html(html) is None
+
+
 class TestResolveForListing:
     @pytest.mark.asyncio
     async def test_returns_mexc_website_for_mexc_listing(self, monkeypatch):
@@ -78,6 +99,27 @@ class TestResolveForListing:
 
         assert website == "https://www.optimustoken.io/"
         fake_resolve_mexc.assert_awaited_once_with("OPTIMUS", session)
+
+    @pytest.mark.asyncio
+    async def test_returns_weex_website_for_weex_listing(self, monkeypatch):
+        listing = mock.Mock()
+        listing.exchange = "weex"
+        listing.symbol = "BTC/USDT"
+        listing.base = "BTC"
+        listing.quote = "USDT"
+
+        session = mock.AsyncMock()
+        fake_resolve_weex = mock.AsyncMock(return_value="https://bitcoin.org/")
+        monkeypatch.setattr(
+            exchange_website_resolvers,
+            "resolve_weex_website",
+            fake_resolve_weex,
+        )
+
+        website = await exchange_website_resolvers.resolve_for_listing(listing, session)
+
+        assert website == "https://bitcoin.org/"
+        fake_resolve_weex.assert_awaited_once_with("BTC", "USDT", session)
 
     @pytest.mark.asyncio
     async def test_returns_none_for_unsupported_exchange(self):

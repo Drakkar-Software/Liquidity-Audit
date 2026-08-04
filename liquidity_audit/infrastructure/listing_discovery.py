@@ -79,7 +79,7 @@ def _market_to_listing(
 
     if exchange_name == "mexc":
         full_name = _extract_mexc_full_name(market, symbol)
-    elif exchange_name in {"coinex", "bingx"}:
+    elif exchange_name in {"coinex", "bingx", "weex"}:
         if not isinstance(base, str) or not base.strip():
             raise ListingDiscoveryError(f"{exchange_name} market {symbol!r} has invalid base")
         full_name = base.strip()

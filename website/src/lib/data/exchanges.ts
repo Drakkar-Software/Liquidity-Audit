@@ -1,4 +1,4 @@
-export const EXCHANGES = ['mexc', 'coinex', 'bingx'] as const;
+export const EXCHANGES = ['mexc', 'coinex', 'bingx', 'weex'] as const;
 
 /** Legacy exchanges kept loadable for archived pair report URLs (e.g. email campaigns). */
 export const LEGACY_EXCHANGE_SLUGS = ['bitmart'] as const;

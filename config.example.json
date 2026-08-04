@@ -1,6 +1,6 @@
 {
   "listings_csv_path": "data/listings.csv",
-  "exchanges": ["mexc", "coinex", "bingx"],
+  "exchanges": ["mexc", "coinex", "bingx", "weex"],
   "order_book_limit": 50,
   "health_rules": {
     "min_buy_orders": 5,
@@ -67,7 +67,7 @@
     "vsCurrency": "usd"
   },
   "daily_selection": {
-    "max_per_day": 6,
+    "max_per_day": 8,
     "history_csv_path": "data/selected_history.csv",
     "cooldown_days": 30
   },
@@ -92,6 +92,11 @@
         "min_volume_quote_usdt": 5000
       },
       "bingx": {
+        "depth_band_pct": 0.02,
+        "min_depth_quote_usdt": 3000,
+        "min_volume_quote_usdt": 5000
+      },
+      "weex": {
         "depth_band_pct": 0.02,
         "min_depth_quote_usdt": 3000,
         "min_volume_quote_usdt": 5000

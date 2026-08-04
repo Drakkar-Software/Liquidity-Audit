@@ -129,6 +129,18 @@ class TestFetchCurrentListings:
         assert listings[0].exchange == "bingx"
 
     @pytest.mark.asyncio
+    async def test_weex_uses_base_as_full_name(self):
+        class FakeClient:
+            markets = {
+                "SOL/USDT": _spot_market("SOL", "USDT", {}),
+            }
+
+        listings = await listing_discovery.fetch_current_listings(FakeClient(), "weex")
+        assert len(listings) == 1
+        assert listings[0].full_name == "SOL"
+        assert listings[0].exchange == "weex"
+
+    @pytest.mark.asyncio
     async def test_bitmart_uses_currency_name(self):
         class FakeClient:
             markets = {
