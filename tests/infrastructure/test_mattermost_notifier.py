@@ -41,18 +41,17 @@ class TestFormatSelectedProjectMessage:
     def test_includes_ticker_exchange_topic_and_health(self):
         selection = _selection("LOW/USDT", is_new_listing=True)
         message = mattermost_notifier._format_selected_project_message(selection)
-        assert "**LOW** · mexc · new listing" in message
-        assert "- Pair: LOW/USDT" in message
-        assert "few_orders" in message
+        assert "LOW · mexc · new listing" in message
+        assert "LOW/USDT · few_orders · 0.42" in message
 
     def test_uses_bad_health_topic_for_existing_selection(self):
         selection = _selection("LOW/USDT", is_new_listing=False)
         message = mattermost_notifier._format_selected_project_message(selection)
-        assert "**LOW** · mexc · bad health" in message
+        assert "LOW · mexc · bad health" in message
 
 
 class TestFormatRunNotificationText:
-    def test_joins_summary_and_daily_selection_sections(self):
+    def test_joins_selections_and_whitelist_without_run_summary(self):
         daily_selection = _selection("LOW/USDT", is_new_listing=False)
         run_summary = models.RunSummary(
             new_listings_total=0,
@@ -66,11 +65,12 @@ class TestFormatRunNotificationText:
             run_summary,
             [daily_selection],
         )
-        assert "Run summary" in notification_text
-        assert "Daily project selections (1)" in notification_text
-        assert "**LOW** · mexc · bad health" in notification_text
-        assert '**Enrich selected**' in notification_text
-        assert '`--projects-whitelist "mexc:LOW"`' in notification_text
+        assert "Run summary" not in notification_text
+        assert "Selections (1)" in notification_text
+        assert "LOW · mexc · bad health" in notification_text
+        assert "LOW/USDT · few_orders · 0.42" in notification_text
+        assert "--projects-whitelist \"mexc:LOW\"" in notification_text
+        assert "Enrich selected" not in notification_text
 
     def test_omits_enrich_line_when_no_selections(self):
         run_summary = models.RunSummary(
@@ -157,8 +157,12 @@ class TestSendRunNotifications:
         assert len(posted_payloads) == 1
         webhook_url, payload = posted_payloads[0]
         assert webhook_url == "https://mattermost.example/hooks/abc"
-        assert "Run summary" in payload["text"]
-        assert "**LOW** · mexc · new listing" in payload["text"]
+        assert "Run summary" not in payload["text"]
+        assert "LOW · mexc · new listing" in payload["text"]
+        assert any(
+            "Mattermost run summary:" in record.message
+            for record in caplog.records
+        )
         assert any(
             "Mattermost notification payload:" in record.message
             for record in caplog.records

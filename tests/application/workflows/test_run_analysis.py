@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import pathlib
 import time
 from contextlib import asynccontextmanager
@@ -335,6 +336,67 @@ class TestProcessExchangeHandleBadSymbol:
         assert skipped_delisted == 1
         assert not pair_json_path.is_file()
         assert listing.delisted_at == "2020-01-01T00:00:00+00:00"
+
+
+class TestProcessExchangeHandleNullResponse:
+    @pytest.mark.asyncio
+    async def test_null_response_logs_info_and_skips_without_failure(
+        self,
+        tmp_path: pathlib.Path,
+        monkeypatch,
+        caplog,
+    ):
+        csv_path = tmp_path / "listings.csv"
+        output_dir = tmp_path / "analysis"
+        config = _analysis_config(csv_path, output_dir)
+        listing = _listing()
+        listings_store_instance = listings_store.ListingsStore(csv_path)
+        store = analysis_store.AnalysisStore(output_dir)
+        listings_csv_lock = asyncio.Lock()
+
+        async def raise_null_response(*args, **kwargs):
+            raise ccxt.NullResponse(
+                "ob_weex fetchTickers() could not find a ticker for SHOGGOTH/USDT",
+            )
+
+        monkeypatch.setattr(
+            fetch_pair_metrics,
+            "fetch_pair_raw_metrics",
+            raise_null_response,
+        )
+        monkeypatch.setattr(ccxt_client, "exchange_client", _fake_exchange_client)
+        monkeypatch.setattr(
+            listings_store.ListingsStore,
+            "append_or_update",
+            listings_store_instance.append_or_update,
+        )
+
+        with caplog.at_level(logging.INFO):
+            (
+                universe,
+                failures,
+                _pair_analyses,
+                newly_delisted,
+                skipped_delisted,
+            ) = await analysis_exchange_processor.process_exchange(
+                "bitmart",
+                [listing],
+                config,
+                store,
+                listings_store_instance,
+                listings_csv_lock,
+                "2026-06-12T00:00:00+00:00",
+            )
+
+        assert universe == []
+        assert failures == []
+        assert newly_delisted == 0
+        assert skipped_delisted == 0
+        assert listing.delisted_at is None
+        assert any(
+            "Skipping bitmart PITCH/USDT" in record.message
+            for record in caplog.records
+        )
 
 
 class TestProcessExchangeAnalyzesEveryActiveListing:

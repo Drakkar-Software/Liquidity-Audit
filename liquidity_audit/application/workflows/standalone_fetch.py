@@ -112,6 +112,13 @@ async def run(
                         "pair": original,
                         "error": str(error),
                     }
+                except ccxt.NullResponse as error:
+                    _LOGGER.info(
+                        "Skipping %s %s: %s",
+                        exchange_name,
+                        symbol,
+                        error,
+                    )
                 except Exception as error:
                     _LOGGER.exception(
                         "Failed to fetch %s %s",
@@ -154,4 +161,8 @@ async def run(
                 market_cap_by_symbol=None,
             )
 
-    return [output_by_index[index] for index in range(len(parsed))]
+    return [
+        output_by_index[index]
+        for index in range(len(parsed))
+        if index in output_by_index
+    ]

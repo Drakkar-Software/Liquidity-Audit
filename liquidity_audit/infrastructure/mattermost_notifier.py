@@ -33,29 +33,39 @@ def _format_topic(selection: models.DailyProjectSelection) -> str:
     return "bad health"
 
 
-def _website_status_line(record: models.ListingRecord) -> str | None:
+def _format_rounded_liquidity_score(score: float | None) -> str:
+    if score is None:
+        return "unknown"
+    rounded_score = round(score, 2)
+    formatted_score = f"{rounded_score:.2f}".rstrip("0").rstrip(".")
+    return formatted_score
+
+
+def _website_or_status_text(record: models.ListingRecord) -> str | None:
     if record.website:
-        return f"- Website: {record.website}"
+        return record.website
     status = record.website_resolution_status
     if status == website_resolution.COINGECKO_NAME_MISMATCH:
-        return "- Website: CoinGecko name mismatch (add @domain on enrich)"
+        return "CoinGecko mismatch (@domain)"
     if status == website_resolution.COINGECKO_AMBIGUOUS_NAME_MATCH:
-        return "- Website: CoinGecko ambiguous match (add @domain on enrich)"
+        return "CoinGecko ambiguous (@domain)"
     return None
 
 
 def _format_selected_project_message(selection: models.DailyProjectSelection) -> str:
     record = selection.record
-    lines = [
-        f"**{record.base}** · {record.exchange} · {_format_topic(selection)}",
-        f"- Pair: {record.symbol}",
-        f"- Health: {record.health_label_primary or 'unknown'} "
-        f"(liquidity_score={record.liquidity_score})",
+    header_line = f"{record.base} · {record.exchange} · {_format_topic(selection)}"
+    health_label = record.health_label_primary or "unknown"
+    detail_parts = [
+        record.symbol,
+        health_label,
+        _format_rounded_liquidity_score(record.liquidity_score),
     ]
-    website_line = _website_status_line(record)
-    if website_line is not None:
-        lines.append(website_line)
-    return "\n".join(lines)
+    website_or_status = _website_or_status_text(record)
+    if website_or_status is not None:
+        detail_parts.append(website_or_status)
+    detail_line = " · ".join(detail_parts)
+    return f"{header_line}\n{detail_line}"
 
 
 def _selection_base(record: models.ListingRecord) -> str:
@@ -102,7 +112,7 @@ def _format_daily_selections_section(
     if not daily_selections:
         return None
     section_lines = [
-        f"**Daily project selections ({len(daily_selections)})**",
+        f"Selections ({len(daily_selections)})",
     ]
     for selection in daily_selections:
         section_lines.append(_format_selected_project_message(selection))
@@ -115,10 +125,7 @@ def _format_enrich_selected_section(
     if not daily_selections:
         return None
     projects_whitelist_arg = format_projects_whitelist_arg(daily_selections)
-    return (
-        "**Enrich selected**\n"
-        f'`--projects-whitelist "{projects_whitelist_arg}"`'
-    )
+    return f'--projects-whitelist "{projects_whitelist_arg}"'
 
 
 def _format_run_summary_message(run_summary: models.RunSummary) -> str:
@@ -154,7 +161,7 @@ def format_run_notification_text(
     run_summary: models.RunSummary,
     daily_selections: list[models.DailyProjectSelection],
 ) -> str:
-    message_sections = [_format_run_summary_message(run_summary)]
+    message_sections: list[str] = []
     selections_section = _format_daily_selections_section(daily_selections)
     if selections_section is not None:
         message_sections.append(selections_section)
@@ -169,6 +176,7 @@ async def send_run_notifications(
     daily_selections: list[models.DailyProjectSelection],
     post: bool = True,
 ) -> None:
+    _LOGGER.info("Mattermost run summary:\n%s", _format_run_summary_message(run_summary))
     notification_text = format_run_notification_text(run_summary, daily_selections)
     _LOGGER.info("Mattermost notification payload:\n%s", notification_text)
     if not post:

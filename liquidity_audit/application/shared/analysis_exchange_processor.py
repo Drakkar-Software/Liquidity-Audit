@@ -146,6 +146,13 @@ async def process_exchange(
                         listing.symbol,
                         error,
                     )
+            except ccxt.NullResponse as error:
+                _LOGGER.info(
+                    "Skipping %s %s: %s",
+                    exchange_name,
+                    listing.symbol,
+                    error,
+                )
             except Exception:
                 _LOGGER.exception(
                     "Failed to analyze %s %s",

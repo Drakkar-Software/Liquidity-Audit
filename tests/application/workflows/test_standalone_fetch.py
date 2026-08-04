@@ -210,6 +210,52 @@ class TestRunStandaloneFetch:
         }
 
     @pytest.mark.asyncio
+    async def test_skips_pair_on_null_response(
+        self,
+        tmp_path: pathlib.Path,
+        monkeypatch,
+        caplog,
+    ):
+        csv_path = tmp_path / "listings.csv"
+        output_dir = tmp_path / "analysis"
+        config = _analysis_config(csv_path, output_dir)
+
+        async def fake_fetch_pair_raw_metrics(exchange_client, listing, config, fetched_at):
+            if listing.symbol == "ULX/USDT":
+                raise ccxt.NullResponse(
+                    "ob_weex fetchTickers() could not find a ticker for ULX/USDT",
+                )
+            return (
+                _minimal_raw_metrics(listing.exchange, listing.symbol),
+                [],
+                100.0,
+            )
+
+        monkeypatch.setattr(ccxt_client, "exchange_client", _fake_exchange_client)
+        monkeypatch.setattr(
+            fetch_pair_metrics,
+            "fetch_pair_raw_metrics",
+            fake_fetch_pair_raw_metrics,
+        )
+
+        with caplog.at_level("INFO"):
+            results = await standalone_fetch_workflow.run(
+                config,
+                ["BTC/USDT:mexc", "ULX/USDT:bitmart"],
+            )
+
+        assert len(results) == 1
+        assert results[0]["symbol"] == "BTC/USDT"
+        assert any(
+            "Skipping bitmart ULX/USDT" in record.message
+            for record in caplog.records
+        )
+        assert not any(
+            record.levelname == "ERROR"
+            for record in caplog.records
+        )
+
+    @pytest.mark.asyncio
     async def test_rejects_unknown_exchange(
         self,
         tmp_path: pathlib.Path,
