@@ -5,6 +5,7 @@ import typing
 import ccxt
 
 import liquidity_audit.application.shared.delisted_listing as delisted_listing
+import liquidity_audit.application.shared.exchange_fetch_errors as exchange_fetch_errors
 import liquidity_audit.application.shared.fetch_pair_metrics as fetch_pair_metrics
 import liquidity_audit.application.shared.time_utils as time_utils
 import liquidity_audit.domain.website.website_resolution_worker as website_resolution_worker
@@ -146,13 +147,25 @@ async def process_exchange(
                         listing.symbol,
                         error,
                     )
-            except ccxt.NullResponse as error:
-                _LOGGER.info(
-                    "Skipping %s %s: %s",
-                    exchange_name,
-                    listing.symbol,
-                    error,
-                )
+            except (ccxt.NullResponse, ccxt.BadRequest, ccxt.ExchangeError) as error:
+                if exchange_fetch_errors.is_skippable_pair_fetch_error(error):
+                    _LOGGER.info(
+                        "Skipping %s %s: %s",
+                        exchange_name,
+                        listing.symbol,
+                        error,
+                    )
+                else:
+                    _LOGGER.exception(
+                        "Failed to analyze %s %s",
+                        exchange_name,
+                        listing.symbol,
+                    )
+                    failures.append({
+                        "exchange": exchange_name,
+                        "symbol": listing.symbol,
+                        "error": "analysis failed",
+                    })
             except Exception:
                 _LOGGER.exception(
                     "Failed to analyze %s %s",

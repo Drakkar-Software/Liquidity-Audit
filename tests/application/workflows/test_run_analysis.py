@@ -399,6 +399,124 @@ class TestProcessExchangeHandleNullResponse:
         )
 
 
+class TestProcessExchangeHandleSkippableFetchErrors:
+    @pytest.mark.asyncio
+    async def test_bingx_bad_request_symbol_not_found_skips_without_failure(
+        self,
+        tmp_path: pathlib.Path,
+        monkeypatch,
+        caplog,
+    ):
+        csv_path = tmp_path / "listings.csv"
+        output_dir = tmp_path / "analysis"
+        config = _analysis_config(csv_path, output_dir)
+        listing = _listing(exchange="bingx", symbol="STALE/USDT")
+        listings_store_instance = listings_store.ListingsStore(csv_path)
+        store = analysis_store.AnalysisStore(output_dir)
+        listings_csv_lock = asyncio.Lock()
+
+        async def raise_bingx_not_found(*args, **kwargs):
+            raise ccxt.BadRequest(
+                "ob_bingx {\"code\":100204,\"msg\":\"symbol is not found.\",\"timestamp\":1785877647527}",
+            )
+
+        monkeypatch.setattr(
+            fetch_pair_metrics,
+            "fetch_pair_raw_metrics",
+            raise_bingx_not_found,
+        )
+        monkeypatch.setattr(ccxt_client, "exchange_client", _fake_exchange_client)
+        monkeypatch.setattr(
+            listings_store.ListingsStore,
+            "append_or_update",
+            listings_store_instance.append_or_update,
+        )
+
+        with caplog.at_level(logging.INFO):
+            (
+                universe,
+                failures,
+                _pair_analyses,
+                newly_delisted,
+                skipped_delisted,
+            ) = await analysis_exchange_processor.process_exchange(
+                "bingx",
+                [listing],
+                config,
+                store,
+                listings_store_instance,
+                listings_csv_lock,
+                "2026-06-12T00:00:00+00:00",
+            )
+
+        assert universe == []
+        assert failures == []
+        assert newly_delisted == 0
+        assert skipped_delisted == 0
+        assert listing.delisted_at is None
+        assert any(
+            "Skipping bingx STALE/USDT" in record.message
+            for record in caplog.records
+        )
+
+    @pytest.mark.asyncio
+    async def test_coinex_exchange_error_market_not_found_skips_without_failure(
+        self,
+        tmp_path: pathlib.Path,
+        monkeypatch,
+        caplog,
+    ):
+        csv_path = tmp_path / "listings.csv"
+        output_dir = tmp_path / "analysis"
+        config = _analysis_config(csv_path, output_dir)
+        listing = _listing(exchange="coinex", symbol="USDR/USDT")
+        listings_store_instance = listings_store.ListingsStore(csv_path)
+        store = analysis_store.AnalysisStore(output_dir)
+        listings_csv_lock = asyncio.Lock()
+
+        async def raise_coinex_market_not_found(*args, **kwargs):
+            raise ccxt.ExchangeError("ob_coinex Invalid Parameter: market USDRUSDT not found")
+
+        monkeypatch.setattr(
+            fetch_pair_metrics,
+            "fetch_pair_raw_metrics",
+            raise_coinex_market_not_found,
+        )
+        monkeypatch.setattr(ccxt_client, "exchange_client", _fake_exchange_client)
+        monkeypatch.setattr(
+            listings_store.ListingsStore,
+            "append_or_update",
+            listings_store_instance.append_or_update,
+        )
+
+        with caplog.at_level(logging.INFO):
+            (
+                universe,
+                failures,
+                _pair_analyses,
+                newly_delisted,
+                skipped_delisted,
+            ) = await analysis_exchange_processor.process_exchange(
+                "coinex",
+                [listing],
+                config,
+                store,
+                listings_store_instance,
+                listings_csv_lock,
+                "2026-06-12T00:00:00+00:00",
+            )
+
+        assert universe == []
+        assert failures == []
+        assert newly_delisted == 0
+        assert skipped_delisted == 0
+        assert listing.delisted_at is None
+        assert any(
+            "Skipping coinex USDR/USDT" in record.message
+            for record in caplog.records
+        )
+
+
 class TestProcessExchangeAnalyzesEveryActiveListing:
     @pytest.mark.asyncio
     async def test_fetches_even_when_recently_analyzed(
